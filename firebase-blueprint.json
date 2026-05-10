@@ -1,0 +1,174 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "name", "role", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product in the shop",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["jam", "sauce", "preserve"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "price": { "type": "number" },
+        "description": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "inStock": { "type": "boolean" },
+        "featured": { "type": "boolean" },
+        "linkedArticleIds": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "category", "price", "description", "inStock", "featured", "createdAt"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Blog article/recipe",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string", "description": "HTML content from TipTap" },
+        "excerpt": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "linkedProductIds": { "type": "array", "items": { "type": "string" } },
+        "published": { "type": "boolean" },
+        "featured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "body", "published", "featured", "createdAt"]
+    },
+    "BlogCategory": {
+      "title": "Blog Category",
+      "description": "Category for blog articles",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "slug", "createdAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhone": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "quantity": { "type": "number" }
+            }
+          }
+        },
+        "total": { "type": "number" },
+        "deliveryMethod": { "type": "string", "enum": ["delivery", "pickup"] },
+        "address": { "type": "string" },
+        "pickupAddressId": { "type": "string" },
+        "comment": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "confirmed", "in_transit", "delivered", "cancelled"] },
+        "cancelReason": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "items", "total", "deliveryMethod", "status", "createdAt", "updatedAt"]
+    },
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "Newsletter subscriber",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "status": { "type": "string", "enum": ["pending", "confirmed"] },
+        "subscribedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "status", "subscribedAt"]
+    },
+    "PickupAddress": {
+      "title": "Pickup Address",
+      "description": "Physical location for order pickup",
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "address": { "type": "string" },
+        "workingHours": { "type": "string" }
+      },
+      "required": ["label", "address", "workingHours"]
+    },
+    "Address": {
+      "title": "Address",
+      "description": "User saved shipping address",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "label": { "type": "string" },
+        "street": { "type": "string" },
+        "city": { "type": "string" },
+        "postalCode": { "type": "string" }
+      }
+    },
+    "NewsletterHistory": {
+      "title": "Newsletter History",
+      "description": "Record of sent newsletters",
+      "type": "object",
+      "properties": {
+        "subject": { "type": "string" },
+        "articleId": { "type": "string" },
+        "articleTitle": { "type": "string" },
+        "recipientsCount": { "type": "number" },
+        "sentAt": { "type": "string", "format": "date-time" },
+        "previewHtml": { "type": "string" }
+      },
+      "required": ["subject", "recipientsCount", "sentAt", "previewHtml"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Admin notification alert",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["order", "subscriber", "system"] },
+        "link": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "message", "type", "read", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": { "schema": "User", "description": "User profiles" },
+    "/products/{productId}": { "schema": "Product", "description": "Products catalogue" },
+    "/articles/{articleId}": { "schema": "Article", "description": "Blog articles" },
+    "/blogCategories/{categoryId}": { "schema": "BlogCategory", "description": "Blog categories" },
+    "/orders/{orderId}": { "schema": "Order", "description": "Customer orders" },
+    "/subscribers/{subId}": { "schema": "Subscriber", "description": "Newsletter subscribers" },
+    "/pickupAddresses/{addressId}": { "schema": "PickupAddress", "description": "Points of pickup" },
+    "/addresses/{addressId}": { "schema": "Address", "description": "Saved user addresses" },
+    "/settings/landing": { "schema": "object", "description": "Landing page settings" },
+    "/newsletterHistory/{id}": { "schema": "NewsletterHistory", "description": "Sent newsletters log" },
+    "/notifications/{id}": { "schema": "Notification", "description": "Admin notifications" }
+  }
+}

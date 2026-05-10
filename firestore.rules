@@ -1,0 +1,172 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ---------------------------------------------------------
+    // PHASE 3: Primitives
+    // ---------------------------------------------------------
+    
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function isAdmin() { 
+      return isSignedIn() && (
+        request.auth.token.email == 'olexandr.prykhodko@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+    
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    // ---------------------------------------------------------
+    // PHASE 0: Global Safety Net
+    // ---------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ---------------------------------------------------------
+    // VALIDATION HELPERS
+    // ---------------------------------------------------------
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'name', 'role', 'createdAt']) &&
+             data.keys().size() >= 4 && data.keys().size() <= 6 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.name is string && data.name.size() <= 100 &&
+             (!data.keys().hasAny(['phone']) || (data.phone is string && data.phone.size() <= 20)) &&
+             (!data.keys().hasAny(['updatedAt']) || data.updatedAt == request.time) &&
+             data.role in ['user', 'admin'] &&
+             data.createdAt == request.time;
+    }
+
+    function isValidBlogCategory(data) {
+      return data.keys().hasAll(['name', 'slug', 'createdAt']) &&
+             data.name is string && data.name.size() <= 100 &&
+             data.slug is string && data.slug.size() <= 100 &&
+             (!data.keys().hasAny(['order']) || data.order is number) &&
+             data.createdAt == request.time;
+    }
+
+    function isValidNewsletterHistory(data) {
+      return data.keys().hasAll(['subject', 'recipientsCount', 'sentAt', 'previewHtml']) &&
+             data.subject is string && data.subject.size() <= 200 &&
+             data.recipientsCount is number &&
+             data.sentAt == request.time &&
+             data.previewHtml is string && data.previewHtml.size() <= 100000;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['title', 'message', 'type', 'read', 'createdAt']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.message is string && data.message.size() <= 1000 &&
+             data.type in ['order', 'subscriber', 'system'] &&
+             data.read is bool &&
+             data.createdAt == request.time;
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'category', 'price', 'description', 'inStock', 'featured', 'createdAt']) &&
+             data.name is string && data.name.size() <= 200 &&
+             data.category in ['jam', 'sauce', 'preserve'] &&
+             data.price is number && data.price >= 0 &&
+             data.description is string && data.description.size() <= 2000 &&
+             data.inStock is bool &&
+             data.featured is bool &&
+             data.createdAt == request.time;
+    }
+
+    function isValidOrder(data) {
+       return data.keys().hasAll(['userId', 'userName', 'userPhone', 'userEmail', 'items', 'total', 'deliveryMethod', 'status', 'createdAt', 'updatedAt']) &&
+              data.keys().size() >= 10 && data.keys().size() <= 13 &&
+              data.userId == request.auth.uid &&
+              data.items is list && data.items.size() > 0 &&
+              data.total is number && data.total >= 0 &&
+              data.status == 'new' &&
+              data.createdAt == request.time &&
+              data.updatedAt == request.time;
+    }
+
+    // ---------------------------------------------------------
+    // MATCH BLOCKS
+    // ---------------------------------------------------------
+
+    match /users/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(uid) && isValidUser(incoming()) && 
+                    (incoming().role == 'user' || (incoming().role == 'admin' && incoming().email == 'olexandr.prykhodko@gmail.com'));
+      allow update: if isOwner(uid) && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'role', 'updatedAt']) &&
+                      (incoming().get('email', existing().email) == existing().email) &&
+                      (incoming().updatedAt == request.time) &&
+                      (incoming().get('role', existing().role) == existing().role || (incoming().role == 'admin' && existing().email == 'olexandr.prykhodko@gmail.com'));
+      allow update: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /articles/{articleId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /blogCategories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow get: if isOwner(existing().userId) || isAdmin();
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isVerified() && isValidOrder(incoming()) && isValidId(orderId);
+      allow update: if isAdmin() && 
+                      incoming().diff(existing()).affectedKeys().hasAny(['status', 'updatedAt', 'cancelReason']) &&
+                      incoming().updatedAt == request.time;
+    }
+
+    match /subscribers/{subId} {
+      allow get: if true;
+      allow create: if incoming().keys().hasAll(['email', 'status', 'subscribedAt']) &&
+                      incoming().email is string &&
+                      incoming().status == 'pending' &&
+                      incoming().subscribedAt == request.time;
+      allow update: if (incoming().status == 'confirmed' && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['status'])) || isAdmin();
+      allow list, delete: if isAdmin();
+    }
+
+    match /pickupAddresses/{addressId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /addresses/{addressId} {
+      allow read, update, delete: if isOwner(existing().userId);
+      allow create: if isOwner(incoming().userId);
+    }
+
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /newsletterHistory/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    match /notifications/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isSignedIn() && isValidNotification(incoming());
+    }
+  }
+}

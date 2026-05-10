@@ -1,0 +1,33 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'olexandr.prykhodko@gmail.com' || (
+          firestore.exists(/databases/ai-studio-fb67e21b-3fe2-432f-9106-d653b398fa96/documents/users/$(request.auth.uid)) &&
+          firestore.get(/databases/ai-studio-fb67e21b-3fe2-432f-9106-d653b398fa96/documents/users/$(request.auth.uid)).data.role == 'admin'
+        )
+      );
+    }
+
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /articles/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /blog/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /settings/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
