@@ -4,6 +4,7 @@ import { db } from '@/shared/lib/firebase';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { Button } from '@/shared/components/Button';
+import { useTranslation } from 'react-i18next';
 import { 
   Package, 
   Plus, 
@@ -24,15 +25,17 @@ import { PageLoader } from '@/shared/components/Loader';
 import { cn } from '@/shared/lib/utils';
 
 export default function AdminProductsPage() {
+  const { t } = useTranslation('shop');
   const [filters, setFilters] = useState({ category: 'all', sortBy: 'newest' as const });
   const { products, loading } = useProducts(filters);
   const [searchTerm, setSearchTerm] = useState('');
   const { showToast } = useToast();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(p => {
+    const name = typeof p.name === 'string' ? p.name : (p.name?.uk || '');
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const toggleFeatured = async (id: string, current: boolean) => {
     try {
@@ -91,10 +94,10 @@ export default function AdminProductsPage() {
               onChange={e => setFilters({ ...filters, category: e.target.value })}
               className="bg-gray-50 px-6 py-3 rounded-full text-sm font-bold border border-transparent focus:border-farm-green/20 focus:outline-none"
             >
-              <option value="all">Всі категорії</option>
-              <option value="jam">Варення</option>
-              <option value="sauce">Соуси</option>
-              <option value="preserve">Консерви</option>
+              <option value="all">{t('categories.all')}</option>
+              <option value="jam">{t('categories.jam')}</option>
+              <option value="sauce">{t('categories.sauce')}</option>
+              <option value="preserve">{t('categories.preserve')}</option>
             </select>
           </div>
         </div>
@@ -119,18 +122,22 @@ export default function AdminProductsPage() {
                     <div className="flex items-center gap-4">
                       <img src={product.images?.[0] || undefined} className="w-12 h-12 rounded-xl object-cover" alt="" />
                       <div>
-                        <p className="font-bold text-gray-900 leading-none mb-1">{product.name}</p>
+                        <p className="font-bold text-gray-900 leading-none mb-1">
+                          {typeof product.name === 'string' ? product.name : (product.name?.uk || 'Noname')}
+                        </p>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ID: {product.id.slice(0, 8)}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-8 py-6">
                     <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold capitalize">
-                      {product.category}
+                      {t('categories.' + product.category)}
                     </span>
                   </td>
                   <td className="px-8 py-6">
-                    <span className="font-bold text-gray-900">{product.price} ₴</span>
+                    <span className="font-bold text-gray-900">
+                      {typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} ₴
+                    </span>
                   </td>
                   <td className="px-8 py-6">
                     {product.inStock ? (

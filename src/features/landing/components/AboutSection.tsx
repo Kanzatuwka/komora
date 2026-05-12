@@ -1,5 +1,6 @@
 import { Button } from '@/shared/components/Button';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 interface AboutProps {
   text: string;
@@ -8,6 +9,8 @@ interface AboutProps {
 }
 
 export function AboutSection({ text, imageUrl, loading }: AboutProps) {
+  const { t } = useTranslation('landing');
+
   if (loading) {
     return (
       <div className="py-24 max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
@@ -26,7 +29,7 @@ export function AboutSection({ text, imageUrl, loading }: AboutProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-4xl font-bold text-farm-green mb-8">Про нашу ферму</h2>
+          <h2 className="text-4xl font-bold text-farm-green mb-8">{t('about.title')}</h2>
           <p className="text-lg text-farm-wood leading-relaxed whitespace-pre-wrap">
             {text}
           </p>

@@ -114,7 +114,9 @@ export default function OrderDetailsPage() {
                       {item.quantity}
                     </div>
                     <div>
-                      <p className="font-bold text-farm-green">{item.name}</p>
+                      <p className="font-bold text-farm-green">
+                        {typeof item.name === 'string' ? item.name : (item.name?.uk || 'Товар')}
+                      </p>
                       <p className="text-xs text-farm-wood opacity-50">{item.price} грн / шт</p>
                     </div>
                   </div>

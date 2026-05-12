@@ -25,6 +25,8 @@ import AdminOrderDetailsPage from '@/features/admin/pages/AdminOrderDetailsPage'
 import AdminSubscribersPage from '@/features/admin/pages/AdminSubscribersPage';
 import AdminNewsletterPage from '@/features/admin/pages/AdminNewsletterPage';
 import AdminSettingsPage from '@/features/admin/pages/AdminSettingsPage';
+import AdminBackupPage from '@/features/admin/pages/AdminBackupPage';
+import AdminMigratePage from '@/features/admin/pages/AdminMigratePage';
 
 export function AppRouter() {
   return (
@@ -71,6 +73,8 @@ export function AppRouter() {
         <Route path="newsletter" element={<AdminNewsletterPage />} />
         <Route path="subscribers" element={<AdminSubscribersPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
+        <Route path="backup" element={<AdminBackupPage />} />
+        <Route path="migrate" element={<AdminMigratePage />} />
       </Route>
 
       {/* Fallback */}

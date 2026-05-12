@@ -4,11 +4,13 @@ import { db } from '@/shared/lib/firebase';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { subscribe as brevoSubscribe } from '@/shared/lib/brevo';
 import { useNotifications } from '@/features/admin/hooks/useNotifications';
+import { useTranslation } from 'react-i18next';
 
 export function useSubscribe() {
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
   const { createNotification } = useNotifications();
+  const { i18n } = useTranslation();
 
   const subscribe = async (email: string) => {
     if (!email) return;
@@ -33,6 +35,7 @@ export function useSubscribe() {
       await setDoc(docRef, {
         email: emailId,
         status: 'pending',
+        language: i18n.language || 'uk',
         subscribedAt: serverTimestamp(),
       });
 
@@ -46,7 +49,7 @@ export function useSubscribe() {
 
       // 3. Тригернути Brevo confirmation template
       try {
-        await brevoSubscribe(email);
+        await brevoSubscribe(email, (i18n.language || 'uk') as any);
       } catch (brevoErr) {
         console.warn('Brevo subscription email failed:', brevoErr);
         // We still show success because the record is in DB, 

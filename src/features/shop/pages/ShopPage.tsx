@@ -6,16 +6,19 @@ import { Navbar } from '@/shared/components/Navbar';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Search, SlidersHorizontal, PackageX } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-
-const CATEGORIES = [
-  { id: 'all', name: 'Всі товари' },
-  { id: 'jam', name: 'Варення' },
-  { id: 'sauce', name: 'Соуси' },
-  { id: 'preserve', name: 'Консерви' },
-];
+import { Footer } from '@/shared/components/Footer';
+import { useTranslation } from 'react-i18next';
 
 export default function ShopPage() {
+  const { t } = useTranslation('shop');
   const [searchParams, setSearchParams] = useSearchParams();
+  
+  const CATEGORIES = [
+    { id: 'all', name: t('categories.all') },
+    { id: 'jam', name: t('categories.jam') },
+    { id: 'sauce', name: t('categories.sauce') },
+    { id: 'preserve', name: t('categories.preserve') },
+  ];
   const category = searchParams.get('category') || 'all';
   const tag = searchParams.get('tag') || '';
   const sortBy = (searchParams.get('sort') as any) || 'newest';
@@ -40,8 +43,8 @@ export default function ShopPage() {
         {/* Header & Filters */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-farm-green mb-4">Магазин</h1>
-            <p className="text-farm-wood opacity-70">Натуральні продукти прямо з нашої ферми</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-farm-green mb-4">{t('title')}</h1>
+            <p className="text-farm-wood opacity-70">{t('subtitle')}</p>
           </div>
 
           <div className="flex flex-wrap gap-4">
@@ -66,9 +69,9 @@ export default function ShopPage() {
               onChange={(e) => updateFilters({ sort: e.target.value })}
               className="bg-white px-6 py-3 rounded-full border border-farm-wood/10 text-sm font-bold shadow-sm focus:outline-none focus:border-farm-green"
             >
-              <option value="newest">Найновіші</option>
-              <option value="price-asc">Ціна: від найдешевших</option>
-              <option value="price-desc">Ціна: від найдорожчих</option>
+              <option value="newest">{t('sort.newest')}</option>
+              <option value="price-asc">{t('sort.priceAsc')}</option>
+              <option value="price-desc">{t('sort.priceDesc')}</option>
             </select>
           </div>
         </div>
@@ -78,7 +81,7 @@ export default function ShopPage() {
           <div className="flex items-center gap-4 mb-12 overflow-x-auto pb-4 no-scrollbar">
             <div className="flex items-center gap-2 text-farm-wood opacity-50 shrink-0">
               <SlidersHorizontal className="w-4 h-4" />
-              <span className="text-sm font-medium">Теги:</span>
+              <span className="text-sm font-medium">{t('filters.tags')}:</span>
             </div>
             <button
               onClick={() => updateFilters({ tag: '' })}
@@ -86,7 +89,7 @@ export default function ShopPage() {
                 !tag ? 'bg-farm-wood text-white' : 'bg-white text-farm-wood border border-farm-wood/10'
               }`}
             >
-              Всі
+              {t('filters.all')}
             </button>
             {allTags.map(t => (
               <button
@@ -130,15 +133,16 @@ export default function ShopPage() {
               exit={{ opacity: 0 }}
             >
               <EmptyState 
-                title="Товарів не знайдено" 
-                description="Спробуйте змінити фільтри або загляньте пізніше."
+                title={t('empty.title')} 
+                description={t('empty.description')}
                 icon={<PackageX className="w-16 h-16 text-farm-wood/20" />}
-                action={{ label: 'Скинути фільтри', onClick: () => setSearchParams(new URLSearchParams()) }}
+                action={{ label: t('empty.action'), onClick: () => setSearchParams(new URLSearchParams()) }}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
+      <Footer />
     </div>
   );
 }

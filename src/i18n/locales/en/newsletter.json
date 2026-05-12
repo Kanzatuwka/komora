@@ -1,0 +1,17 @@
+{
+  "subscribe": {
+    "title": "Join Our Pantry",
+    "description": "Subscribe to our newsletter to be the first to receive new recipes and news from the farm.",
+    "emailPlaceholder": "Your email",
+    "submit": "Subscribe",
+    "checkEmailToast": "Check your email — we've sent a confirmation letter",
+    "alreadySubscribedToast": "You are already subscribed",
+    "pendingToast": "Confirmation letter already sent — check your email",
+    "errorToast": "Failed to subscribe. Please try again later."
+  },
+  "confirmed": {
+    "title": "Subscription Confirmed",
+    "description": "Thank you, now you will be the first to know about new recipes and news.",
+    "toHome": "To Homepage"
+  }
+}

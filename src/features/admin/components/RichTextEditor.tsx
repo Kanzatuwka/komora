@@ -22,7 +22,7 @@ import { useProducts } from '../../shop/hooks/useShopData';
 import { useState } from 'react';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
-import { cn } from '@/shared/lib/utils';
+import { cn, getLocalizedValue } from '@/shared/lib/utils';
 
 interface RichTextEditorProps {
   content: string;
@@ -47,9 +47,10 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   const { products } = useProducts({ category: 'all' });
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(p => {
+    const name = getLocalizedValue(p.name, 'uk');
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const editor = useEditor({
     extensions: [
@@ -164,8 +165,8 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
                 >
                   <img src={product.images?.[0] || undefined} className="w-12 h-12 rounded-xl object-cover" alt="" />
                   <div className="flex-1">
-                    <p className="font-bold text-sm text-gray-900">{product.name}</p>
-                    <p className="text-xs text-farm-wood opacity-50">{product.price} грн</p>
+                    <p className="font-bold text-sm text-gray-900">{getLocalizedValue(product.name, 'uk')}</p>
+                    <p className="text-xs text-farm-wood opacity-50">{typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} грн</p>
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 bg-farm-green text-white px-3 py-1 rounded-lg text-[10px] font-bold">
                     Вибрати

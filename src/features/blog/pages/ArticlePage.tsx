@@ -4,6 +4,8 @@ import { Navbar } from '@/shared/components/Navbar';
 import { Button } from '@/shared/components/Button';
 import { PageLoader } from '@/shared/components/Loader';
 import { ChevronLeft, Calendar, Tag, Share2, Folder } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedValue } from '@/shared/lib/utils';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import DOMPurify from 'dompurify';
@@ -12,6 +14,7 @@ import { motion } from 'motion/react';
 
 export default function ArticlePage() {
   const { id } = useParams();
+  const { i18n } = useTranslation();
   const { article, loading } = useArticle(id || '');
   const { categories, loading: categoriesLoading } = useBlogCategories();
   const { products, loading: productsLoading } = useLinkedProducts(article?.linkedProductIds || []);
@@ -19,7 +22,7 @@ export default function ArticlePage() {
   if (loading || categoriesLoading) return <PageLoader />;
   if (!article) return <div className="p-24 text-center">Статтю не знайдено</div>;
 
-  const sanitizedBody = DOMPurify.sanitize(article.body);
+  const sanitizedBody = DOMPurify.sanitize(getLocalizedValue(article.body, i18n.language));
   const category = categories.find(c => c.id === article.categoryId);
 
   return (
@@ -54,10 +57,10 @@ export default function ArticlePage() {
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-farm-green leading-tight mb-8">
-              {article.title}
+              {getLocalizedValue(article.title, i18n.language)}
             </h1>
             <p className="text-xl text-farm-wood opacity-70 leading-relaxed italic border-l-4 border-farm-berry pl-6">
-              {article.excerpt}
+              {getLocalizedValue(article.excerpt, i18n.language)}
             </p>
           </div>
 
@@ -70,7 +73,7 @@ export default function ArticlePage() {
           </div>
 
           {/* Article Content */}
-          <ArticleBody content={article.body} />
+          <ArticleBody content={sanitizedBody} />
 
           {/* Linked Products */}
           {!productsLoading && products.length > 0 && (
@@ -85,8 +88,8 @@ export default function ArticlePage() {
                   >
                     <img src={product.images?.[0] || undefined} className="w-20 h-20 rounded-2xl object-cover" alt="" />
                     <div className="ml-4 flex-1">
-                      <p className="font-bold text-lg group-hover:text-farm-cream transition-colors">{product.name}</p>
-                      <p className="text-farm-cream/60 text-sm">{product.price} грн</p>
+                      <p className="font-bold text-lg group-hover:text-farm-cream transition-colors">{getLocalizedValue(product.name, i18n.language)}</p>
+                      <p className="text-farm-cream/60 text-sm">{typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} грн</p>
                     </div>
                   </Link>
                 ))}

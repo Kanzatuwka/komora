@@ -24,7 +24,7 @@ import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { cn } from '@/shared/lib/utils';
 import { useToast } from '@/shared/contexts/ToastContext';
-import { sendTransactional } from '@/shared/lib/brevo';
+import { sendTransactional, getTemplateId } from '@/shared/lib/brevo';
 import { Modal } from '@/shared/components/Modal';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -62,25 +62,29 @@ export default function AdminOrderDetailsPage() {
 
       await updateDoc(doc(db, 'orders', order.id), updates);
 
-      let templateId = 0;
+      const lang = order.userLanguage || 'uk';
+      let templateKey: string | null = null;
       switch (newStatus) {
-        case 'confirmed': templateId = Number(import.meta.env.VITE_BREVO_ORDER_CONFIRMED_TEMPLATE_ID); break;
-        case 'in_transit': templateId = Number(import.meta.env.VITE_BREVO_ORDER_IN_TRANSIT_TEMPLATE_ID); break;
-        case 'delivered': templateId = Number(import.meta.env.VITE_BREVO_ORDER_DELIVERED_TEMPLATE_ID); break;
-        case 'cancelled': templateId = Number(import.meta.env.VITE_BREVO_ORDER_CANCELLED_TEMPLATE_ID); break;
+        case 'confirmed': templateKey = 'ORDER_CONFIRMED'; break;
+        case 'in_transit': templateKey = 'ORDER_IN_TRANSIT'; break;
+        case 'delivered': templateKey = 'ORDER_DELIVERED'; break;
+        case 'cancelled': templateKey = 'ORDER_CANCELLED'; break;
       }
 
-      if (templateId && order.userEmail) {
-        await sendTransactional({
-          to: order.userEmail,
-          templateId,
-          params: {
-            customerName: order.userName,
-            orderNumber: order.id.slice(0, 8).toUpperCase(),
-            total: order.total.toFixed(2),
-            cancelReason: newStatus === 'cancelled' ? cancelReason : ''
-          }
-        });
+      if (templateKey && order.userEmail) {
+        const templateId = getTemplateId(templateKey as any, lang);
+        if (templateId) {
+          await sendTransactional({
+            to: order.userEmail,
+            templateId,
+            params: {
+              customerName: order.userName,
+              orderNumber: order.id.slice(0, 8).toUpperCase(),
+              total: order.total.toFixed(2),
+              cancelReason: newStatus === 'cancelled' ? cancelReason : ''
+            }
+          });
+        }
       }
 
       showToast({ message: `Статус змінено на ${newStatus}`, type: 'success' });
@@ -141,7 +145,9 @@ export default function AdminOrderDetailsPage() {
                         {item.quantity}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900">{item.name}</p>
+                        <p className="font-bold text-gray-900">
+                          {typeof item.name === 'string' ? item.name : (item.name?.uk || 'Товар')}
+                        </p>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.price} грн / шт</p>
                       </div>
                     </div>

@@ -17,7 +17,7 @@ import {
   getDocs 
 } from 'firebase/firestore';
 import { db } from '@/shared/lib/firebase';
-import { cn } from '@/shared/lib/utils';
+import { cn, getLocalizedValue } from '@/shared/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface SearchResult {
@@ -63,13 +63,14 @@ export function AdminSearch() {
         const productsSnap = await getDocs(query(productsRef, limit(20)));
         productsSnap.docs.forEach(doc => {
           const data = doc.data();
-          if (data.name.toLowerCase().includes(q)) {
+          const name = getLocalizedValue(data.name, 'uk');
+          if (name.toLowerCase().includes(q)) {
             searchResults.push({
               id: doc.id,
-              title: data.name,
+              title: name,
               type: 'product',
               path: `/admin/products/${doc.id}`,
-              metadata: `${data.price} грн • ${data.category}`
+              metadata: `${typeof data.price === 'number' ? data.price : (data.price?.UAH || 0)} грн • ${data.category}`
             });
           }
         });
@@ -79,10 +80,11 @@ export function AdminSearch() {
         const articlesSnap = await getDocs(query(articlesRef, limit(20)));
         articlesSnap.docs.forEach(doc => {
           const data = doc.data();
-          if (data.title.toLowerCase().includes(q)) {
+          const title = getLocalizedValue(data.title, 'uk');
+          if (title.toLowerCase().includes(q)) {
             searchResults.push({
               id: doc.id,
-              title: data.title,
+              title: title,
               type: 'article',
               path: `/admin/blog/${doc.id}`,
               metadata: 'Стаття / Рецепт'

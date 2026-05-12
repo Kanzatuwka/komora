@@ -5,6 +5,10 @@ import { useToast } from '@/shared/contexts/ToastContext';
 import { Button } from '@/shared/components/Button';
 import { Check, ShoppingCart, Minus, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { formatPrice } from '@/shared/lib/format';
+import { getLocalizedValue } from '@/shared/lib/utils';
 
 interface ProductCardProps {
   product: any;
@@ -13,16 +17,19 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
   const { showToast } = useToast();
+  const { t, i18n } = useTranslation('shop');
+  const { currency } = useCurrency();
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
 
   const handleAdd = () => {
     addItem(product, quantity);
     setIsAdded(true);
+    const productName = getLocalizedValue(product.name, i18n.language);
     showToast({ 
-      message: `${product.name} додано до кошика`, 
+      message: t('product.addedToCart', { name: productName }), 
       type: 'success',
-      action: { label: 'Переглянути', onClick: () => window.location.href = '/cart' }
+      action: { label: t('product.viewCart'), onClick: () => window.location.href = '/cart' }
     });
     setTimeout(() => setIsAdded(false), 1500);
   };
@@ -32,30 +39,31 @@ export function ProductCard({ product }: ProductCardProps) {
       <Link to={`/shop/${product.id}`} className="block relative aspect-square rounded-[2rem] overflow-hidden mb-6">
         <img 
           src={product.images?.[0] || 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&q=80'} 
-          alt={product.name}
+          alt={getLocalizedValue(product.name, i18n.language)}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         {!product.inStock && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="bg-white/90 text-farm-berry text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Немає в наявності</span>
+            <span className="bg-white/90 text-farm-berry text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{t('product.outOfStock')}</span>
           </div>
         )}
       </Link>
 
       <div className="flex-1 flex flex-col px-2">
         <Link to={`/shop/${product.id}`}>
-          <h3 className="text-xl font-bold text-farm-green mb-1 group-hover:text-farm-berry transition-colors">{product.name}</h3>
+          <h3 className="text-xl font-bold text-farm-green mb-1 group-hover:text-farm-berry transition-colors">{getLocalizedValue(product.name, i18n.language)}</h3>
         </Link>
-        <p className="text-farm-wood/50 text-sm mb-4 line-clamp-1">{product.category}</p>
+        <p className="text-farm-wood/50 text-sm mb-4 line-clamp-1">{t('categories.' + product.category)}</p>
         
         <div className="mt-auto flex items-center justify-between mb-6">
-          <span className="text-2xl font-bold text-farm-green">{product.price} грн</span>
+          <span className="text-2xl font-bold text-farm-green">{formatPrice(product.price, currency, i18n.language)}</span>
           
           {product.inStock && (
             <div className="flex items-center gap-3 bg-farm-green/5 rounded-full p-1">
               <button 
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
                 className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                aria-label="Decrease quantity"
               >
                 <Minus className="w-4 h-4" />
               </button>
@@ -63,6 +71,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <button 
                 onClick={() => setQuantity(q => q + 1)}
                 className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                aria-label="Increase quantity"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -85,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 exit={{ y: -20, opacity: 0 }}
                 className="flex items-center gap-2"
               >
-                <Check className="w-5 h-5" /> Додано
+                <Check className="w-5 h-5" /> {t('product.added')}
               </motion.span>
             ) : (
               <motion.span 
@@ -95,7 +104,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 exit={{ y: -20, opacity: 0 }}
                 className="flex items-center gap-2"
               >
-                <ShoppingCart className="w-5 h-5" /> До кошика
+                <ShoppingCart className="w-5 h-5" /> {t('product.addToCart')}
               </motion.span>
             )}
           </AnimatePresence>

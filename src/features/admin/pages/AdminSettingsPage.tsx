@@ -7,18 +7,20 @@ import { Save, Loader2, Plus, MapPin, Clock, Trash2, Edit2 } from 'lucide-react'
 import { usePickupAddresses } from '../../shop/hooks/useShopData';
 import { Modal } from '@/shared/components/Modal';
 import { cn } from '@/shared/lib/utils';
+import { LocalizedField } from '../components/LocalizedField';
+import { SUPPORTED_LANGUAGES } from '@/i18n/config';
 
 import { ImageUploader } from '../components/ImageUploader';
 
 interface LandingSettings {
   hero: {
-    title: string;
-    subtitle: string;
-    ctaText: string;
+    title: Record<string, string>;
+    subtitle: Record<string, string>;
+    ctaText: Record<string, string>;
     imageUrl: string;
   };
   about: {
-    text: string;
+    text: Record<string, string>;
     imageUrl: string;
   };
 }
@@ -34,9 +36,9 @@ export default function AdminSettingsPage() {
   const [editingPoint, setEditingPoint] = useState<any>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [pointForm, setPointForm] = useState({
-    label: '',
-    address: '',
-    workingHours: ''
+    label: { uk: '', en: '', de: '' } as Record<string, string>,
+    address: { uk: '', en: '', de: '' } as Record<string, string>,
+    workingHours: { uk: '', en: '', de: '' } as Record<string, string>
   });
 
   useEffect(() => {
@@ -44,17 +46,32 @@ export default function AdminSettingsPage() {
       try {
         const snap = await getDoc(doc(db, 'settings', 'landing'));
         if (snap.exists()) {
-          setSettings(snap.data() as LandingSettings);
+          const data = snap.data() as any;
+          
+          // Normalize legacy data
+          const normalized: LandingSettings = {
+            hero: {
+              title: typeof data.hero?.title === 'string' ? { uk: data.hero.title, en: '', de: '' } : data.hero?.title || { uk: '', en: '', de: '' },
+              subtitle: typeof data.hero?.subtitle === 'string' ? { uk: data.hero.subtitle, en: '', de: '' } : data.hero?.subtitle || { uk: '', en: '', de: '' },
+              ctaText: typeof data.hero?.ctaText === 'string' ? { uk: data.hero.ctaText, en: '', de: '' } : data.hero?.ctaText || { uk: '', en: '', de: '' },
+              imageUrl: data.hero?.imageUrl || '',
+            },
+            about: {
+              text: typeof data.about?.text === 'string' ? { uk: data.about.text, en: '', de: '' } : data.about?.text || { uk: '', en: '', de: '' },
+              imageUrl: data.about?.imageUrl || '',
+            }
+          };
+          setSettings(normalized);
         } else {
           setSettings({
             hero: {
-              title: 'Справжні смаки природи',
-              subtitle: 'Сімейні рецепти, зібрані з любов’ю на наших полях та садах.',
-              ctaText: 'До магазину',
+              title: { uk: 'Справжні смаки природи', en: '', de: '' },
+              subtitle: { uk: 'Сімейні рецепти, зібрані з любов’ю на наших полях та садах.', en: '', de: '' },
+              ctaText: { uk: 'До магазину', en: '', de: '' },
               imageUrl: '',
             },
             about: {
-              text: 'Ласкаво просимо до Комори! Ми – сімейна ферма, що присвятила себе створенню натуральних продуктів.',
+              text: { uk: 'Ласкаво просимо до Комори! Ми – сімейна ферма, що присвятила себе створенню натуральних продуктів.', en: '', de: '' },
               imageUrl: '',
             }
           });
@@ -97,7 +114,11 @@ export default function AdminSettingsPage() {
       }
       setIsPointModalOpen(false);
       setEditingPoint(null);
-      setPointForm({ label: '', address: '', workingHours: '' });
+      setPointForm({ 
+        label: { uk: '', en: '', de: '' }, 
+        address: { uk: '', en: '', de: '' }, 
+        workingHours: { uk: '', en: '', de: '' } 
+      });
     } catch (err) {
       showToast({ message: 'Помилка збереження точки', type: 'error' });
     } finally {
@@ -130,7 +151,7 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12">
+    <div className="max-w-5xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 leading-tight">Налаштування <br/><span className="text-farm-green">платформи</span></h1>
         <Button onClick={handleSaveSettings} disabled={saving} className="flex items-center gap-2 px-8">
@@ -147,43 +168,30 @@ export default function AdminSettingsPage() {
               <span className="w-2 h-2 bg-farm-berry rounded-full animate-pulse" /> Герой-секція
             </h2>
             <div className="space-y-6">
+              <LocalizedField 
+                label="Заголовок"
+                value={settings.hero.title}
+                onChange={title => setSettings({ ...settings, hero: { ...settings.hero, title } })}
+              />
+              <LocalizedField 
+                label="Підзаголовок"
+                type="textarea"
+                value={settings.hero.subtitle}
+                onChange={subtitle => setSettings({ ...settings, hero: { ...settings.hero, subtitle } })}
+              />
+              <LocalizedField 
+                label="Текст кнопки"
+                value={settings.hero.ctaText}
+                onChange={ctaText => setSettings({ ...settings, hero: { ...settings.hero, ctaText } })}
+              />
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Заголовок</label>
-                <input 
-                  type="text"
-                  value={settings.hero.title}
-                  onChange={e => setSettings({ ...settings, hero: { ...settings.hero, title: e.target.value } })}
-                  className="w-full px-6 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-farm-green/20 outline-none font-bold"
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">Фонове фото</label>
+                <ImageUploader 
+                  single 
+                  images={settings.hero.imageUrl ? [settings.hero.imageUrl] : []} 
+                  onChange={imgs => setSettings({ ...settings, hero: { ...settings.hero, imageUrl: imgs[0] || '' } })} 
+                  folder="settings"
                 />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Підзаголовок</label>
-                <textarea 
-                  rows={3}
-                  value={settings.hero.subtitle}
-                  onChange={e => setSettings({ ...settings, hero: { ...settings.hero, subtitle: e.target.value } })}
-                  className="w-full px-6 py-3 bg-gray-50 border-none rounded-3xl focus:ring-2 focus:ring-farm-green/20 outline-none text-sm text-gray-600 leading-relaxed"
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-6">
-                <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Текст кнопки</label>
-                  <input 
-                    type="text"
-                    value={settings.hero.ctaText}
-                    onChange={e => setSettings({ ...settings, hero: { ...settings.hero, ctaText: e.target.value } })}
-                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-farm-green/20 outline-none text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">Фонове фото</label>
-                  <ImageUploader 
-                    single 
-                    images={settings.hero.imageUrl ? [settings.hero.imageUrl] : []} 
-                    onChange={imgs => setSettings({ ...settings, hero: { ...settings.hero, imageUrl: imgs[0] || '' } })} 
-                    folder="settings"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -194,15 +202,12 @@ export default function AdminSettingsPage() {
               <span className="w-2 h-2 bg-farm-green rounded-full animate-pulse" /> Про нас
             </h2>
             <div className="space-y-6">
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Опис ферми</label>
-                <textarea 
-                  rows={6}
-                  value={settings.about.text}
-                  onChange={e => setSettings({ ...settings, about: { ...settings.about, text: e.target.value } })}
-                  className="w-full px-6 py-3 bg-gray-50 border-none rounded-3xl focus:ring-2 focus:ring-farm-green/20 outline-none text-sm text-gray-600 leading-relaxed"
-                />
-              </div>
+              <LocalizedField 
+                label="Опис ферми"
+                type="textarea"
+                value={settings.about.text}
+                onChange={text => setSettings({ ...settings, about: { ...settings.about, text } })}
+              />
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">Фото ферми</label>
                 <ImageUploader 
@@ -223,7 +228,11 @@ export default function AdminSettingsPage() {
             <button 
               onClick={() => {
                 setEditingPoint(null);
-                setPointForm({ label: '', address: '', workingHours: '' });
+                setPointForm({ 
+                  label: { uk: '', en: '', de: '' }, 
+                  address: { uk: '', en: '', de: '' }, 
+                  workingHours: { uk: '', en: '', de: '' } 
+                });
                 setIsPointModalOpen(true);
               }}
               className="w-10 h-10 bg-farm-green/5 text-farm-green rounded-full flex items-center justify-center hover:bg-farm-green hover:text-white transition-all shadow-sm"
@@ -257,7 +266,11 @@ export default function AdminSettingsPage() {
                     <button 
                       onClick={() => {
                         setEditingPoint(point);
-                        setPointForm({ label: point.label, address: point.address, workingHours: point.workingHours });
+                        setPointForm({ 
+                          label: point.raw?.label || { uk: point.label, en: '', de: '' }, 
+                          address: point.raw?.address || { uk: point.address, en: '', de: '' }, 
+                          workingHours: point.raw?.workingHours || { uk: point.workingHours, en: '', de: '' } 
+                        });
                         setIsPointModalOpen(true);
                       }}
                       className="p-2 text-farm-wood hover:text-farm-green"
@@ -295,37 +308,21 @@ export default function AdminSettingsPage() {
         title={editingPoint ? 'Редагувати точку' : 'Додати точку самовивозу'}
       >
         <form onSubmit={handleSavePoint} className="space-y-6">
-          <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Назва (напр.: Магазин у саду)</label>
-            <input 
-              type="text"
-              required
-              value={pointForm.label}
-              onChange={e => setPointForm({ ...pointForm, label: e.target.value })}
-              className="w-full px-6 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-farm-green/20 outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Повна адреса</label>
-            <input 
-              type="text"
-              required
-              value={pointForm.address}
-              onChange={e => setPointForm({ ...pointForm, address: e.target.value })}
-              className="w-full px-6 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-farm-green/20 outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-2">Години роботи</label>
-            <input 
-              type="text"
-              required
-              placeholder="Пн-Пт 9:00 - 18:00"
-              value={pointForm.workingHours}
-              onChange={e => setPointForm({ ...pointForm, workingHours: e.target.value })}
-              className="w-full px-6 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-farm-green/20 outline-none"
-            />
-          </div>
+          <LocalizedField 
+            label="Назва"
+            value={pointForm.label}
+            onChange={label => setPointForm({ ...pointForm, label })}
+          />
+          <LocalizedField 
+            label="Повна адреса"
+            value={pointForm.address}
+            onChange={address => setPointForm({ ...pointForm, address })}
+          />
+          <LocalizedField 
+            label="Години роботи"
+            value={pointForm.workingHours}
+            onChange={workingHours => setPointForm({ ...pointForm, workingHours })}
+          />
           <div className="pt-4">
             <Button disabled={saving} className="w-full py-4">
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Зберегти точку'}

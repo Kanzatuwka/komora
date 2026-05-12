@@ -1,0 +1,74 @@
+{
+  "title": "Persönliches Konto",
+  "tabs": {
+    "orders": "Meine Bestellungen",
+    "addresses": "Meine Adressen",
+    "profile": "Profil"
+  },
+  "user": "Benutzer",
+  "logout": "Abmelden",
+  "delivery": "Lieferung",
+  "pickup": "Abholung",
+  "orders": {
+    "title": "Bestellverlauf",
+    "empty": "Sie haben noch keine Bestellungen",
+    "toShop": "Zum Geschäft"
+  },
+  "orderDetails": {
+    "notFound": "Bestellung nicht gefunden",
+    "backToAccount": "Zurück zum Konto",
+    "orderNumber": "Bestellung",
+    "inTransitNote": "Ihre Bestellung ist bereits auf dem Weg zu Ihnen!",
+    "recipientInfo": "Empfängerdetails",
+    "deliveryInfo": "Lieferung",
+    "courierDelivery": "Kurierlieferung",
+    "pickup": "Abholung",
+    "items": "Bestellzusammensetzung",
+    "totalToPay": "Gesamtbetrag:"
+  },
+  "orderStatus": {
+    "new": "Neu",
+    "confirmed": "Bestätigt",
+    "in_transit": "Unterwegs",
+    "delivered": "Geliefert",
+    "cancelled": "Storniert"
+  },
+  "profile": {
+    "title": "Ihr Profil",
+    "edit": "Bearbeiten",
+    "fullName": "Vollständiger Name",
+    "phone": "Telefon",
+    "notSpecified": "Nicht angegeben",
+    "saving": "Speichern...",
+    "save": "Speichern",
+    "security": "Sicherheit",
+    "googleAuthNote": "Sie haben sich über Google angemeldet. Das Passwort wird in den Google-Kontoeinstellungen verwaltet.",
+    "changePassword": "Passwort ändern"
+  },
+  "passwordChange": {
+    "title": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "update": "Aktualisieren",
+    "cancel": "Abbrechen",
+    "passwordsNoMatch": "Passwörter stimmen nicht überein",
+    "passwordMin": "Passwort muss mindestens 6 Zeichen lang sein",
+    "successToast": "Passwort erfolgreich aktualisiert",
+    "currentInvalid": "Aktuelles Passwort ist falsch",
+    "updateError": "Fehler beim Aktualisieren des Passworts"
+  },
+  "addresses": {
+    "title": "Meine Adressen",
+    "addNew": "Neu hinzufügen",
+    "empty": "Keine gespeicherten Adressen",
+    "delete": "Löschen",
+    "newAddressTitle": "Neue Adresse",
+    "labelPlaceholder": "Bezeichnung (z. B. Zuhause, Arbeit)",
+    "streetPlaceholder": "Straße, Hausnummer",
+    "cityPlaceholder": "Stadt",
+    "postalCodePlaceholder": "Postleitzahl",
+    "deleteConfirmTitle": "Adresse löschen?",
+    "deleteConfirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden."
+  }
+}

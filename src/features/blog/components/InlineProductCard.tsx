@@ -5,6 +5,8 @@ import { useCart } from '@/shared/contexts/CartContext';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { ShoppingCart, ArrowRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedValue } from '@/shared/lib/utils';
 
 interface InlineProductCardProps {
   productId: string;
@@ -12,6 +14,7 @@ interface InlineProductCardProps {
 
 export function InlineProductCard({ productId }: InlineProductCardProps) {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const { product, loading } = useProduct(productId);
   const { addItem } = useCart();
   const { showToast } = useToast();
@@ -30,8 +33,9 @@ export function InlineProductCard({ productId }: InlineProductCardProps) {
   const handleAddToCart = () => {
     setAdding(true);
     addItem(product, 1);
+    const productName = getLocalizedValue(product.name, i18n.language);
     showToast({ 
-      message: `${product.name} додано до кошика`, 
+      message: `${productName} додано до кошика`, 
       type: 'success',
       action: {
         label: 'В кошик',
@@ -47,13 +51,13 @@ export function InlineProductCard({ productId }: InlineProductCardProps) {
         <img 
           src={product.images?.[0] || 'https://images.unsplash.com/photo-1558236714-d1ae4c311689?auto=format&fit=crop&q=80'} 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-          alt={product.name} 
+          alt={getLocalizedValue(product.name, i18n.language)} 
         />
       </div>
       
       <div className="flex-1 text-center sm:text-left">
-        <h3 className="text-xl font-bold text-farm-green mb-2">{product.name}</h3>
-        <p className="text-2xl font-bold text-farm-berry mb-6">{product.price} грн</p>
+        <h3 className="text-xl font-bold text-farm-green mb-2">{getLocalizedValue(product.name, i18n.language)}</h3>
+        <p className="text-2xl font-bold text-farm-berry mb-6">{typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} грн</p>
         
         <div className="flex flex-col xs:flex-row gap-3">
           <Link to={`/shop/${product.id}`} className="flex-1">

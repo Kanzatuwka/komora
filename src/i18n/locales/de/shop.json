@@ -1,0 +1,91 @@
+{
+  "title": "Geschäft",
+  "subtitle": "Natürliche Produkte direkt von unserem Bauernhof",
+  "categories": {
+    "all": "Alle Produkte",
+    "jam": "Marmelade",
+    "sauce": "Saucen",
+    "preserve": "Konserven"
+  },
+  "sort": {
+    "label": "Sortierung",
+    "newest": "Neueste",
+    "priceAsc": "Preis: aufsteigend",
+    "priceDesc": "Preis: absteigend"
+  },
+  "filter": {
+    "category": "Kategorie",
+    "tag": "Schlagwort",
+    "all": "Alle",
+    "tags": "Tags"
+  },
+  "product": {
+    "addToCart": "In den Warenkorb",
+    "added": "Hinzugefügt",
+    "addedToCart": "{{name}} zum Warenkorb hinzugefügt",
+    "viewCart": "Ansehen",
+    "outOfStock": "Nicht vorrätig",
+    "featured": "Beliebt",
+    "linkedRecipes": "Rezepte mit diesem Produkt",
+    "notFound": "Produkt nicht gefunden"
+  },
+  "cart": {
+    "title": "Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "emptyDescription": "Es sieht so aus, als hätten Sie noch nichts hinzugefügt. Besuchen Sie unser Geschäft, um etwas Leckeres zu finden.",
+    "toShop": "Zum Geschäft",
+    "continueShopping": "Weiter einkaufen",
+    "itemsCount": "{{count}} Artikel in Ihrer Liste",
+    "summary": "Zusammenfassung",
+    "items": "Artikel",
+    "delivery": "Versand",
+    "deliveryCalculated": "Wird später berechnet",
+    "total": "Gesamtbetrag",
+    "checkout": "Zur Kasse"
+  },
+  "checkout": {
+    "title": "Kasse",
+    "deliveryMethod": "Erhaltsmethode",
+    "delivery": "Lieferung per Kurier",
+    "pickup": "Selbstabholung",
+    "contactInfo": "Kontaktdaten",
+    "name": "Ihr Name",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "deliveryAddress": "Lieferadresse",
+    "selectSavedAddress": "Gespeicherte wählen:",
+    "street": "Straße und Hausnummer",
+    "city": "Stadt",
+    "postalCode": "Postleitzahl",
+    "pickupPoint": "Abholpunkt",
+    "pickupSchedule": "Zeitplan:",
+    "noPickupPoints": "Noch keine Abholpunkte hinzugefügt.",
+    "comment": "Bestellkommentar",
+    "yourOrder": "Ihre Bestellung",
+    "placeOrder": "Jetzt bestellen",
+    "total": "Gesamtbetrag",
+    "terms": "Durch Klicken auf die Schaltfläche erklären Sie sich mit den Servicebedingungen von Komora einverstanden.",
+    "newOrderToast": "Neue Bestellung!",
+    "successToast": "Bestellung erfolgreich aufgegeben!",
+    "errorToast": "Fehler beim Aufgeben der Bestellung. Bitte versuchen Sie es erneut."
+  },
+  "orderConfirmation": {
+    "thanks": "Vielen Dank für Ihre Bestellung!",
+    "received": "wurde erfolgreich empfangen",
+    "info": "Bestellinformationen",
+    "deliveryAndPayment": "Versand und Zahlung",
+    "courierDelivery": "Kurierlieferung",
+    "pickup": "Abholung",
+    "pickupPoint": "Abholpunkt",
+    "total": "Gesamt",
+    "emailNote": "Wir haben Ihnen eine E-Mail mit den Bestelldetails gesendet. Sie können den Status in Ihrem Konto verfolgen.",
+    "notFound": "Bestellung nicht gefunden",
+    "toShop": "Zum Geschäft",
+    "toAccount": "Zum Konto"
+  },
+  "empty": {
+    "title": "Keine Produkte gefunden",
+    "description": "Versuchen Sie, die Filter zu ändern oder schauen Sie später wieder vorbei.",
+    "action": "Filter zurücksetzen"
+  }
+}

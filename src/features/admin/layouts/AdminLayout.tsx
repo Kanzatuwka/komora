@@ -11,13 +11,17 @@ import {
   LogOut, 
   Menu, 
   X,
-  Bell
+  Bell,
+  Database,
+  Languages
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/components/Button';
 import { AdminSearch } from '../components/AdminSearch';
 import { AdminNotifications } from '../components/AdminNotifications';
+import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
+import { CurrencySwitcher } from '@/shared/components/CurrencySwitcher';
 
 export function AdminLayout() {
   const { user, logout } = useAuth();
@@ -36,6 +40,8 @@ export function AdminLayout() {
     { label: 'Підписники', path: '/admin/subscribers', icon: Users },
     { label: 'Розсилка', path: '/admin/newsletter', icon: Bell },
     { label: 'Налаштування', path: '/admin/settings', icon: Settings },
+    { label: 'Бекап', path: '/admin/backup', icon: Database },
+    { label: 'Міграція', path: '/admin/migrate', icon: Languages },
   ];
 
   return (
@@ -99,6 +105,10 @@ export function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-4 pr-6 border-r border-gray-100">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
             <AdminNotifications />
             <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
               <div className="text-right hidden sm:block">

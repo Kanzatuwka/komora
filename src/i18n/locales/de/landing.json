@@ -1,0 +1,17 @@
+{
+  "about": {
+    "title": "Über unseren Bauernhof"
+  },
+  "featuredProducts": {
+    "title": "Unsere Produkte",
+    "subtitle": "Das Beste aus unserer Speisekammer, mit Liebe gemacht",
+    "viewAll": "Alle Produkte",
+    "outOfStock": "Nicht vorrätig"
+  },
+  "featuredArticles": {
+    "title": "Rezepte & Neuigkeiten",
+    "subtitle": "Interessante Geschichten und köstliche Ideen von unserer Familie",
+    "viewAll": "Mehr im Blog",
+    "readMore": "Weiterlesen"
+  }
+}

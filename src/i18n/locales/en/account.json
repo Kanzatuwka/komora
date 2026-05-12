@@ -1,0 +1,74 @@
+{
+  "title": "Personal Account",
+  "tabs": {
+    "orders": "My Orders",
+    "addresses": "My Addresses",
+    "profile": "Profile"
+  },
+  "user": "User",
+  "logout": "Logout",
+  "delivery": "Delivery",
+  "pickup": "Pickup",
+  "orders": {
+    "title": "Order History",
+    "empty": "You have no orders yet",
+    "toShop": "To Shop"
+  },
+  "orderDetails": {
+    "notFound": "Order not found",
+    "backToAccount": "Back to Account",
+    "orderNumber": "Order",
+    "inTransitNote": "Your order is already on its way to you!",
+    "recipientInfo": "Recipient Details",
+    "deliveryInfo": "Delivery",
+    "courierDelivery": "Courier Delivery",
+    "pickup": "Pickup",
+    "items": "Order Composition",
+    "totalToPay": "Total to pay:"
+  },
+  "orderStatus": {
+    "new": "New",
+    "confirmed": "Confirmed",
+    "in_transit": "In Transit",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "profile": {
+    "title": "Your Profile",
+    "edit": "Edit",
+    "fullName": "Full Name",
+    "phone": "Phone",
+    "notSpecified": "Not specified",
+    "saving": "Saving...",
+    "save": "Save",
+    "security": "Security",
+    "googleAuthNote": "You logged in via Google. Password is managed in Google account settings.",
+    "changePassword": "Change password"
+  },
+  "passwordChange": {
+    "title": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "update": "Update",
+    "cancel": "Cancel",
+    "passwordsNoMatch": "Passwords do not match",
+    "passwordMin": "Password must be at least 6 characters",
+    "successToast": "Password updated successfully",
+    "currentInvalid": "Current password is incorrect",
+    "updateError": "Error updating password"
+  },
+  "addresses": {
+    "title": "My Addresses",
+    "addNew": "Add New",
+    "empty": "No saved addresses",
+    "delete": "Delete",
+    "newAddressTitle": "New Address",
+    "labelPlaceholder": "Label (e.g. Home, Work)",
+    "streetPlaceholder": "Street, house",
+    "cityPlaceholder": "City",
+    "postalCodePlaceholder": "Postal Code",
+    "deleteConfirmTitle": "Delete address?",
+    "deleteConfirmDescription": "This action cannot be undone."
+  }
+}

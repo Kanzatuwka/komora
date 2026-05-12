@@ -28,9 +28,10 @@ export default function AdminBlogPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { showToast } = useToast();
 
-  const filteredArticles = articles.filter(a => 
-    a.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredArticles = articles.filter(a => {
+    const title = typeof a.title === 'string' ? a.title : (a.title?.uk || '');
+    return title.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const toggleFeatured = async (id: string, current: boolean) => {
     try {
@@ -105,8 +106,12 @@ export default function AdminBlogPage() {
                     <div className="flex items-center gap-4">
                       <img src={article.imageUrl || undefined} className="w-12 h-12 rounded-xl object-cover" alt="" />
                       <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate mb-1">{article.title}</p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">{article.excerpt}</p>
+                        <p className="font-bold text-gray-900 truncate mb-1">
+                          {typeof article.title === 'string' ? article.title : (article.title?.uk || 'Untitled')}
+                        </p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">
+                          {typeof article.excerpt === 'string' ? article.excerpt : (article.excerpt?.uk || '')}
+                        </p>
                       </div>
                     </div>
                   </td>

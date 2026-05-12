@@ -6,10 +6,12 @@ import {
   orderBy, 
   onSnapshot, 
   doc, 
-  getDoc,
   limit 
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '@/shared/lib/firebase';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { pickLocale, pickPrice } from '@/shared/lib/i18nContent';
 
 interface BlogFilters {
   tag?: string;
@@ -20,6 +22,7 @@ interface BlogFilters {
 export function useArticles({ tag, categoryId, count = 12 }: BlogFilters) {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     let q = query(
@@ -36,14 +39,24 @@ export function useArticles({ tag, categoryId, count = 12 }: BlogFilters) {
     }
 
     const unsub = onSnapshot(q, (snap) => {
-      setArticles(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setArticles(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          title: pickLocale(data.title, language),
+          body: pickLocale(data.body, language),
+          excerpt: pickLocale(data.excerpt, language),
+          raw: data
+        };
+      }));
       setLoading(false);
     }, (error) => {
       handleFirestoreError(error, OperationType.LIST, 'articles');
     });
 
     return unsub;
-  }, [tag, categoryId, count]);
+  }, [tag, categoryId, count, language]);
 
   return { articles, loading };
 }
@@ -51,15 +64,24 @@ export function useArticles({ tag, categoryId, count = 12 }: BlogFilters) {
 export function useBlogCategories() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const q = query(collection(db, 'blogCategories'), orderBy('order', 'asc'));
     const unsub = onSnapshot(q, (snap) => {
-      setCategories(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setCategories(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          name: pickLocale(data.name, language),
+          raw: data
+        };
+      }));
       setLoading(false);
     });
     return unsub;
-  }, []);
+  }, [language]);
 
   return { categories, loading };
 }
@@ -67,19 +89,28 @@ export function useBlogCategories() {
 export function useArticle(id: string) {
   const [article, setArticle] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!id) return;
     const unsub = onSnapshot(doc(db, 'articles', id), (snap) => {
       if (snap.exists()) {
-        setArticle({ id: snap.id, ...snap.data() });
+        const data = snap.data();
+        setArticle({
+          id: snap.id,
+          ...data,
+          title: pickLocale(data.title, language),
+          body: pickLocale(data.body, language),
+          excerpt: pickLocale(data.excerpt, language),
+          raw: data
+        });
       }
       setLoading(false);
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, `articles/${id}`);
     });
     return unsub;
-  }, [id]);
+  }, [id, language]);
 
   return { article, loading };
 }
@@ -87,6 +118,8 @@ export function useArticle(id: string) {
 export function useLinkedProducts(productIds: string[]) {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+  const { currency } = useCurrency();
 
   useEffect(() => {
     if (!productIds || productIds.length === 0) {
@@ -101,12 +134,22 @@ export function useLinkedProducts(productIds: string[]) {
     );
 
     const unsub = onSnapshot(q, (snap) => {
-      setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setProducts(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          name: pickLocale(data.name, language),
+          description: pickLocale(data.description, language),
+          price: pickPrice(data.price, currency),
+          raw: data
+        };
+      }));
       setLoading(false);
     });
 
     return unsub;
-  }, [JSON.stringify(productIds)]);
+  }, [JSON.stringify(productIds), language, currency]);
 
   return { products, loading };
 }

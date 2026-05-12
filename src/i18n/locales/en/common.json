@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "shop": "Shop",
+    "blog": "Blog",
+    "about": "About Us",
+    "cart": "Cart",
+    "account": "Account",
+    "admin": "Admin",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "back": "Back",
+    "continue": "Continue",
+    "confirm": "Confirm",
+    "close": "Close",
+    "submit": "Submit",
+    "search": "Search",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "tryAgain": "Try again"
+  },
+  "toasts": {
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "updated": "Updated",
+    "error": "An error occurred",
+    "tryAgain": "Please try again"
+  },
+  "validation": {
+    "required": "Required field",
+    "emailInvalid": "Invalid email format",
+    "passwordMin": "Password must be at least {{count}} characters",
+    "passwordsNoMatch": "Passwords do not match",
+    "phoneInvalid": "Invalid phone format"
+  },
+  "languages": {
+    "uk": "Ukrainian",
+    "en": "English",
+    "de": "German"
+  },
+  "currencies": {
+    "UAH": "Hryvnia",
+    "EUR": "Euro",
+    "USD": "Dollar"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "contacts": "Contacts",
+    "social": "Social Media",
+    "language": "Language",
+    "currency": "Currency",
+    "copyright": "© 2026 Komora · family farm",
+    "aboutText": "Family farm creating natural products for your table.",
+    "navTitle": "Navigation",
+    "legalTitle": "Legal",
+    "contactTitle": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "delivery": "Delivery & Payment",
+    "allRightsReserved": "All rights reserved."
+  },
+  "notFound": {
+    "title": "Not Found",
+    "back": "To Homepage"
+  }
+}

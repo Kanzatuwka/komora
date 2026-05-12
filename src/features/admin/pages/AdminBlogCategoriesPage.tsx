@@ -7,35 +7,42 @@ import { PageLoader } from '@/shared/components/Loader';
 import { Plus, Trash2, Edit2, Check, X, GripVertical } from 'lucide-react';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { motion, Reorder } from 'motion/react';
+import { LocalizedField } from '@/features/admin/components/LocalizedField';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { pickLocale } from '@/shared/lib/i18nContent';
 
 export default function AdminBlogCategoriesPage() {
   const { categories, loading } = useBlogCategories();
   const { showToast } = useToast();
-  const [newCategoryName, setNewCategoryName] = useState('');
+  const { language } = useLanguage();
+  const [newCategoryName, setNewCategoryName] = useState({ uk: '', en: '', de: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingValue, setEditingValue] = useState('');
+  const [editingValue, setEditingValue] = useState({ uk: '', en: '', de: '' });
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCategoryName.trim()) return;
+    if (!newCategoryName.uk?.trim()) {
+      showToast({ message: 'Назва (UA) обовʼязкова', type: 'error' });
+      return;
+    }
 
     setSaving(true);
     try {
-      const slug = newCategoryName
+      const slug = newCategoryName.uk
         .toLowerCase()
         .replace(/[^\w\sа-яієґ]/gi, '')
         .trim()
         .replace(/\s+/g, '-');
 
       await addDoc(collection(db, 'blogCategories'), {
-        name: newCategoryName.trim(),
+        name: newCategoryName,
         slug,
         order: categories.length,
         createdAt: serverTimestamp()
       });
-      setNewCategoryName('');
+      setNewCategoryName({ uk: '', en: '', de: '' });
       showToast({ message: 'Категорію додано', type: 'success' });
     } catch (err) {
       showToast({ message: 'Помилка при додаванні', type: 'error' });
@@ -45,18 +52,14 @@ export default function AdminBlogCategoriesPage() {
   };
 
   const handleUpdate = async (id: string) => {
-    if (!editingValue.trim()) return;
+    if (!editingValue.uk?.trim()) {
+      showToast({ message: 'Назва (UA) обовʼязкова', type: 'error' });
+      return;
+    }
 
     try {
-      const slug = editingValue
-        .toLowerCase()
-        .replace(/[^\w\sа-яієґ]/gi, '')
-        .trim()
-        .replace(/\s+/g, '-');
-
       await updateDoc(doc(db, 'blogCategories', id), {
-        name: editingValue.trim(),
-        slug
+        name: editingValue
       });
       setEditingId(null);
       showToast({ message: 'Оновлено', type: 'success' });
@@ -97,20 +100,18 @@ export default function AdminBlogCategoriesPage() {
       </div>
 
       <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-        <form onSubmit={handleCreate} className="flex gap-4 mb-8">
-          <input
-            type="text"
-            required
+        <form onSubmit={handleCreate} className="space-y-4 mb-8">
+          <LocalizedField
+            label="Назва нової категорії"
             value={newCategoryName}
-            onChange={e => setNewCategoryName(e.target.value)}
-            className="flex-1 px-6 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white transition-all"
-            placeholder="Назва нової категорії..."
-            disabled={saving}
+            onChange={(v) => setNewCategoryName(v as any)}
           />
-          <Button type="submit" disabled={saving} className="rounded-2xl">
-            <Plus className="w-5 h-5 mr-2" />
-            Додати
-          </Button>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={saving} className="rounded-2xl">
+              <Plus className="w-5 h-5 mr-2" />
+              Додати категорію
+            </Button>
+          </div>
         </form>
 
         <div className="space-y-3">
@@ -131,19 +132,15 @@ export default function AdminBlogCategoriesPage() {
 
                 <div className="flex-1">
                   {editingId === category.id ? (
-                    <input
-                      autoFocus
-                      type="text"
-                      className="w-full px-4 py-1 rounded-lg border border-farm-green/20 focus:ring-0"
-                      value={editingValue}
-                      onChange={e => setEditingValue(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleUpdate(category.id);
-                        if (e.key === 'Escape') setEditingId(null);
-                      }}
-                    />
+                    <div className="py-2">
+                      <LocalizedField
+                        label=""
+                        value={editingValue}
+                        onChange={(v) => setEditingValue(v as any)}
+                      />
+                    </div>
                   ) : (
-                    <p className="font-bold text-gray-700">{category.name}</p>
+                    <p className="font-bold text-gray-700">{pickLocale(category.name, language)}</p>
                   )}
                 </div>
 
@@ -168,7 +165,11 @@ export default function AdminBlogCategoriesPage() {
                       <button
                         onClick={() => {
                           setEditingId(category.id);
-                          setEditingValue(category.name);
+                          setEditingValue(
+                            typeof category.name === 'string'
+                              ? { uk: category.name, en: '', de: '' }
+                              : category.name || { uk: '', en: '', de: '' }
+                          );
                         }}
                         className="p-2 text-gray-400 hover:text-farm-green hover:bg-farm-green/10 rounded-xl"
                       >

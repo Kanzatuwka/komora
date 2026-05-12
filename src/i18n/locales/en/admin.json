@@ -1,0 +1,11 @@
+{
+  "orderStatus": {
+    "newMessage": "A new order is awaiting confirmation.",
+    "confirmedMessage": "We have confirmed your order and are starting to prepare it.",
+    "in_transitMessage": "Your order has been handed over for delivery.",
+    "deliveredMessage": "Order delivered. Thank you for choosing Komora!"
+  },
+  "newsletter": {
+    "subject": "New recipe: {{title}}"
+  }
+}

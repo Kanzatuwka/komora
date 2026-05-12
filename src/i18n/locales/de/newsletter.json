@@ -1,0 +1,17 @@
+{
+  "subscribe": {
+    "title": "Treten Sie unserer Speisekammer bei",
+    "description": "Abonnieren Sie unseren Newsletter, um als Erster neue Rezepte und Neuigkeiten vom Bauernhof zu erhalten.",
+    "emailPlaceholder": "Ihre E-Mail",
+    "submit": "Abonnieren",
+    "checkEmailToast": "Überprüfen Sie Ihre E-Mail — wir haben Ihnen einen Bestätigungsbrief gesendet",
+    "alreadySubscribedToast": "Sie haben bereits abonniert",
+    "pendingToast": "Bestätigungsbrief bereits gesendet — überprüfen Sie Ihre E-Mail",
+    "errorToast": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es später erneut."
+  },
+  "confirmed": {
+    "title": "Abonnement bestätigt",
+    "description": "Vielen Dank, jetzt erfahren Sie als Erster von neuen Rezepten und Neuigkeiten.",
+    "toHome": "Zur Startseite"
+  }
+}

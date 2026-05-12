@@ -1,0 +1,17 @@
+{
+  "title": "Blog",
+  "subtitle": "Interesting stories, recipes and news from our farm",
+  "filter": {
+    "all": "All"
+  },
+  "card": {
+    "readMore": "Read more"
+  },
+  "article": {
+    "notFound": "Article not found",
+    "backToList": "Back to all articles",
+    "tryIngredients": "Try ingredients from our pantry",
+    "share": "Share:",
+    "allArticles": "All articles"
+  }
+}

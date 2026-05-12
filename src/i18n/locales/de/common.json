@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "shop": "Geschäft",
+    "blog": "Blog",
+    "about": "Über uns",
+    "cart": "Warenkorb",
+    "account": "Konto",
+    "admin": "Admin",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "register": "Registrieren"
+  },
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "submit": "Absenden",
+    "search": "Suche",
+    "loading": "Laden...",
+    "saving": "Speichern...",
+    "tryAgain": "Erneut versuchen"
+  },
+  "toasts": {
+    "saved": "Gespeichert",
+    "deleted": "Gelöscht",
+    "updated": "Aktualisiert",
+    "error": "Ein Fehler ist aufgetreten",
+    "tryAgain": "Bitte versuchen Sie es erneut"
+  },
+  "validation": {
+    "required": "Pflichtfeld",
+    "emailInvalid": "Ungültiges E-Mail-Format",
+    "passwordMin": "Passwort muss mindestens {{count}} Zeichen lang sein",
+    "passwordsNoMatch": "Passwörter stimmen nicht überein",
+    "phoneInvalid": "Ungültiges Telefonformat"
+  },
+  "languages": {
+    "uk": "Ukrainisch",
+    "en": "Englisch",
+    "de": "Deutsch"
+  },
+  "currencies": {
+    "UAH": "Hrywnja",
+    "EUR": "Euro",
+    "USD": "Dollar"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "contacts": "Kontakte",
+    "social": "Soziale Medien",
+    "language": "Sprache",
+    "currency": "Währung",
+    "copyright": "© 2026 Komora · Familienbauernhof",
+    "aboutText": "Familienbauernhof, der natürliche Produkte für Ihren Tisch herstellt.",
+    "navTitle": "Navigation",
+    "legalTitle": "Rechtliches",
+    "contactTitle": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "delivery": "Versand & Zahlung",
+    "allRightsReserved": "Alle Rechte vorbehalten."
+  },
+  "notFound": {
+    "title": "Nicht gefunden",
+    "back": "Zur Startseite"
+  }
+}

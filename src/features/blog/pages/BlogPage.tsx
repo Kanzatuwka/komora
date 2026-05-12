@@ -6,9 +6,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { SlidersHorizontal } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedValue } from '@/shared/lib/utils';
 
 export default function BlogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { i18n } = useTranslation();
   const activeCategoryId = searchParams.get('category') || 'all';
   const { categories, loading: categoriesLoading } = useBlogCategories();
   const { articles, loading: articlesLoading } = useArticles({ categoryId: activeCategoryId });
@@ -75,10 +78,10 @@ export default function BlogPage() {
                   transition={{ delay: i * 0.1 }}
                   className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col"
                 >
-                  <Link to={`/blog/${article.id}`} className="block h-56 overflow-hidden">
+                    <Link to={`/blog/${article.id}`} className="block h-56 overflow-hidden">
                     <img 
                       src={article.imageUrl || 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&q=80'} 
-                      alt={article.title}
+                      alt={getLocalizedValue(article.title, i18n.language)}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </Link>
@@ -96,10 +99,10 @@ export default function BlogPage() {
                       ))}
                     </div>
                     <h2 className="text-xl font-bold text-farm-green mb-4 line-clamp-2 group-hover:text-farm-berry transition-colors">
-                      {article.title}
+                      {getLocalizedValue(article.title, i18n.language)}
                     </h2>
                     <p className="text-farm-wood opacity-70 text-sm line-clamp-3 mb-6 flex-1">
-                      {article.excerpt}
+                      {getLocalizedValue(article.excerpt, i18n.language)}
                     </p>
                     <div className="flex items-center justify-between mt-auto pt-6 border-t border-farm-wood/10">
                       <span className="text-xs text-farm-wood/50">

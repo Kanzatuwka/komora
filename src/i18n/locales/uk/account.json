@@ -1,0 +1,74 @@
+{
+  "title": "Особистий кабінет",
+  "tabs": {
+    "orders": "Мої замовлення",
+    "addresses": "Мої адреси",
+    "profile": "Профіль"
+  },
+  "user": "Користувач",
+  "logout": "Вийти",
+  "delivery": "Доставка",
+  "pickup": "Самовивіз",
+  "orders": {
+    "title": "Історія замовлень",
+    "empty": "У вас ще немає замовлень",
+    "toShop": "До магазину"
+  },
+  "orderDetails": {
+    "notFound": "Замовлення не знайдено",
+    "backToAccount": "Назад до кабінету",
+    "orderNumber": "Замовлення",
+    "inTransitNote": "Ваше замовлення вже їде до вас!",
+    "recipientInfo": "Дані отримувача",
+    "deliveryInfo": "Доставка",
+    "courierDelivery": "Курʼєрська доставка",
+    "pickup": "Самовивіз",
+    "items": "Склад замовлення",
+    "totalToPay": "Разом до сплати:"
+  },
+  "orderStatus": {
+    "new": "Нове",
+    "confirmed": "Підтверджено",
+    "in_transit": "В дорозі",
+    "delivered": "Доставлено",
+    "cancelled": "Скасовано"
+  },
+  "profile": {
+    "title": "Ваш профіль",
+    "edit": "Редагувати",
+    "fullName": "Повне імʼя",
+    "phone": "Телефон",
+    "notSpecified": "Не вказано",
+    "saving": "Збереження...",
+    "save": "Зберегти",
+    "security": "Безпека",
+    "googleAuthNote": "Ви увійшли через Google. Пароль керується у налаштуваннях акаунта Google.",
+    "changePassword": "Змінити пароль"
+  },
+  "passwordChange": {
+    "title": "Зміна пароля",
+    "currentPassword": "Поточний пароль",
+    "newPassword": "Новий пароль",
+    "confirmPassword": "Підтвердіть пароль",
+    "update": "Оновити",
+    "cancel": "Скасувати",
+    "passwordsNoMatch": "Паролі не співпадають",
+    "passwordMin": "Пароль має бути не менше 6 символів",
+    "successToast": "Пароль успішно оновлено",
+    "currentInvalid": "Поточний пароль невірний",
+    "updateError": "Помилка оновлення пароля"
+  },
+  "addresses": {
+    "title": "Мої адреси",
+    "addNew": "Додати нову",
+    "empty": "Збережених адрес немає",
+    "delete": "Видалити",
+    "newAddressTitle": "Нова адреса",
+    "labelPlaceholder": "Назва (напр. Дім, Робота)",
+    "streetPlaceholder": "Вулиця, будинок",
+    "cityPlaceholder": "Місто",
+    "postalCodePlaceholder": "Поштовий індекс",
+    "deleteConfirmTitle": "Видалити адресу?",
+    "deleteConfirmDescription": "Цю дію неможливо скасувати."
+  }
+}

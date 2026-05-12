@@ -11,6 +11,10 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '@/shared/lib/firebase';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { pickLocale, pickPrice } from '@/shared/lib/i18nContent';
+import { useTranslation } from 'react-i18next';
 
 interface FilterOptions {
   category?: string;
@@ -21,6 +25,8 @@ interface FilterOptions {
 export function useProducts(filters: FilterOptions) {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+  const { currency } = useCurrency();
 
   useEffect(() => {
     let q = query(collection(db, 'products'));
@@ -34,6 +40,9 @@ export function useProducts(filters: FilterOptions) {
     }
 
     // Apply sorting
+    // NOTE: sorting by price in Firestore with multi-currency is tricky 
+    // without a separate field for normalized price. For now, we sort by raw field
+    // but in a real app we might need a hidden 'sortPrice' field.
     switch (filters.sortBy) {
       case 'price-asc':
         q = query(q, orderBy('price', 'asc'));
@@ -46,14 +55,24 @@ export function useProducts(filters: FilterOptions) {
     }
 
     const unsub = onSnapshot(q, (snap) => {
-      setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setProducts(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          name: pickLocale(data.name, language),
+          description: pickLocale(data.description, language),
+          price: pickPrice(data.price, currency),
+          raw: data // keep raw data for admin or special cases
+        };
+      }));
       setLoading(false);
     }, (error) => {
       handleFirestoreError(error, OperationType.LIST, 'products');
     });
 
     return unsub;
-  }, [filters.category, filters.tag, filters.sortBy]);
+  }, [filters.category, filters.tag, filters.sortBy, language, currency]);
 
   return { products, loading };
 }
@@ -87,19 +106,29 @@ export function useCategoryTags(category: string) {
 export function useProduct(id: string) {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+  const { currency } = useCurrency();
 
   useEffect(() => {
     if (!id) return;
     const unsub = onSnapshot(doc(db, 'products', id), (snap) => {
       if (snap.exists()) {
-        setProduct({ id: snap.id, ...snap.data() });
+        const data = snap.data();
+        setProduct({
+          id: snap.id,
+          ...data,
+          name: pickLocale(data.name, language),
+          description: pickLocale(data.description, language),
+          price: pickPrice(data.price, currency),
+          raw: data
+        });
       }
       setLoading(false);
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, `products/${id}`);
     });
     return unsub;
-  }, [id]);
+  }, [id, language, currency]);
 
   return { product, loading };
 }
@@ -107,6 +136,7 @@ export function useProduct(id: string) {
 export function useLinkedArticles(articleIds: string[]) {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!articleIds || articleIds.length === 0) {
@@ -123,18 +153,30 @@ export function useLinkedArticles(articleIds: string[]) {
     );
 
     const unsub = onSnapshot(q, (snap) => {
-      setArticles(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setArticles(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          title: pickLocale(data.title, language),
+          body: pickLocale(data.body, language),
+          excerpt: pickLocale(data.excerpt, language),
+          raw: data
+        };
+      }));
       setLoading(false);
     });
 
     return unsub;
-  }, [JSON.stringify(articleIds)]);
+  }, [JSON.stringify(articleIds), language]);
 
   return { articles, loading };
 }
 
 export function useCreateOrder() {
   const [loading, setLoading] = useState(false);
+  const { i18n } = useTranslation();
+  const { currency } = useCurrency();
 
   const createOrder = async (orderData: any) => {
     setLoading(true);
@@ -142,6 +184,8 @@ export function useCreateOrder() {
       const docRef = await addDoc(collection(db, 'orders'), {
         ...orderData,
         status: 'new',
+        userLanguage: i18n.language,
+        currency: currency,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -160,16 +204,25 @@ export function useCreateOrder() {
 export function useUserAddresses(userId: string) {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!userId) return;
     const q = query(collection(db, 'addresses'), where('userId', '==', userId));
     const unsub = onSnapshot(q, (snap) => {
-      setAddresses(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setAddresses(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          label: pickLocale(data.label, language), // Assuming addresses might be localized labels
+          raw: data
+        };
+      }));
       setLoading(false);
     });
     return unsub;
-  }, [userId]);
+  }, [userId, language]);
 
   return { addresses, loading };
 }
@@ -177,14 +230,27 @@ export function useUserAddresses(userId: string) {
 export function usePickupAddresses() {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'pickupAddresses'), (snap) => {
-      setAddresses(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setAddresses(snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          label: pickLocale(data.label, language),
+          address: pickLocale(data.address, language),
+          workingHours: pickLocale(data.workingHours, language),
+          raw: data
+        };
+      }));
       setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'pickupAddresses');
     });
     return unsub;
-  }, []);
+  }, [language]);
 
   return { addresses, loading };
 }

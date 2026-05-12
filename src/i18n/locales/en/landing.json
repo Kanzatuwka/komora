@@ -1,0 +1,17 @@
+{
+  "about": {
+    "title": "About Our Farm"
+  },
+  "featuredProducts": {
+    "title": "Our Products",
+    "subtitle": "The best from our pantry, made with love",
+    "viewAll": "All Products",
+    "outOfStock": "Out of Stock"
+  },
+  "featuredArticles": {
+    "title": "Recipes & News",
+    "subtitle": "Interesting stories and delicious ideas from our family",
+    "viewAll": "More in Blog",
+    "readMore": "Read more"
+  }
+}

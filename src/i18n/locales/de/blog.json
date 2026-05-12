@@ -1,0 +1,17 @@
+{
+  "title": "Blog",
+  "subtitle": "Interessante Geschichten, Rezepte und Neuigkeiten von unserem Bauernhof",
+  "filter": {
+    "all": "Alle"
+  },
+  "card": {
+    "readMore": "Weiterlesen"
+  },
+  "article": {
+    "notFound": "Artikel nicht gefunden",
+    "backToList": "Zurück zu allen Artikeln",
+    "tryIngredients": "Probieren Sie Zutaten aus unserer Speisekammer",
+    "share": "Teilen:",
+    "allArticles": "Alle Artikel"
+  }
+}

@@ -9,8 +9,14 @@ import { Button } from '@/shared/components/Button';
 import { PageLoader } from '@/shared/components/Loader';
 import { ChevronLeft, MapPin, Truck, Store, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { sendTransactional } from '@/shared/lib/brevo';
+import { serverTimestamp } from 'firebase/firestore';
+import { sendTransactional, getTemplateId } from '@/shared/lib/brevo';
 import { useNotifications } from '@/features/admin/hooks/useNotifications';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { formatPrice } from '@/shared/lib/format';
+import { pickLocale } from '@/shared/lib/i18nContent';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -21,6 +27,9 @@ export default function CheckoutPage() {
   const { addresses: pickupPoints } = usePickupAddresses();
   const { addresses: userAddresses } = useUserAddresses(user?.uid || '');
   const { createNotification } = useNotifications();
+  const { t, i18n } = useTranslation(['shop', 'common', 'account']);
+  const { language } = useLanguage();
+  const { currency } = useCurrency();
 
   const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup'>('delivery');
   const [formData, setFormData] = useState({
@@ -64,10 +73,12 @@ export default function CheckoutPage() {
       userName: formData.name,
       userPhone: formData.phone,
       userEmail: formData.email,
+      userLanguage: language,
+      currency: currency,
       items: items.map(i => ({
         productId: i.productId,
-        name: i.name,
-        price: i.price,
+        name: typeof i.name === 'object' ? pickLocale(i.name, language) : i.name,
+        price: typeof i.price === 'object' ? (i.price as any)[currency] : i.price,
         quantity: i.quantity
       })),
       total,
@@ -75,6 +86,9 @@ export default function CheckoutPage() {
       address: deliveryMethod === 'delivery' ? `${formData.address}, ${formData.city}, ${formData.zip}` : null,
       pickupAddressId: deliveryMethod === 'pickup' ? formData.pickupId : null,
       comment: formData.comment,
+      status: 'new',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     };
 
     try {
@@ -82,8 +96,8 @@ export default function CheckoutPage() {
       
       // Create admin notification
       await createNotification({
-        title: 'Нове замовлення!',
-        message: `Клієнт ${formData.name} оформив замовлення на суму ${total} грн.`,
+        title: t('shop:checkout.newOrderToast'),
+        message: `Клієнт ${formData.name} оформив замовлення на суму ${total} ${currency}.`,
         type: 'order',
         link: `/admin/orders`
       });
@@ -91,24 +105,24 @@ export default function CheckoutPage() {
       // Send email
       await sendTransactional({
         to: formData.email,
-        templateId: Number(import.meta.env.VITE_BREVO_ORDER_PLACED_TEMPLATE_ID),
+        templateId: getTemplateId('ORDER_PLACED', language),
         params: {
           customerName: formData.name,
           orderNumber: orderId.slice(0, 8).toUpperCase(),
-          orderItemsHtml: items.map(i => `${i.name} × ${i.quantity} — ${(i.price * i.quantity).toFixed(2)} грн`).join('\n'),
-          total: total.toFixed(2),
+          orderItemsHtml: items.map(i => `${typeof i.name === 'object' ? pickLocale(i.name, language) : i.name} × ${i.quantity} — ${formatPrice(i.price * i.quantity, currency, language)}`).join('\n'), 
+          total: formatPrice(total, currency, language),
           deliveryInfo: deliveryMethod === 'delivery' 
-            ? `Доставка: ${orderData.address}` 
-            : `Самовивіз: ${pickupPoints.find(p => p.id === formData.pickupId)?.label || ''}`
+            ? `${t('shop:checkout.deliveryAddress')}: ${orderData.address}` 
+            : `${t('shop:checkout.pickupPoint')}: ${pickLocale(pickupPoints.find(p => p.id === formData.pickupId)?.label, language) || ''}`
         }
       });
 
       clearCart();
       navigate(`/order/${orderId}`);
-      showToast({ message: 'Замовлення успішно оформлено!', type: 'success' });
+      showToast({ message: t('shop:checkout.successToast'), type: 'success' });
     } catch (err) {
       console.error(err);
-      showToast({ message: 'Сталася помилка при оформленні. Спробуйте ще раз.', type: 'error' });
+      showToast({ message: t('shop:checkout.errorToast'), type: 'error' });
     }
   };
 
@@ -123,7 +137,7 @@ export default function CheckoutPage() {
           className="flex items-center gap-2 text-farm-wood hover:text-farm-green transition-colors mb-12"
         >
           <ChevronLeft className="w-5 h-5" />
-          <span className="font-bold">Назад</span>
+          <span className="font-bold">{t('common:actions.back')}</span>
         </button>
 
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-12">
@@ -132,7 +146,7 @@ export default function CheckoutPage() {
             {/* Delivery Method */}
             <div className="bg-white p-10 rounded-[3rem] shadow-sm">
               <h2 className="text-2xl font-bold text-farm-green mb-8 flex items-center gap-3">
-                <Truck className="w-6 h-6" /> Спосіб отримання
+                <Truck className="w-6 h-6" /> {t('shop:checkout.deliveryMethod')}
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <button
@@ -144,7 +158,7 @@ export default function CheckoutPage() {
                   )}
                 >
                   <Truck className={cn("w-8 h-8", deliveryMethod === 'delivery' ? "text-farm-green" : "text-farm-wood/30")} />
-                  <span className={cn("font-bold", deliveryMethod === 'delivery' ? "text-farm-green" : "text-farm-wood")}>Доставка кур'єром</span>
+                  <span className={cn("font-bold", deliveryMethod === 'delivery' ? "text-farm-green" : "text-farm-wood")}>{t('shop:checkout.delivery')}</span>
                 </button>
                 <button
                   type="button"
@@ -155,17 +169,17 @@ export default function CheckoutPage() {
                   )}
                 >
                   <Store className={cn("w-8 h-8", deliveryMethod === 'pickup' ? "text-farm-green" : "text-farm-wood/30")} />
-                  <span className={cn("font-bold", deliveryMethod === 'pickup' ? "text-farm-green" : "text-farm-wood")}>Самовивіз</span>
+                  <span className={cn("font-bold", deliveryMethod === 'pickup' ? "text-farm-green" : "text-farm-wood")}>{t('shop:checkout.pickup')}</span>
                 </button>
               </div>
             </div>
 
             {/* Customer Info */}
             <div className="bg-white p-10 rounded-[3rem] shadow-sm">
-              <h2 className="text-2xl font-bold text-farm-green mb-8">Контактні дані</h2>
+              <h2 className="text-2xl font-bold text-farm-green mb-8">{t('shop:checkout.contactInfo')}</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">Ваше ім'я *</label>
+                  <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">{t('shop:checkout.name')} *</label>
                   <input
                     type="text"
                     required
@@ -175,7 +189,7 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">Телефон *</label>
+                  <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">{t('shop:checkout.phone')} *</label>
                   <input
                     type="tel"
                     required
@@ -201,10 +215,10 @@ export default function CheckoutPage() {
             <div className="bg-white p-10 rounded-[3rem] shadow-sm">
               {deliveryMethod === 'delivery' ? (
                 <>
-                  <h2 className="text-2xl font-bold text-farm-green mb-8">Адреса доставки</h2>
+                  <h2 className="text-2xl font-bold text-farm-green mb-8">{t('shop:checkout.deliveryAddress')}</h2>
                   {userAddresses.length > 0 && (
                     <div className="mb-8 p-4 bg-farm-green/5 rounded-2xl flex flex-col gap-2">
-                      <span className="text-xs font-bold uppercase tracking-widest text-farm-green/60 ml-2">Вибрати збережену:</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-farm-green/60 ml-2">{t('shop:checkout.selectSavedAddress')}</span>
                       <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                         {userAddresses.map(addr => (
                           <button
@@ -221,7 +235,7 @@ export default function CheckoutPage() {
                   )}
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">Вулиця та номер будинку *</label>
+                      <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">{t('shop:checkout.street')} *</label>
                       <input
                         type="text"
                         required={deliveryMethod === 'delivery'}
@@ -231,7 +245,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">Місто *</label>
+                      <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">{t('shop:checkout.city')} *</label>
                       <input
                         type="text"
                         required={deliveryMethod === 'delivery'}
@@ -241,7 +255,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">Поштовий індекс *</label>
+                      <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">{t('shop:checkout.postalCode')} *</label>
                       <input
                         type="text"
                         required={deliveryMethod === 'delivery'}
@@ -254,7 +268,7 @@ export default function CheckoutPage() {
                 </>
               ) : (
                 <>
-                  <h2 className="text-2xl font-bold text-farm-green mb-8">Точка самовивозу</h2>
+                  <h2 className="text-2xl font-bold text-farm-green mb-8">{t('shop:checkout.pickupPoint')}</h2>
                   {pickupPoints.length > 0 ? (
                     <div className="space-y-4">
                       {pickupPoints.map(point => (
@@ -275,21 +289,21 @@ export default function CheckoutPage() {
                             className="mt-1 accent-farm-green"
                           />
                           <div>
-                            <p className="font-bold text-farm-green">{point.label}</p>
-                            <p className="text-sm text-farm-wood opacity-70 mb-2">{point.address}</p>
-                            <p className="text-[10px] uppercase font-bold tracking-widest text-farm-wood/40">Графік: {point.workingHours}</p>
+                            <p className="font-bold text-farm-green">{pickLocale(point.label, language)}</p>
+                            <p className="text-sm text-farm-wood opacity-70 mb-2">{pickLocale(point.address, language)}</p>
+                            <p className="text-[10px] uppercase font-bold tracking-widest text-farm-wood/40">{t('shop:checkout.pickupSchedule')} {pickLocale(point.workingHours, language)}</p>
                           </div>
                         </label>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-farm-wood opacity-50 italic">Точки самовивозу поки що не додані.</p>
+                    <p className="text-farm-wood opacity-50 italic">{t('shop:checkout.noPickupPoints')}</p>
                   )}
                 </>
               )}
 
               <div className="mt-12">
-                <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">Коментар до замовлення</label>
+                <label className="block text-sm font-medium text-farm-wood mb-2 ml-4">{t('shop:checkout.comment')}</label>
                 <textarea
                   rows={3}
                   value={formData.comment}
@@ -303,29 +317,29 @@ export default function CheckoutPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white p-10 rounded-[3rem] shadow-xl sticky top-32">
-              <h2 className="text-2xl font-bold text-farm-green mb-8">Ваше замовлення</h2>
+              <h2 className="text-2xl font-bold text-farm-green mb-8">{t('shop:checkout.yourOrder')}</h2>
               
               <div className="space-y-6 mb-8 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
                 {items.map(item => (
                   <div key={item.productId} className="flex gap-4">
                     <img src={item.image || undefined} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-farm-green text-sm line-clamp-1">{item.name}</p>
-                      <p className="text-xs text-farm-wood opacity-50">{item.quantity} × {item.price} грн</p>
+                      <p className="font-bold text-farm-green text-sm line-clamp-1">{typeof item.name === 'object' ? pickLocale(item.name, language) : item.name}</p>
+                      <p className="text-xs text-farm-wood opacity-50">{item.quantity} × {formatPrice(item.price, currency, language)}</p>
                     </div>
-                    <span className="font-bold text-farm-green text-sm">{item.quantity * item.price} грн</span>
+                    <span className="font-bold text-farm-green text-sm">{formatPrice(item.quantity * item.price, currency, language)}</span>
                   </div>
                 ))}
               </div>
 
               <div className="pt-8 border-t border-farm-wood/10">
                 <div className="flex justify-between items-center mb-10">
-                  <span className="text-farm-wood font-bold">Разом:</span>
-                  <span className="text-3xl font-bold text-farm-green">{total} грн</span>
+                  <span className="text-farm-wood font-bold">{t('shop:checkout.total') || 'Разом'}:</span>
+                  <span className="text-3xl font-bold text-farm-green">{formatPrice(total, currency, language)}</span>
                 </div>
 
                 <Button type="submit" size="lg" className="w-full py-6">
-                  Замовити зараз
+                  {t('shop:checkout.placeOrder')}
                 </Button>
               </div>
             </div>

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, storage } from '@/shared/lib/firebase';
-import { doc, getDoc, setDoc, addDoc, collection, serverTimestamp, writeBatch, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, serverTimestamp, writeBatch, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Button } from '@/shared/components/Button';
 import { PageLoader } from '@/shared/components/Loader';
+import { useTranslation } from 'react-i18next';
 import { 
   ChevronLeft, 
   Upload, 
@@ -17,28 +18,29 @@ import {
 import { useToast } from '@/shared/contexts/ToastContext';
 import { cn } from '@/shared/lib/utils';
 import { useArticles } from '../../blog/hooks/useBlogData';
-
+import { LocalizedField } from '../components/LocalizedField';
 import { ImageUploader } from '../components/ImageUploader';
 
-const CATEGORIES = [
-  { id: 'jam', name: 'Варення' },
-  { id: 'sauce', name: 'Соуси' },
-  { id: 'preserve', name: 'Консерви' },
-];
-
 export default function AdminProductFormPage() {
+  const { t } = useTranslation('shop');
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const isEdit = !!id;
 
+  const CATEGORIES = [
+    { id: 'jam', name: t('categories.jam') },
+    { id: 'sauce', name: t('categories.sauce') },
+    { id: 'preserve', name: t('categories.preserve') },
+  ];
+
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    name: { uk: '', en: '', de: '' } as Record<string, string>,
     category: 'jam',
-    price: 0,
-    description: '',
+    price: { UAH: 0, EUR: 0, USD: 0 } as Record<string, number>,
+    description: { uk: '', en: '', de: '' } as Record<string, string>,
     images: [] as string[],
     inStock: true,
     featured: false,
@@ -52,7 +54,20 @@ export default function AdminProductFormPage() {
     if (isEdit) {
       getDoc(doc(db, 'products', id)).then(snap => {
         if (snap.exists()) {
-          setFormData({ ...snap.data() as any });
+          const data = snap.data();
+          const normalized = {
+            ...data,
+            name: typeof data.name === 'string'
+              ? { uk: data.name, en: '', de: '' }
+              : data.name || { uk: '', en: '', de: '' },
+            description: typeof data.description === 'string'
+              ? { uk: data.description, en: '', de: '' }
+              : data.description || { uk: '', en: '', de: '' },
+            price: typeof data.price === 'number'
+              ? { UAH: data.price, EUR: 0, USD: 0 }
+              : data.price || { UAH: 0, EUR: 0, USD: 0 },
+          } as any;
+          setFormData(normalized);
         }
         setLoading(false);
       });
@@ -70,12 +85,17 @@ export default function AdminProductFormPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.name.uk?.trim() || !formData.description.uk?.trim() || (formData.price.UAH || 0) <= 0) {
+      showToast({ message: 'Назва (UA), опис (UA) та ціна (UAH) обовʼязкові', type: 'error' });
+      return;
+    }
+
     setSaving(true);
 
     try {
       const data = {
         ...formData,
-        price: Number(formData.price),
         updatedAt: serverTimestamp(),
       };
 
@@ -93,7 +113,7 @@ export default function AdminProductFormPage() {
         });
       }
 
-      // Bidirectional linking
+      // Bidirectional linking logic (unchanged essentially, just uses raw data from snap)
       const oldDoc = isEdit && id ? await getDoc(doc(db, 'products', id)) : null;
       const oldArticleIds = oldDoc?.exists() ? (oldDoc.data().linkedArticleIds || []) as string[] : [];
       const newArticleIds = formData.linkedArticleIds;
@@ -127,7 +147,7 @@ export default function AdminProductFormPage() {
   if (loading) return <PageLoader />;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12">
+    <div className="max-w-4xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between">
         <button 
           onClick={() => navigate('/admin/products')}
@@ -143,17 +163,12 @@ export default function AdminProductFormPage() {
       <form onSubmit={handleSave} className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-8">
           <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100 space-y-6">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2 ml-4">Назва товару</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-6 py-4 rounded-full bg-gray-50 border-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white transition-all"
-                placeholder="Введіть назву..."
-              />
-            </div>
+            <LocalizedField
+              label="Назва"
+              value={formData.name}
+              onChange={(v) => setFormData({ ...formData, name: v })}
+              required
+            />
 
             <div className="grid grid-cols-2 gap-6">
               <div>
@@ -161,34 +176,60 @@ export default function AdminProductFormPage() {
                 <select
                   value={formData.category}
                   onChange={e => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-6 py-4 rounded-full bg-gray-50 border-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white transition-all"
+                  className="w-full px-6 py-4 rounded-full bg-gray-50 border-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white transition-all outline-none"
                 >
                   {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 ml-4">Ціна (грн)</label>
-                <input
-                  type="number"
-                  required
-                  value={formData.price}
-                  onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
-                  className="w-full px-6 py-4 rounded-full bg-gray-50 border-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white transition-all"
-                />
-              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2 ml-4">Опис</label>
-              <textarea
-                rows={6}
-                required
-                value={formData.description}
-                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-6 py-4 rounded-[2rem] bg-gray-50 border-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white transition-all resize-none"
-                placeholder="Детальний опис товару..."
-              />
+              <label className="block mb-2 font-medium">Ціна <span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs text-gray-500">UAH</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.price.UAH}
+                    onChange={(e) => setFormData({ ...formData, price: { ...formData.price, UAH: parseFloat(e.target.value) || 0 } })}
+                    className="w-full border rounded p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">EUR</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.price.EUR}
+                    onChange={(e) => setFormData({ ...formData, price: { ...formData.price, EUR: parseFloat(e.target.value) || 0 } })}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">USD</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.price.USD}
+                    onChange={(e) => setFormData({ ...formData, price: { ...formData.price, USD: parseFloat(e.target.value) || 0 } })}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+              </div>
             </div>
+
+            <LocalizedField
+              label="Опис"
+              type="textarea"
+              value={formData.description}
+              onChange={(v) => setFormData({ ...formData, description: v })}
+              required
+            />
           </div>
 
           <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
@@ -250,7 +291,9 @@ export default function AdminProductFormPage() {
                       }}
                       className="accent-farm-green"
                     />
-                    <span className="text-xs font-medium truncate">{article.title}</span>
+                    <span className="text-xs font-medium truncate">
+                      {typeof article.title === 'string' ? article.title : (article.title?.uk || 'Untitled')}
+                    </span>
                   </label>
                 ))}
               </div>

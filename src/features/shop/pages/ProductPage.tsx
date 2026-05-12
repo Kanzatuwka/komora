@@ -8,9 +8,17 @@ import { Button } from '@/shared/components/Button';
 import { PageLoader } from '@/shared/components/Loader';
 import { ChevronLeft, ShoppingCart, Plus, Minus, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { formatPrice } from '@/shared/lib/format';
+import { getLocalizedValue } from '@/shared/lib/utils';
 
 export default function ProductPage() {
   const { id } = useParams();
+  const { t } = useTranslation(['shop', 'common']);
+  const { language } = useLanguage();
+  const { currency } = useCurrency();
   const navigate = useNavigate();
   const { product, loading } = useProduct(id || '');
   const { articles, loading: articlesLoading } = useLinkedArticles(product?.linkedArticleIds || []);
@@ -22,15 +30,16 @@ export default function ProductPage() {
   const [isAdded, setIsAdded] = useState(false);
 
   if (loading) return <PageLoader />;
-  if (!product) return <div className="p-24 text-center">Товар не знайдено</div>;
+  if (!product) return <div className="p-24 text-center">{t('shop:product.notFound')}</div>;
 
   const handleAdd = () => {
     addItem(product, quantity);
     setIsAdded(true);
+    const productName = getLocalizedValue(product.name, language);
     showToast({ 
-      message: `${product.name} додано до кошика`, 
+      message: t('shop:product.addedToCart', { name: productName }), 
       type: 'success',
-      action: { label: 'До кошика', onClick: () => navigate('/cart') }
+      action: { label: t('shop:product.addToCart'), onClick: () => navigate('/cart') }
     });
     setTimeout(() => setIsAdded(false), 1500);
   };
@@ -45,7 +54,7 @@ export default function ProductPage() {
           className="flex items-center gap-2 text-farm-wood hover:text-farm-green transition-colors mb-12"
         >
           <ChevronLeft className="w-5 h-5" />
-          <span className="font-bold">Назад</span>
+          <span className="font-bold">{t('common:actions.back')}</span>
         </button>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start">
@@ -57,7 +66,7 @@ export default function ProductPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 src={product.images?.[activeImage] || 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&q=80'} 
-                alt={product.name}
+                alt={getLocalizedValue(product.name, language)}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -82,20 +91,20 @@ export default function ProductPage() {
           <div className="bg-white p-12 rounded-[3.5rem] shadow-sm">
             <div className="flex gap-2 mb-6">
               <span className="bg-farm-green/5 text-farm-green px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-                {product.category}
+                {t('shop:categories.' + product.category)}
               </span>
               {product.featured && (
                 <span className="bg-farm-berry/5 text-farm-berry px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-                  Популярне
+                  {t('shop:product.featured')}
                 </span>
               )}
             </div>
-
-            <h1 className="text-4xl font-bold text-farm-green mb-4">{product.name}</h1>
-            <p className="text-3xl font-bold text-farm-green mb-8">{product.price} грн</p>
+            
+            <h1 className="text-4xl font-bold text-farm-green mb-4">{getLocalizedValue(product.name, language)}</h1>
+            <p className="text-3xl font-bold text-farm-green mb-8">{formatPrice(product.price, currency, language)}</p>
             
             <div className="prose prose-stone mb-12 text-farm-wood/80 leading-relaxed whitespace-pre-wrap">
-              {product.description}
+              {getLocalizedValue(product.description, language)}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 items-center pt-8 border-t border-farm-wood/10">
@@ -132,7 +141,7 @@ export default function ProductPage() {
                           exit={{ y: -20, opacity: 0 }}
                           className="flex items-center gap-2"
                         >
-                          <Check className="w-6 h-6" /> Додано до кошика
+                          <Check className="w-6 h-6" /> {t('shop:product.added')}
                         </motion.span>
                       ) : (
                         <motion.span 
@@ -142,7 +151,7 @@ export default function ProductPage() {
                           exit={{ y: -20, opacity: 0 }}
                           className="flex items-center gap-2"
                         >
-                          <ShoppingCart className="w-6 h-6" /> До кошика
+                          <ShoppingCart className="w-6 h-6" /> {t('shop:product.addToCart')}
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -150,7 +159,7 @@ export default function ProductPage() {
                 </>
               ) : (
                 <div className="w-full bg-farm-berry/10 text-farm-berry p-4 rounded-2xl text-center font-bold">
-                  Тимчасово немає в наявності
+                  {t('shop:product.outOfStock')}
                 </div>
               )}
             </div>
@@ -165,7 +174,7 @@ export default function ProductPage() {
               animate={{ opacity: 1, y: 0 }}
               className="mt-24 pt-24 border-t border-farm-wood/10"
             >
-              <h2 className="text-3xl font-bold text-farm-green mb-12">Рецепти з цим продуктом</h2>
+              <h2 className="text-3xl font-bold text-farm-green mb-12">{t('shop:product.linkedRecipes')}</h2>
               <div className="grid md:grid-cols-3 gap-8">
                 {articles.map(article => (
                   <Link 
@@ -181,7 +190,7 @@ export default function ProductPage() {
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-bold text-farm-green group-hover:text-farm-berry transition-colors">{article.title}</h3>
+                      <h3 className="font-bold text-farm-green group-hover:text-farm-berry transition-colors">{getLocalizedValue(article.title, language)}</h3>
                     </div>
                   </Link>
                 ))}

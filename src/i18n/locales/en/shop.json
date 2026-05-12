@@ -1,0 +1,91 @@
+{
+  "title": "Shop",
+  "subtitle": "Natural products straight from our farm",
+  "categories": {
+    "all": "All Products",
+    "jam": "Jam",
+    "sauce": "Sauces",
+    "preserve": "Preserves"
+  },
+  "sort": {
+    "label": "Sorting",
+    "newest": "Newest",
+    "priceAsc": "Price: low to high",
+    "priceDesc": "Price: high to low"
+  },
+  "filter": {
+    "category": "Category",
+    "tag": "Tag",
+    "all": "All",
+    "tags": "Tags"
+  },
+  "product": {
+    "addToCart": "Add to Cart",
+    "added": "Added",
+    "addedToCart": "{{name}} added to cart",
+    "viewCart": "View",
+    "outOfStock": "Out of stock",
+    "featured": "Popular",
+    "linkedRecipes": "Recipes with this product",
+    "notFound": "Product not found"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "emptyDescription": "It looks like you haven't added anything yet. Visit our shop to find something delicious.",
+    "toShop": "To Shop",
+    "continueShopping": "Continue Shopping",
+    "itemsCount": "{{count}} items in your list",
+    "summary": "Summary",
+    "items": "Items",
+    "delivery": "Delivery",
+    "deliveryCalculated": "Calculated later",
+    "total": "Total to pay",
+    "checkout": "Checkout"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "deliveryMethod": "Obtaining method",
+    "delivery": "Courier Delivery",
+    "pickup": "Pickup",
+    "contactInfo": "Contact Details",
+    "name": "Your name",
+    "phone": "Phone",
+    "email": "Email",
+    "deliveryAddress": "Delivery Address",
+    "selectSavedAddress": "Select saved:",
+    "street": "Street and house number",
+    "city": "City",
+    "postalCode": "Postal Code",
+    "pickupPoint": "Pickup Point",
+    "pickupSchedule": "Schedule:",
+    "noPickupPoints": "No pickup points added yet.",
+    "comment": "Order Comment",
+    "yourOrder": "Your Order",
+    "placeOrder": "Order Now",
+    "total": "Total",
+    "terms": "By clicking the button, you agree to Komora's terms of service.",
+    "newOrderToast": "New order!",
+    "successToast": "Order placed successfully!",
+    "errorToast": "Error placing order. Please try again."
+  },
+  "orderConfirmation": {
+    "thanks": "Thank you for your order!",
+    "received": "was received successfully",
+    "info": "Order Information",
+    "deliveryAndPayment": "Delivery and Payment",
+    "courierDelivery": "Courier Delivery",
+    "pickup": "Pickup",
+    "pickupPoint": "Pickup Point",
+    "total": "Total",
+    "emailNote": "We have sent an email with order details to you. You can track the status in your account.",
+    "notFound": "Order not found",
+    "toShop": "To Shop",
+    "toAccount": "To Account"
+  },
+  "empty": {
+    "title": "No products found",
+    "description": "Try changing filters or check back later.",
+    "action": "Reset filters"
+  }
+}
