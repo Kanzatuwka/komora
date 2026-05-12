@@ -66,6 +66,12 @@
     "delivery": "Versand & Zahlung",
     "allRightsReserved": "Alle Rechte vorbehalten."
   },
+  "currencyChangeModal": {
+    "title": "Währung ändern?",
+    "description": "Ihr Warenkorb enthält Artikel in {{current}}. Die Änderung auf {{new}} wird Ihren Warenkorb leeren. Fortfahren?",
+    "confirm": "Warenkorb leeren und ändern",
+    "cancel": "Abbrechen"
+  },
   "notFound": {
     "title": "Nicht gefunden",
     "back": "Zur Startseite"

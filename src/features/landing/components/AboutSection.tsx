@@ -9,7 +9,7 @@ interface AboutProps {
 }
 
 export function AboutSection({ text, imageUrl, loading }: AboutProps) {
-  const { t } = useTranslation('landing');
+  const { t, i18n } = useTranslation('landing');
 
   if (loading) {
     return (

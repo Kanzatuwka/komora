@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Package, Clock, Truck, Store, ChevronRight } from 'lucide-react';
-import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { formatDate, formatPrice } from '@/shared/lib/format';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 interface OrderListItemProps {
@@ -9,6 +10,9 @@ interface OrderListItemProps {
 }
 
 export function OrderListItem({ order }: OrderListItemProps) {
+  const { t } = useTranslation(['account', 'shop', 'common']);
+  const { language } = useLanguage();
+
   return (
     <Link 
       to={`/account/orders/${order.id}`}
@@ -25,18 +29,18 @@ export function OrderListItem({ order }: OrderListItemProps) {
         <p className="text-sm text-farm-wood opacity-50 flex items-center gap-4">
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" /> 
-            {order.createdAt?.toDate ? format(order.createdAt.toDate(), 'd MMMM yyyy', { locale: uk }) : '...'}
+            {order.createdAt ? formatDate(order.createdAt, language) : '...'}
           </span>
           <span className="flex items-center gap-1">
             {order.deliveryMethod === 'delivery' ? <Truck className="w-3 h-3" /> : <Store className="w-3 h-3" />} 
-            {order.deliveryMethod === 'delivery' ? 'Кур\'єр' : 'Самовивіз'}
+            {order.deliveryMethod === 'delivery' ? t('shop:orderConfirmation.courierDelivery') : t('shop:orderConfirmation.pickup')}
           </span>
         </p>
       </div>
       <div className="text-right">
-        <p className="font-bold text-lg text-farm-green mb-1">{order.total} грн</p>
+        <p className="font-bold text-lg text-farm-green mb-1">{formatPrice(order.total, order.currency, language)}</p>
         <span className="text-xs text-farm-wood/40 flex items-center gap-1 justify-end group-hover:text-farm-berry transition-colors">
-          Деталі <ChevronRight className="w-3 h-3" />
+          {t('common:details')} <ChevronRight className="w-3 h-3" />
         </span>
       </div>
     </Link>

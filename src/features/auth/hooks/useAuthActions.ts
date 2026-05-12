@@ -9,11 +9,15 @@ import {
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider } from '@/shared/lib/firebase';
 import { useToast } from '@/shared/contexts/ToastContext';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 export function useAuthActions() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showToast } = useToast();
+  const { t } = useTranslation(['auth', 'common']);
+  const { language: currentLanguage } = useLanguage();
 
   const redirectAfterLogin = () => {
     const from = (location.state as any)?.from?.pathname || '/';
@@ -24,7 +28,7 @@ export function useAuthActions() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       redirectAfterLogin();
-      showToast({ message: 'Вітаємо з поверненням!', type: 'success' });
+      showToast({ message: t('auth:login.successToast', { defaultValue: 'Вітаємо з поверненням!' }), type: 'success' });
     } catch (err) {
       console.error(err);
       throw new Error('Невірний email або пароль');
@@ -46,6 +50,7 @@ export function useAuthActions() {
           name: result.user.displayName || '',
           phone: '',
           role: isAdmin ? 'admin' : 'user',
+          language: currentLanguage,
           createdAt: serverTimestamp(),
         });
       } else {
@@ -56,14 +61,14 @@ export function useAuthActions() {
       }
       
       redirectAfterLogin();
-      showToast({ message: 'Успішний вхід через Google', type: 'success' });
+      showToast({ message: t('auth:login.googleSuccessToast', { defaultValue: 'Успішний вхід через Google' }), type: 'success' });
     } catch (err) {
       console.error(err);
-      showToast({ message: 'Помилка входу через Google', type: 'error' });
+      showToast({ message: t('auth:login.errorGeneric'), type: 'error' });
     }
   };
 
-  const register = async ({ name, email, password }: any) => {
+  const register = async ({ name, email, password, language }: any) => {
     try {
       const cred: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
       
@@ -72,17 +77,18 @@ export function useAuthActions() {
         name,
         phone: '',
         role: 'user',
+        language: language || currentLanguage,
         createdAt: serverTimestamp(),
       });
       
       navigate('/', { replace: true });
-      showToast({ message: 'Вітаємо в Коморі!', type: 'success' });
+      showToast({ message: t('auth:register.welcomeToast'), type: 'success' });
     } catch (err: any) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
-        throw new Error('Цей email вже використовується');
+        throw new Error(t('auth:register.errorEmailInUse', { defaultValue: 'Цей email вже використовується' }));
       }
-      throw new Error('Помилка реєстрації. Спробуйте ще раз.');
+      throw new Error(t('auth:register.errorGeneric', { defaultValue: 'Помилка реєстрації. Спробуйте ще раз.' }));
     }
   };
 
@@ -90,7 +96,7 @@ export function useAuthActions() {
     try {
       await signOut(auth);
       navigate('/');
-      showToast({ message: 'Ви вийшли з акаунта', type: 'info' });
+      showToast({ message: t('auth:logout.successToast', { defaultValue: 'Ви вийшли з акаунта' }), type: 'info' });
     } catch (err) {
       console.error(err);
     }

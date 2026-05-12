@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/shared/components/Button';
-import { cn } from '@/shared/lib/utils';
 import { Lock, Globe, CircleDollarSign } from 'lucide-react';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
 import { CurrencySwitcher } from '@/shared/components/CurrencySwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileFormProps {
   profile: any;
@@ -15,6 +15,7 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile, user, updateProfile, loading, onPasswordChange, isGoogleUser }: ProfileFormProps) {
+  const { t } = useTranslation(['account', 'common']);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     name: profile?.name || '',
@@ -38,9 +39,9 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
   return (
     <div className="bg-white p-12 rounded-[3.5rem] shadow-sm">
       <div className="flex items-center justify-between mb-12">
-        <h2 className="text-3xl font-bold text-farm-green">Ваш профіль</h2>
+        <h2 className="text-3xl font-bold text-farm-green">{t('account:profile.title')}</h2>
         {!isEditing && (
-          <Button onClick={handleEdit} size="sm">Редагувати</Button>
+          <Button onClick={handleEdit} size="sm">{t('account:profile.edit')}</Button>
         )}
       </div>
 
@@ -48,7 +49,7 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-4">Повне ім'я</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-4">{t('account:profile.fullName')}</label>
               <input 
                 type="text" 
                 value={form.name}
@@ -57,7 +58,7 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-4">Телефон</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-4">{t('account:profile.phone')}</label>
               <input 
                 type="tel" 
                 value={form.phone}
@@ -67,27 +68,27 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
             </div>
             <div className="flex gap-4 pt-4">
               <Button disabled={loading}>
-                {loading ? 'Збереження...' : 'Зберегти'}
+                {loading ? t('account:profile.saving') : t('account:profile.save')}
               </Button>
-              <Button type="button" variant="ghost" onClick={() => setIsEditing(false)}>Скасувати</Button>
+              <Button type="button" variant="ghost" onClick={() => setIsEditing(false)}>{t('common:cancel')}</Button>
             </div>
           </form>
         ) : (
           <div className="space-y-6">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-farm-wood/40 mb-2 ml-4">Повне ім'я</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-farm-wood/40 mb-2 ml-4">{t('account:profile.fullName')}</p>
               <div className="px-8 py-4 bg-farm-cream/50 rounded-full font-bold text-farm-green">
-                {profile?.name || 'Не вказано'}
+                {profile?.name || t('account:profile.notSpecified')}
               </div>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-farm-wood/40 mb-2 ml-4">Телефон</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-farm-wood/40 mb-2 ml-4">{t('account:profile.phone')}</p>
               <div className="px-8 py-4 bg-farm-cream/50 rounded-full font-bold text-farm-green">
-                {profile?.phone || 'Не вказано'}
+                {profile?.phone || t('account:profile.notSpecified')}
               </div>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-farm-wood/40 mb-2 ml-4">Email адреса</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-farm-wood/40 mb-2 ml-4">Email</p>
               <div className="px-8 py-4 bg-farm-cream/50 rounded-full font-bold text-farm-green">
                 {user.email}
               </div>
@@ -98,7 +99,7 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
         <div className="space-y-8 bg-gray-50/50 p-8 rounded-[2.5rem] border border-gray-100/50">
           <div>
             <h3 className="text-sm font-bold text-farm-green uppercase tracking-widest mb-6 flex items-center gap-2">
-              <Globe className="w-4 h-4 text-farm-green/40" /> Налаштування мови
+              <Globe className="w-4 h-4 text-farm-green/40" /> {t('common:nav.language')}
             </h3>
             <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
               <LanguageSwitcher variant="inline" />
@@ -107,7 +108,7 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
 
           <div>
             <h3 className="text-sm font-bold text-farm-green uppercase tracking-widest mb-6 flex items-center gap-2">
-              <CircleDollarSign className="w-4 h-4 text-farm-green/40" /> Основна валюта
+              <CircleDollarSign className="w-4 h-4 text-farm-green/40" /> {t('common:nav.currency')}
             </h3>
             <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
               <CurrencySwitcher variant="inline" />
@@ -115,10 +116,10 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
           </div>
 
           <div className="pt-6 border-t border-farm-wood/10">
-            <h3 className="text-sm font-bold text-farm-green uppercase tracking-widest mb-4">Безпека</h3>
+            <h3 className="text-sm font-bold text-farm-green uppercase tracking-widest mb-4">{t('account:profile.security')}</h3>
             {isGoogleUser ? (
               <p className="text-xs text-farm-wood opacity-70 italic">
-                Ви увійшли через Google. Пароль керується налаштуваннями вашого Google-акаунта.
+                {t('account:profile.googleAuthNote')}
               </p>
             ) : (
               <Button 
@@ -126,7 +127,7 @@ export function ProfileForm({ profile, user, updateProfile, loading, onPasswordC
                 onClick={onPasswordChange}
                 className="w-full flex items-center gap-2 justify-center rounded-full py-3"
               >
-                <Lock className="w-4 h-4" /> Змінити пароль
+                <Lock className="w-4 h-4" /> {t('account:profile.changePassword')}
               </Button>
             )}
           </div>

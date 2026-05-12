@@ -17,9 +17,17 @@ export function formatDate(date: any, language: string, opts: Intl.DateTimeForma
   return new Intl.DateTimeFormat(LOCALE_BY_LANG[language] || 'uk-UA', opts).format(d);
 }
 
-export function formatPrice(amount: number, currency: string, language: string): string {
-  return new Intl.NumberFormat(LOCALE_BY_LANG[language] || 'uk-UA', { 
-    style: 'currency', 
-    currency 
-  }).format(amount);
+export function formatPrice(price: any, currency: string | undefined, language: string): string {
+  const currencyCode = currency || 'UAH';
+  const amount = typeof price === 'number' ? price : (price?.[currencyCode] || price?.['UAH'] || 0);
+  
+  try {
+    return new Intl.NumberFormat(LOCALE_BY_LANG[language] || 'uk-UA', { 
+      style: 'currency', 
+      currency: currencyCode 
+    }).format(amount);
+  } catch (e) {
+    console.error('formatPrice error:', e, { price, currency, language });
+    return `${amount} ${currencyCode}`;
+  }
 }

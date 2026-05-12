@@ -66,6 +66,12 @@
     "delivery": "Delivery & Payment",
     "allRightsReserved": "All rights reserved."
   },
+  "currencyChangeModal": {
+    "title": "Change Currency?",
+    "description": "Your cart contains items in {{current}}. Changing to {{new}} will clear your cart. Continue?",
+    "confirm": "Clear cart and change",
+    "cancel": "Cancel"
+  },
   "notFound": {
     "title": "Not Found",
     "back": "To Homepage"

@@ -13,10 +13,11 @@ import { getLocalizedValue } from '@/shared/lib/utils';
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, total, count } = useCart();
+  const { items, removeItem, updateQuantity, total, count, cartCurrency } = useCart();
   const { t } = useTranslation(['shop', 'common']);
   const { language } = useLanguage();
-  const { currency } = useCurrency();
+  const { currency: currentCurrency } = useCurrency();
+  const currency = cartCurrency || currentCurrency;
 
   if (items.length === 0) {
     return (

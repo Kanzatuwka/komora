@@ -7,8 +7,10 @@ import { PageLoader } from '@/shared/components/Loader';
 import { Button } from '@/shared/components/Button';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { Navbar } from '@/shared/components/Navbar';
+import { useTranslation } from 'react-i18next';
 
 export default function SubscriptionConfirmedPage() {
+  const { t } = useTranslation(['newsletter', 'landing', 'common']);
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const email = searchParams.get('email');
@@ -65,9 +67,9 @@ export default function SubscriptionConfirmedPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
                 <CheckCircle2 className="w-8 h-8 text-green-600" />
               </div>
-              <h1 className="text-3xl font-bold text-farm-green mb-4">Підписку підтверджено!</h1>
+              <h1 className="text-3xl font-bold text-farm-green mb-4">{t('newsletter:confirmed.title')}!</h1>
               <p className="text-farm-wood mb-10 opacity-80">
-                Тепер ви будете першими дізнаватися про наші новинки та рецепти. Дякуємо, що ви з нами!
+                {t('newsletter:confirmed.description')}
               </p>
             </>
           ) : (
@@ -75,15 +77,15 @@ export default function SubscriptionConfirmedPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
                 <XCircle className="w-8 h-8 text-red-600" />
               </div>
-              <h1 className="text-3xl font-bold text-farm-berry mb-4">Упс! Сталася помилка</h1>
+              <h1 className="text-3xl font-bold text-farm-berry mb-4">{t('common:toasts.error')}</h1>
               <p className="text-farm-wood mb-10 opacity-80">
-                Ми не змогли підтвердити вашу підписку. Посилання може бути застарілим або невалідним.
+                {t('newsletter:subscribe.errorToast')}
               </p>
             </>
           )}
           
           <Link to="/">
-            <Button className="w-full">На головну</Button>
+            <Button className="w-full">{t('newsletter:confirmed.toHome')}</Button>
           </Link>
         </div>
       </main>

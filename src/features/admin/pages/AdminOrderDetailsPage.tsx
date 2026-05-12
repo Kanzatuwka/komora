@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOrderDetails } from '../../account/hooks/useAccountData';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { formatPrice } from '@/shared/lib/format';
 import { db } from '@/shared/lib/firebase';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Navbar } from '@/shared/components/Navbar';
@@ -31,6 +33,7 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function AdminOrderDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const { order, loading } = useOrderDetails(id || '');
   const { showToast } = useToast();
   const [cancelReason, setCancelReason] = useState(order?.cancelReason || '');
@@ -80,7 +83,7 @@ export default function AdminOrderDetailsPage() {
             params: {
               customerName: order.userName,
               orderNumber: order.id.slice(0, 8).toUpperCase(),
-              total: order.total.toFixed(2),
+              total: formatPrice(order.total, order.currency || 'UAH', lang),
               cancelReason: newStatus === 'cancelled' ? cancelReason : ''
             }
           });
@@ -148,16 +151,16 @@ export default function AdminOrderDetailsPage() {
                         <p className="font-bold text-gray-900">
                           {typeof item.name === 'string' ? item.name : (item.name?.uk || 'Товар')}
                         </p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.price} грн / шт</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{formatPrice(item.price, order.currency, language)} / шт</p>
                       </div>
                     </div>
-                    <span className="font-bold text-gray-900">{item.price * item.quantity} грн</span>
+                    <span className="font-bold text-gray-900">{formatPrice(item.price * item.quantity, order.currency, language)}</span>
                   </div>
                 ))}
               </div>
               <div className="mt-10 pt-10 border-t border-gray-50 flex justify-between items-end">
                 <span className="text-gray-400 font-medium">Разом до сплати</span>
-                <span className="text-3xl font-bold text-farm-green">{order.total} грн</span>
+                <span className="text-3xl font-bold text-farm-green">{formatPrice(order.total, order.currency, language)}</span>
               </div>
             </div>
 

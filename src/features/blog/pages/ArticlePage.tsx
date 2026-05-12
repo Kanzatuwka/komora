@@ -5,24 +5,30 @@ import { Button } from '@/shared/components/Button';
 import { PageLoader } from '@/shared/components/Loader';
 import { ChevronLeft, Calendar, Tag, Share2, Folder } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getLocalizedValue } from '@/shared/lib/utils';
-import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { useCart } from '@/shared/contexts/CartContext';
+import { formatDate, formatPrice } from '@/shared/lib/format';
+import { pickLocale } from '@/shared/lib/i18nContent';
 import DOMPurify from 'dompurify';
 import { ArticleBody } from '../components/ArticleBody';
 import { motion } from 'motion/react';
 
 export default function ArticlePage() {
   const { id } = useParams();
-  const { i18n } = useTranslation();
+  const { t } = useTranslation(['blog', 'common']);
+  const { language } = useLanguage();
+  const { currency: currentCurrency } = useCurrency();
+  const { cartCurrency } = useCart();
+  const currency = cartCurrency || currentCurrency;
   const { article, loading } = useArticle(id || '');
   const { categories, loading: categoriesLoading } = useBlogCategories();
   const { products, loading: productsLoading } = useLinkedProducts(article?.linkedProductIds || []);
 
   if (loading || categoriesLoading) return <PageLoader />;
-  if (!article) return <div className="p-24 text-center">Статтю не знайдено</div>;
+  if (!article) return <div className="p-24 text-center">{t('blog:article.notFound')}</div>;
 
-  const sanitizedBody = DOMPurify.sanitize(getLocalizedValue(article.body, i18n.language));
+  const sanitizedBody = DOMPurify.sanitize(pickLocale(article.body, language));
   const category = categories.find(c => c.id === article.categoryId);
 
   return (
@@ -32,7 +38,7 @@ export default function ArticlePage() {
       <main className="max-w-4xl mx-auto px-4 pt-32 pb-24">
         <Link to="/blog" className="flex items-center gap-2 text-farm-wood hover:text-farm-green transition-colors mb-12">
           <ChevronLeft className="w-5 h-5" />
-          <span className="font-bold">До всіх статей</span>
+          <span className="font-bold">{t('blog:article.backToList')}</span>
         </Link>
 
         <article>
@@ -40,12 +46,12 @@ export default function ArticlePage() {
             <div className="flex flex-wrap gap-4 items-center mb-6">
               <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-farm-wood/50">
                 <Calendar className="w-4 h-4" />
-                {article.createdAt && format(article.createdAt.toDate(), 'd MMMM yyyy', { locale: uk })}
+                {article.createdAt && formatDate(article.createdAt, language)}
               </span>
               {category && (
                 <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-farm-green text-white px-3 py-1 rounded-full">
                   <Folder className="w-3 h-3" />
-                  {category.name}
+                  {pickLocale(category.name, language)}
                 </span>
               )}
               <div className="flex gap-2">
@@ -57,10 +63,10 @@ export default function ArticlePage() {
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-farm-green leading-tight mb-8">
-              {getLocalizedValue(article.title, i18n.language)}
+              {article.title}
             </h1>
             <p className="text-xl text-farm-wood opacity-70 leading-relaxed italic border-l-4 border-farm-berry pl-6">
-              {getLocalizedValue(article.excerpt, i18n.language)}
+              {article.excerpt}
             </p>
           </div>
 
@@ -78,7 +84,7 @@ export default function ArticlePage() {
           {/* Linked Products */}
           {!productsLoading && products.length > 0 && (
             <section className="bg-farm-green p-12 rounded-[3.5rem] text-white">
-              <h2 className="text-2xl font-bold mb-8">Спробуйте інгредієнти з нашої комори</h2>
+              <h2 className="text-2xl font-bold mb-8">{t('blog:article.tryIngredients')}</h2>
               <div className="grid sm:grid-cols-2 gap-6">
                 {products.map(product => (
                   <Link 
@@ -88,8 +94,8 @@ export default function ArticlePage() {
                   >
                     <img src={product.images?.[0] || undefined} className="w-20 h-20 rounded-2xl object-cover" alt="" />
                     <div className="ml-4 flex-1">
-                      <p className="font-bold text-lg group-hover:text-farm-cream transition-colors">{getLocalizedValue(product.name, i18n.language)}</p>
-                      <p className="text-farm-cream/60 text-sm">{typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} грн</p>
+                      <p className="font-bold text-lg group-hover:text-farm-cream transition-colors">{pickLocale(product.name, language)}</p>
+                      <p className="text-farm-cream/60 text-sm">{formatPrice(product.price, currency, language)}</p>
                     </div>
                   </Link>
                 ))}
@@ -100,13 +106,13 @@ export default function ArticlePage() {
           {/* Share */}
           <div className="mt-24 pt-12 border-t border-farm-wood/10 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-farm-wood">Поділитися:</span>
+              <span className="text-sm font-bold text-farm-wood">{t('blog:article.share')}</span>
               <button className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-farm-cream transition-colors">
                 <Share2 className="w-5 h-5 text-farm-green" />
               </button>
             </div>
             <Link to="/blog">
-              <Button variant="outline">Усі статті</Button>
+              <Button variant="outline">{t('blog:article.allArticles')}</Button>
             </Link>
           </div>
         </article>

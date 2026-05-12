@@ -10,7 +10,7 @@ export function useSubscribe() {
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
   const { createNotification } = useNotifications();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['newsletter', 'common']);
 
   const subscribe = async (email: string) => {
     if (!email) return;
@@ -24,9 +24,9 @@ export function useSubscribe() {
       if (existing.exists()) {
         const status = existing.data().status;
         if (status === 'confirmed') {
-          showToast({ message: 'Ви вже підписані', type: 'info' });
+          showToast({ message: t('newsletter:subscribe.alreadySubscribedToast'), type: 'info' });
         } else {
-          showToast({ message: 'Лист підтвердження вже надіслано — перевірте пошту', type: 'info' });
+          showToast({ message: t('newsletter:subscribe.pendingToast'), type: 'info' });
         }
         return;
       }
@@ -58,7 +58,7 @@ export function useSubscribe() {
       }
 
       showToast({
-        message: 'Перевірте пошту — ми надіслали листа для підтвердження',
+        message: t('newsletter:subscribe.checkEmailToast'),
         type: 'success',
         duration: 5000,
       });
@@ -66,7 +66,7 @@ export function useSubscribe() {
       return true;
     } catch (err) {
       console.error(err);
-      showToast({ message: 'Не вдалося підписатися. Спробуйте пізніше або перевірте налаштування API.', type: 'error' });
+      showToast({ message: t('newsletter:subscribe.errorToast'), type: 'error' });
       return false;
     } finally {
       setLoading(false);

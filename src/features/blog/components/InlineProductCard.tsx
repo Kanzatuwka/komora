@@ -6,7 +6,10 @@ import { useToast } from '@/shared/contexts/ToastContext';
 import { ShoppingCart, ArrowRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getLocalizedValue } from '@/shared/lib/utils';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useCurrency } from '@/shared/contexts/CurrencyContext';
+import { formatPrice } from '@/shared/lib/format';
+import { pickLocale } from '@/shared/lib/i18nContent';
 
 interface InlineProductCardProps {
   productId: string;
@@ -14,9 +17,12 @@ interface InlineProductCardProps {
 
 export function InlineProductCard({ productId }: InlineProductCardProps) {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t } = useTranslation(['shop', 'common']);
+  const { language } = useLanguage();
+  const { currency: currentCurrency } = useCurrency();
   const { product, loading } = useProduct(productId);
-  const { addItem } = useCart();
+  const { addItem, cartCurrency } = useCart();
+  const currency = cartCurrency || currentCurrency;
   const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
 
@@ -33,12 +39,12 @@ export function InlineProductCard({ productId }: InlineProductCardProps) {
   const handleAddToCart = () => {
     setAdding(true);
     addItem(product, 1);
-    const productName = getLocalizedValue(product.name, i18n.language);
+    const productName = pickLocale(product.name, language);
     showToast({ 
-      message: `${productName} додано до кошика`, 
+      message: t('shop:product.addedToCart', { name: productName }), 
       type: 'success',
       action: {
-        label: 'В кошик',
+        label: t('shop:product.viewCart'),
         onClick: () => navigate('/cart')
       }
     });
@@ -51,18 +57,18 @@ export function InlineProductCard({ productId }: InlineProductCardProps) {
         <img 
           src={product.images?.[0] || 'https://images.unsplash.com/photo-1558236714-d1ae4c311689?auto=format&fit=crop&q=80'} 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-          alt={getLocalizedValue(product.name, i18n.language)} 
+          alt={pickLocale(product.name, language)} 
         />
       </div>
       
       <div className="flex-1 text-center sm:text-left">
-        <h3 className="text-xl font-bold text-farm-green mb-2">{getLocalizedValue(product.name, i18n.language)}</h3>
-        <p className="text-2xl font-bold text-farm-berry mb-6">{typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} грн</p>
+        <h3 className="text-xl font-bold text-farm-green mb-2">{pickLocale(product.name, language)}</h3>
+        <p className="text-2xl font-bold text-farm-berry mb-6">{formatPrice(product.price, currency, language)}</p>
         
         <div className="flex flex-col xs:flex-row gap-3">
           <Link to={`/shop/${product.id}`} className="flex-1">
             <Button variant="outline" className="w-full rounded-2xl flex items-center justify-center gap-2">
-              До товару <ArrowRight className="w-4 h-4" />
+              {t('shop:cart.toShop')} <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
           <Button 
@@ -71,11 +77,11 @@ export function InlineProductCard({ productId }: InlineProductCardProps) {
             className="flex-1 rounded-2xl flex items-center justify-center gap-2"
           >
             {adding ? (
-              <>✓ Додано</>
+              <>✓ {t('shop:product.added')}</>
             ) : (
               <>
                 <ShoppingCart className="w-4 h-4" /> 
-                {product.inStock ? 'В кошик' : 'Немає'}
+                {product.inStock ? t('shop:product.addToCart') : t('shop:product.outOfStock')}
               </>
             )}
           </Button>

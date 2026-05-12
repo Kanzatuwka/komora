@@ -21,7 +21,7 @@ import { pickLocale } from '@/shared/lib/i18nContent';
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  const { items, total, clearCart } = useCart();
+  const { items, total, clearCart, cartCurrency } = useCart();
   const { showToast } = useToast();
   const { createOrder, loading: orderLoading } = useCreateOrder();
   const { addresses: pickupPoints } = usePickupAddresses();
@@ -29,7 +29,8 @@ export default function CheckoutPage() {
   const { createNotification } = useNotifications();
   const { t, i18n } = useTranslation(['shop', 'common', 'account']);
   const { language } = useLanguage();
-  const { currency } = useCurrency();
+  const { currency: currentCurrency } = useCurrency();
+  const currency = cartCurrency || currentCurrency;
 
   const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup'>('delivery');
   const [formData, setFormData] = useState({
