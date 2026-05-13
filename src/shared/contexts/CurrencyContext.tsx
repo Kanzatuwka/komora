@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/shared/lib/firebase';
+import { db, handleFirestoreError, OperationType } from '@/shared/lib/firebase';
 import { useAuth } from './AuthContext';
 import { useLanguage } from './LanguageContext';
 
@@ -61,7 +61,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       try {
         await updateDoc(doc(db, 'users', user.uid), { preferredCurrency: c });
       } catch (error) {
-        console.error('Error updating user currency:', error);
+        handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
       }
     }
   };

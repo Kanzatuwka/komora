@@ -25,7 +25,7 @@ import { PageLoader } from '@/shared/components/Loader';
 import { cn } from '@/shared/lib/utils';
 
 export default function AdminProductsPage() {
-  const { t } = useTranslation('shop');
+  const { t, i18n } = useTranslation(['admin', 'shop']);
   const [filters, setFilters] = useState({ category: 'all', sortBy: 'newest' as const });
   const { products, loading } = useProducts(filters);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,16 +33,16 @@ export default function AdminProductsPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const filteredProducts = products.filter(p => {
-    const name = typeof p.name === 'string' ? p.name : (p.name?.uk || '');
+    const name = typeof p.name === 'string' ? p.name : (p.name?.[i18n.language] || p.name?.uk || '');
     return name.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const toggleFeatured = async (id: string, current: boolean) => {
     try {
       await updateDoc(doc(db, 'products', id), { featured: !current });
-      showToast({ message: 'Статус змінено', type: 'success' });
+      showToast({ message: t('admin:products.toasts.featuredToggled'), type: 'success' });
     } catch (err) {
-      showToast({ message: 'Помилка оновлення', type: 'error' });
+      showToast({ message: t('admin:products.toasts.genericError'), type: 'error' });
     }
   };
 
@@ -55,10 +55,10 @@ export default function AdminProductsPage() {
 
     try {
       await deleteDoc(doc(db, 'products', id));
-      showToast({ message: 'Товар видалено', type: 'success' });
+      showToast({ message: t('admin:products.toasts.deleted'), type: 'success' });
       setConfirmDeleteId(null);
     } catch (err) {
-      showToast({ message: 'Помилка видалення', type: 'error' });
+      showToast({ message: t('admin:products.toasts.deleteError'), type: 'error' });
     }
   };
 
@@ -68,11 +68,11 @@ export default function AdminProductsPage() {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Наші продукти</h1>
-          <p className="text-gray-500">Керуйте асортиментом вашої комори</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:products.title')}</h1>
+          <p className="text-gray-500">{t('admin:products.subtitle')}</p>
         </div>
         <Link to="/admin/products/new">
-          <Button icon={<Plus className="w-5 h-5" />}>Додати товар</Button>
+          <Button icon={<Plus className="w-5 h-5" />}>{t('admin:products.addNew')}</Button>
         </Link>
       </div>
 
@@ -84,7 +84,7 @@ export default function AdminProductsPage() {
             <input 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Пошук по назві..." 
+              placeholder={t('admin:products.searchPlaceholder')} 
               className="w-full bg-gray-50 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-farm-green/20 border border-transparent focus:border-farm-green/20"
             />
           </div>
@@ -94,10 +94,10 @@ export default function AdminProductsPage() {
               onChange={e => setFilters({ ...filters, category: e.target.value })}
               className="bg-gray-50 px-6 py-3 rounded-full text-sm font-bold border border-transparent focus:border-farm-green/20 focus:outline-none"
             >
-              <option value="all">{t('categories.all')}</option>
-              <option value="jam">{t('categories.jam')}</option>
-              <option value="sauce">{t('categories.sauce')}</option>
-              <option value="preserve">{t('categories.preserve')}</option>
+              <option value="all">{t('shop:categories.all')}</option>
+              <option value="jam">{t('shop:categories.jam')}</option>
+              <option value="sauce">{t('shop:categories.sauce')}</option>
+              <option value="preserve">{t('shop:categories.preserve')}</option>
             </select>
           </div>
         </div>
@@ -107,12 +107,12 @@ export default function AdminProductsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50">
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Товар</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Категорія</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Ціна</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Наявність</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Популярне</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Дії</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:products.table.product')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:products.table.category')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:products.table.price')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:products.table.stock')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:products.table.featured')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">{t('admin:products.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -123,7 +123,7 @@ export default function AdminProductsPage() {
                       <img src={product.images?.[0] || undefined} className="w-12 h-12 rounded-xl object-cover" alt="" />
                       <div>
                         <p className="font-bold text-gray-900 leading-none mb-1">
-                          {typeof product.name === 'string' ? product.name : (product.name?.uk || 'Noname')}
+                          {typeof product.name === 'string' ? product.name : (product.name?.[i18n.language] || product.name?.uk || 'Noname')}
                         </p>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ID: {product.id.slice(0, 8)}</p>
                       </div>
@@ -131,22 +131,22 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-8 py-6">
                     <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold capitalize">
-                      {t('categories.' + product.category)}
+                      {t('shop:categories.' + product.category)}
                     </span>
                   </td>
                   <td className="px-8 py-6">
                     <span className="font-bold text-gray-900">
-                      {typeof product.price === 'number' ? product.price : (product.price?.UAH || 0)} ₴
+                      {typeof product.price === 'number' ? product.price : (product.price?.[i18n.language === 'uk' ? 'UAH' : i18n.language === 'en' ? 'USD' : 'EUR'] || product.price?.UAH || 0)} {i18n.language === 'uk' ? '₴' : i18n.language === 'en' ? '$' : '€'}
                     </span>
                   </td>
                   <td className="px-8 py-6">
                     {product.inStock ? (
                       <span className="flex items-center gap-1.5 text-green-600 text-xs font-bold">
-                        <CheckCircle2 className="w-4 h-4" /> Є в наявності
+                        <CheckCircle2 className="w-4 h-4" /> {t('admin:products.stock.available')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1.5 text-gray-400 text-xs font-bold font-italic">
-                        <XCircle className="w-4 h-4" /> Немає
+                        <XCircle className="w-4 h-4" /> {t('admin:products.stock.unavailable')}
                       </span>
                     )}
                   </td>
@@ -183,7 +183,7 @@ export default function AdminProductsPage() {
                         )}
                       >
                         {confirmDeleteId === product.id ? (
-                          <span className="text-[10px] font-bold uppercase whitespace-nowrap">Підтвердити</span>
+                          <span className="text-[10px] font-bold uppercase whitespace-nowrap">{t('admin:blogAdmin.confirm')}</span>
                         ) : (
                           <Trash2 className="w-5 h-5" />
                         )}
@@ -195,7 +195,7 @@ export default function AdminProductsPage() {
               {filteredProducts.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-8 py-20 text-center text-gray-400 italic">
-                    Товарів не знайдено
+                    {t('admin:search.empty')}
                   </td>
                 </tr>
               )}

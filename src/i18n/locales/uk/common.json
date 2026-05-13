@@ -8,7 +8,9 @@
     "admin": "Адмін",
     "login": "Увійти",
     "logout": "Вийти",
-    "register": "Зареєструватися"
+    "register": "Зареєструватися",
+    "language": "Мова",
+    "currency": "Валюта"
   },
   "actions": {
     "save": "Зберегти",

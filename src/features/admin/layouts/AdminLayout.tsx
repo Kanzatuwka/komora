@@ -22,8 +22,10 @@ import { AdminSearch } from '../components/AdminSearch';
 import { AdminNotifications } from '../components/AdminNotifications';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
 import { CurrencySwitcher } from '@/shared/components/CurrencySwitcher';
+import { useTranslation } from 'react-i18next';
 
 export function AdminLayout() {
+  const { t } = useTranslation('admin');
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -32,16 +34,16 @@ export function AdminLayout() {
   if (!user) return null; // Safety check for TS even if it shouldn't happen
 
   const menuItems = [
-    { label: 'Статистика', path: '/admin', icon: BarChart3 },
-    { label: 'Замовлення', path: '/admin/orders', icon: ShoppingBag },
-    { label: 'Продукти', path: '/admin/products', icon: Package },
-    { label: 'Блог', path: '/admin/blog', icon: FileText },
-    { label: 'Категорії блогу', path: '/admin/blog/categories', icon: Settings },
-    { label: 'Підписники', path: '/admin/subscribers', icon: Users },
-    { label: 'Розсилка', path: '/admin/newsletter', icon: Bell },
-    { label: 'Налаштування', path: '/admin/settings', icon: Settings },
-    { label: 'Бекап', path: '/admin/backup', icon: Database },
-    { label: 'Міграція', path: '/admin/migrate', icon: Languages },
+    { label: t('sidebar.stats'), path: '/admin', icon: BarChart3 },
+    { label: t('sidebar.orders'), path: '/admin/orders', icon: ShoppingBag },
+    { label: t('sidebar.products'), path: '/admin/products', icon: Package },
+    { label: t('sidebar.blog'), path: '/admin/blog', icon: FileText },
+    { label: t('sidebar.blogCategories'), path: '/admin/blog/categories', icon: Settings },
+    { label: t('sidebar.subscribers'), path: '/admin/subscribers', icon: Users },
+    { label: t('sidebar.newsletter'), path: '/admin/newsletter', icon: Bell },
+    { label: t('sidebar.settings'), path: '/admin/settings', icon: Settings },
+    { label: t('sidebar.backup'), path: '/admin/backup', icon: Database },
+    { label: t('sidebar.migration'), path: '/admin/migrate', icon: Languages },
   ];
 
   return (
@@ -88,7 +90,7 @@ export function AdminLayout() {
             onClick={logout}
             className="flex items-center gap-3 px-4 py-3 rounded-2xl font-medium text-white/50 hover:text-white hover:bg-white/10 transition-all"
           >
-            <LogOut className="w-5 h-5" /> Вийти
+            <LogOut className="w-5 h-5" /> {t('sidebar.logout')}
           </button>
         </div>
       </aside>
@@ -113,7 +115,7 @@ export function AdminLayout() {
             <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-bold text-gray-900 leading-none mb-1">{user.displayName || 'Admin'}</p>
-                <p className="text-[10px] font-bold text-farm-green leading-none">Власник</p>
+                <p className="text-[10px] font-bold text-farm-green leading-none">{t('sidebar.role')}</p>
               </div>
               <div className="w-10 h-10 bg-farm-green/10 rounded-full flex items-center justify-center text-farm-green font-bold">
                 {user.displayName?.[0] || 'A'}

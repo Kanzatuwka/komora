@@ -45,12 +45,15 @@ export function useAuthActions() {
       
       if (!snap.exists()) {
         const isAdmin = result.user.email === 'olexandr.prykhodko@gmail.com';
+        const defaultCurrency = currentLanguage === 'en' ? 'USD' : currentLanguage === 'de' ? 'EUR' : 'UAH';
+        
         await setDoc(userRef, {
           email: result.user.email,
           name: result.user.displayName || '',
           phone: '',
           role: isAdmin ? 'admin' : 'user',
           language: currentLanguage,
+          preferredCurrency: defaultCurrency,
           createdAt: serverTimestamp(),
         });
       } else {
@@ -72,12 +75,16 @@ export function useAuthActions() {
     try {
       const cred: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
       
+      const regLang = language || currentLanguage;
+      const defaultCurrency = regLang === 'en' ? 'USD' : regLang === 'de' ? 'EUR' : 'UAH';
+
       await setDoc(doc(db, 'users', cred.user.uid), {
         email,
         name,
         phone: '',
         role: 'user',
-        language: language || currentLanguage,
+        language: regLang,
+        preferredCurrency: defaultCurrency,
         createdAt: serverTimestamp(),
       });
       

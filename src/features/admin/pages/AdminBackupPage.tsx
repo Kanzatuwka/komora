@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { db } from '@/shared/lib/firebase';
+import { useTranslation } from 'react-i18next';
 import { 
   collection, 
   getDocs, 
@@ -7,6 +8,8 @@ import {
   doc, 
   Timestamp
 } from 'firebase/firestore';
+
+// ... (rest of the imports)
 import { Download, Upload, AlertTriangle, Loader2, Database } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from '@/shared/components/Button';
@@ -67,6 +70,7 @@ function processForImport(data: any): any {
 }
 
 export default function AdminBackupPage() {
+  const { t } = useTranslation('admin');
   const { showToast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -95,7 +99,7 @@ export default function AdminBackupPage() {
           totalDocs += snapshot.size;
         } catch (err) {
           console.error(`Error exporting collection ${collName}:`, err);
-          throw new Error(`Помилка експорту колекції ${collName}: ${err instanceof Error ? err.message : String(err)}`);
+          throw new Error(t('backup.toasts.exportCollError', { collName, error: err instanceof Error ? err.message : String(err) }));
         }
       }
 
@@ -110,11 +114,11 @@ export default function AdminBackupPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      showToast({ message: `Бекап завантажено: ${totalDocs} документів з ${COLLECTIONS.length} колекцій`, type: 'success' });
+      showToast({ message: t('backup.toasts.exportSuccess', { docsCount: totalDocs, collsCount: COLLECTIONS.length }), type: 'success' });
     } catch (error) {
       console.error('Export error:', error);
       showToast({ 
-        message: error instanceof Error ? error.message : 'Помилка при створенні бекапу', 
+        message: error instanceof Error ? error.message : t('backup.toasts.exportError'), 
         type: 'error' 
       });
     } finally {
@@ -136,7 +140,7 @@ export default function AdminBackupPage() {
         setImportData(json);
         setShowConfirmModal(true);
       } catch (error) {
-        showToast({ message: 'Невірний формат файлу', type: 'error' });
+        showToast({ message: t('backup.toasts.invalidFile'), type: 'error' });
       }
     };
     reader.readAsText(file);
@@ -181,10 +185,10 @@ export default function AdminBackupPage() {
         setProgress(Math.round((completedOperations / totalOperations) * 100));
       }
 
-      showToast({ message: 'Дані успішно відновлено!', type: 'success' });
+      showToast({ message: t('backup.toasts.importSuccess'), type: 'success' });
     } catch (error) {
       console.error('Restore error:', error);
-      showToast({ message: 'Сталася помилка при відновленні даних', type: 'error' });
+      showToast({ message: t('backup.toasts.importError'), type: 'error' });
     } finally {
       setIsImporting(false);
       setImportData(null);
@@ -196,8 +200,8 @@ export default function AdminBackupPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-farm-green mb-2">Бекап та відновлення даних</h1>
-        <p className="text-farm-wood/70">Інструмент для експорту та імпорту даних Firestore. Використовуйте з обережністю.</p>
+        <h1 className="text-3xl font-bold text-farm-green mb-2">{t('backup.title')}</h1>
+        <p className="text-farm-wood/70">{t('backup.subtitle')}</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -206,9 +210,9 @@ export default function AdminBackupPage() {
           <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
             <Download className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold text-farm-green mb-4">Завантажити бекап</h2>
+          <h2 className="text-xl font-bold text-farm-green mb-4">{t('backup.export.title')}</h2>
           <p className="text-gray-500 mb-8 flex-1">
-            Створіть повну копію бази даних у форматі JSON. Це включає товари, статті, замовлення та налаштування.
+            {t('backup.export.description')}
           </p>
           <Button 
             className="w-full" 
@@ -216,7 +220,7 @@ export default function AdminBackupPage() {
             disabled={isExporting || isImporting}
           >
             {isExporting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Download className="w-5 h-5 mr-2" />}
-            {isExporting ? 'Обробка...' : 'Експортувати в JSON'}
+            {isExporting ? t('backup.export.processing') : t('backup.export.button')}
           </Button>
         </div>
 
@@ -225,9 +229,9 @@ export default function AdminBackupPage() {
           <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6">
             <Upload className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold text-farm-green mb-4">Відновити з файлу</h2>
+          <h2 className="text-xl font-bold text-farm-green mb-4">{t('backup.import.title')}</h2>
           <p className="text-gray-500 mb-8 flex-1">
-            Завантажте раніше створений JSON файл, щоб відновити стан бази даних. Це перезапише існуючі документи з такими ж ID.
+            {t('backup.import.description')}
           </p>
           <input 
             type="file" 
@@ -243,7 +247,7 @@ export default function AdminBackupPage() {
             disabled={isExporting || isImporting}
           >
             {isImporting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Upload className="w-5 h-5 mr-2" />}
-            {isImporting ? `Відновлення (${progress}%)` : 'Вибрати файл...'}
+            {isImporting ? `${t('backup.import.processing')} (${progress}%)` : t('backup.import.button')}
           </Button>
         </div>
       </div>
@@ -251,7 +255,7 @@ export default function AdminBackupPage() {
       {isImporting && (
         <div className="mt-8 p-6 bg-white rounded-3xl border border-gray-100 shadow-sm animate-pulse">
           <div className="flex justify-between items-center mb-4">
-            <span className="font-bold text-farm-green">Йде процес відновлення...</span>
+            <span className="font-bold text-farm-green">{t('backup.import.progressLabel')}</span>
             <span className="text-farm-green font-black">{progress}%</span>
           </div>
           <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden">
@@ -268,17 +272,17 @@ export default function AdminBackupPage() {
       <Modal 
         isOpen={showConfirmModal} 
         onClose={() => setShowConfirmModal(false)}
-        title="Підтвердження відновлення"
+        title={t('backup.modal.title')}
       >
         <div className="text-center">
           <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertTriangle className="w-8 h-8" />
           </div>
-          <p className="text-lg text-gray-700 mb-6">
-            Це перезапише <span className="font-bold text-red-600">{totalImportDocs}</span> документів у вашій базі даних. Це може призвести до незворотної зміни даних.
+          <p className="text-lg text-gray-700 mb-6 font-medium">
+            {t('backup.modal.warning', { docsCount: totalImportDocs })}
           </p>
           <div className="p-4 bg-gray-50 rounded-2xl mb-8 text-left text-sm text-gray-500">
-            <p className="font-bold mb-2">Об'єкти для відновлення:</p>
+            <p className="font-bold mb-2 uppercase tracking-widest text-[10px]">{t('backup.modal.objectsLabel')}</p>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
               {importData && Object.entries(importData.collections).map(([name, docs]: [string, any]) => (
                 docs.length > 0 && <li key={name}>• {name}: {docs.length}</li>
@@ -291,13 +295,13 @@ export default function AdminBackupPage() {
               className="flex-1" 
               onClick={() => setShowConfirmModal(false)}
             >
-              Скасувати
+              {t('backup.modal.cancel')}
             </Button>
             <Button 
               className="flex-1 bg-red-600 hover:bg-red-700 border-red-600" 
               onClick={handleRestore}
             >
-              Так, продовжити
+              {t('backup.modal.confirm')}
             </Button>
           </div>
         </div>

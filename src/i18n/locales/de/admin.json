@@ -5,7 +5,387 @@
     "in_transitMessage": "Ihre Bestellung wurde zur Lieferung übergeben.",
     "deliveredMessage": "Bestellung geliefert. Vielen Dank, dass Sie sich für Komora entschieden haben!"
   },
+  "sidebar": {
+    "stats": "Statistiken",
+    "orders": "Bestellungen",
+    "products": "Produkte",
+    "blog": "Blog",
+    "blogCategories": "Blog-Kategorien",
+    "subscribers": "Abonnenten",
+    "newsletter": "Newsletter",
+    "settings": "Einstellungen",
+    "backup": "Backup",
+    "migration": "Migration",
+    "logout": "Abmelden",
+    "role": "Inhaber"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "new": "neu",
+    "allRead": "Alles gelesen",
+    "markAllRead": "Alle als gelesen markieren",
+    "loading": "Laden...",
+    "accessError": "Zugriffsfehler",
+    "justNow": "Gerade eben",
+    "read": "Gelesen",
+    "view": "Ansehen",
+    "empty": "Keine Benachrichtigungen",
+    "emptyDescription": "Ihr Posteingang ist leer",
+    "settings": "Benachrichtigungseinstellungen"
+  },
+  "search": {
+    "placeholder": "Suchen (Produkte, Artikel, Bestellungen)...",
+    "searching": "Suchen...",
+    "results": "Suchergebnisse",
+    "empty": "Nichts gefunden",
+    "tryAnother": "Versuchen Sie eine andere Anfrage"
+  },
+  "dashboard": {
+    "title": "Admin-Bereich",
+    "subtitle": "Übersicht Ihrer Komora-Aktivitäten",
+    "checkNotifications": "Benachrichtigungen prüfen",
+    "stats": {
+      "newOrders": "Neue Bestellungen",
+      "ordersMonth": "Bestellungen (30 Tage)",
+      "subscribers": "Abonnenten",
+      "contentCount": "Artikel · Produkte"
+    },
+    "quickActions": {
+      "writeArticle": "Artikel schreiben",
+      "addProduct": "Produkt hinzufügen",
+      "sendNewsletter": "Newsletter senden"
+    },
+    "recentOrders": "Aktuelle Bestellungen",
+    "allOrders": "Alle Bestellungen",
+    "noOrders": "Noch keine Bestellungen"
+  },
+  "orders": {
+    "title": "Bestellungen",
+    "subtitle": "Bestellabwicklung und Kundenmanagement",
+    "searchPlaceholder": "Suche nach Nummer oder Kunde...",
+    "filters": {
+      "all": "Alle",
+      "new": "Neu",
+      "confirmed": "Bestätigt",
+      "in_transit": "Unterwegs",
+      "delivered": "Geliefert",
+      "cancelled": "Storniert"
+    },
+    "table": {
+      "number": "Bestell-Nr.",
+      "client": "Kunde",
+      "date": "Datum",
+      "total": "Summe",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "toasts": {
+      "statusChanged": "Status geändert auf {{status}}",
+      "updateError": "Fehler beim Aktualisieren",
+      "cancelReasonRequired": "Bitte geben Sie einen Stornierungsgrund an"
+    },
+    "cancelModal": {
+      "title": "Bestellung stornieren",
+      "warning": "Sie stornieren die Bestellung",
+      "description": "Diese Aktion sendet eine Stornierungsmitteilung an den Kunden.",
+      "reasonLabel": "Stornierungsgrund",
+      "reasonPlaceholder": "Geben Sie einen Grund für den Kunden an (z. B. Artikel nicht vorrätig)",
+      "confirm": "Stornierung bestätigen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "orderDetails": {
+    "notFound": "Bestellung nicht gefunden",
+    "backToList": "Zurück zur Liste",
+    "items": "Bestellinhalt",
+    "totalToPay": "Gesamtbetrag",
+    "clientComment": "Kundenkommentar:",
+    "history": "Bestellverlauf",
+    "created": "Bestellung erstellt",
+    "lastUpdate": "Letzte Änderung",
+    "client": "Kunde",
+    "changeStatus": "Status ändern"
+  },
+  "products": {
+    "title": "Produkte & Waren",
+    "subtitle": "Verwalten Sie Ihr Komora-Sortiment",
+    "addNew": "Produkt hinzufügen",
+    "searchPlaceholder": "Suche nach Name...",
+    "table": {
+      "product": "Produkt",
+      "category": "Kategorie",
+      "price": "Preis",
+      "stock": "Verfügbarkeit",
+      "featured": "Beliebt",
+      "actions": "Aktionen"
+    },
+    "stock": {
+      "available": "Vorrätig",
+      "unavailable": "Nicht vorrätig"
+    },
+    "toasts": {
+      "featuredToggled": "Top-Produkt Status aktualisiert",
+      "deleted": "Produkt gelöscht",
+      "deleteError": "Fehler beim Löschen",
+      "genericError": "Fehler"
+    }
+  },
+  "productForm": {
+    "backToList": "Zurück zur Liste",
+    "editTitle": "Produkt bearbeiten",
+    "newTitle": "Neues Produkt",
+    "nameLabel": "Name",
+    "descriptionLabel": "Beschreibung",
+    "priceLabel": "Basispreis (UAH)",
+    "priceEUR": "Preis in EUR",
+    "priceUSD": "Preis in USD",
+    "categoryLabel": "Kategorie",
+    "noCategory": "Keine Kategorie",
+    "unitsLabel": "Maßeinheiten (z. B. Stk, 500g, 1l)",
+    "inStock": "Verfügbarkeit",
+    "inStockHelp": "Im Shop anzeigen",
+    "featured": "Beliebtes Produkt",
+    "featuredHelp": "Auf der Hauptseite anzeigen",
+    "settings": "Einstellungen",
+    "linkedArticles": "Verknüpfte Artikel (Rezepte)",
+    "saving": "Speichern...",
+    "save": "Produkt speichern",
+    "cancel": "Abbrechen",
+    "toasts": {
+      "imageUploaded": "Bild hochgeladen",
+      "imageRecommendation": "Empfohlen: quadratische Bilder bis 5MB.",
+      "uploadError": "Fehler beim Hochladen",
+      "saved": "Produkt gespeichert",
+      "saveError": "Fehler beim Speichern",
+      "requiredFields": "Name (UA), Beschreibung (UA) und Preis (UAH) sind erforderlich"
+    }
+  },
+  "blogAdmin": {
+    "title": "Blog & Rezepte",
+    "subtitle": "Teilen Sie Ihre Komora-Geschichten",
+    "addNew": "Neuer Artikel",
+    "searchPlaceholder": "Suche nach Titel...",
+    "table": {
+      "article": "Artikel",
+      "tags": "Tags",
+      "date": "Datum",
+      "status": "Status",
+      "featured": "Beliebt",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "published": "Veröffentlicht",
+      "draft": "Entwurf"
+    },
+    "toasts": {
+      "statusChanged": "Status geändert",
+      "updateError": "Fehler beim Aktualisieren",
+      "deleted": "Artikel gelöscht",
+      "deleteError": "Fehler beim Löschen"
+    },
+    "confirm": "Bestätigen"
+  },
+  "articleForm": {
+    "backToList": "Zurück zur Liste",
+    "editTitle": "Artikel bearbeiten",
+    "newTitle": "Neuer Artikel",
+    "titleLabel": "Titel",
+    "excerptLabel": "Kurzbeschreibung",
+    "bodyLabel": "Artikeltext",
+    "coverHeader": "Titelbild",
+    "noPhoto": "Kein Foto",
+    "changeCover": "Ändern",
+    "categoryLabel": "Kategorie",
+    "noCategory": "Keine Kategorie",
+    "publish": "Veröffentlichen",
+    "featured": "Beliebt",
+    "linkedProducts": "Produkte im Rezept",
+    "saving": "Speichern...",
+    "save": "Artikel speichern",
+    "cancel": "Abbrechen",
+    "insertProduct": "Produktkarte",
+    "insertProductModal": "Produkt in Text einfügen",
+    "productSearchPlaceholder": "Produkt nach Name suchen...",
+    "select": "Auswählen",
+    "noProductsFound": "Keine Produkte gefunden",
+    "toasts": {
+      "coverUploaded": "Titelbild hochgeladen",
+      "uploadError": "Fehler beim Hochladen",
+      "requiredFields": "Titel und andere Felder sind erforderlich"
+    }
+  },
+  "blogCategoriesAdmin": {
+    "title": "Blog-Kategorien",
+    "newCategoryLabel": "Name der neuen Kategorie",
+    "addButton": "Kategorie hinzufügen",
+    "empty": "Noch keine Kategorien erstellt",
+    "confirm": "Bestätigen",
+    "toasts": {
+      "nameRequired": "Name ist erforderlich",
+      "added": "Kategorie hinzugefügt",
+      "deleted": "Gelöscht",
+      "error": "Fehler"
+    }
+  },
+  "subscribers": {
+    "title": "Abonnenten",
+    "subtitle": "Kontaktdatenbank für den Newsletter-Versand",
+    "table": {
+      "email": "E-Mail",
+      "status": "Status",
+      "date": "Abonnementdatum",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "confirmed": "Bestätigt",
+      "pending": "Ausstehend"
+    },
+    "confirm": "Bestätigen",
+    "empty": "Die Liste ist leer",
+    "toasts": {
+      "deleted": "Abonnent gelöscht",
+      "deleteError": "Fehler beim Löschen"
+    }
+  },
   "newsletter": {
-    "subject": "Neues Rezept: {{title}}"
+    "title": "Newsletter",
+    "stats": {
+      "recipients": "{{count}} Empfänger"
+    },
+    "tabs": {
+      "compose": "Erstellen",
+      "history": "Verlauf"
+    },
+    "composer": {
+      "segmentsLabel": "Zielgruppen:",
+      "subjectTemplate": "Unser neues Rezept: {{title}} 🍓",
+      "subjectLabel": "E-Mail-Betreff",
+      "subjectPlaceholder": "z.B. Unser neues leckeres Rezept...",
+      "introLabel": "Einleitungstext",
+      "introPlaceholder": "Schreiben Sie ein paar begrüßende Worte...",
+      "previewButton": "Vorschau",
+      "previewTitle": "Newsletter-Vorschau",
+      "closePreview": "Schließen",
+      "sendButton": "An alle senden",
+      "confirmSendButton": "Bestätigen ({{count}} Segmente)",
+      "dynamicArticleTitle": "Rezept auswählen",
+      "dynamicArticleSubtitle": "Daten (Foto, Titel, Beschreibung) werden automatisch übernommen"
+    },
+    "history": {
+      "recent": "Gerade eben",
+      "empty": "Der Newsletter-Verlauf ist leer"
+    },
+    "toasts": {
+      "noSubscribers": "Keine Abonnenten in den ausgewählten Segmenten",
+      "sending": "Wird gesendet...",
+      "sent": "Erfolgreich an {{count}} Abonnenten gesendet",
+      "error": "Fehler beim Senden"
+    },
+    "email": {
+      "tryProducts": "Probieren Sie diese Produkte aus dem Rezept:",
+      "orderNow": "Jetzt bestellen",
+      "unsubscribeNote": "Sie haben diese E-Mail erhalten, weil Sie den Komora-Newsletter abonniert haben.",
+      "readRecipe": "Rezept lesen"
+    }
+  },
+  "settings": {
+    "title": "Plattform-Einstellungen",
+    "saveAll": "Alles speichern",
+    "sections": {
+      "hero": "Hero-Bereich",
+      "about": "Über uns",
+      "pickup": "Abholung"
+    },
+    "hero": {
+      "title": "Titel",
+      "subtitle": "Untertitel",
+      "ctaText": "CTA-Text",
+      "bgImage": "Hintergrundbild"
+    },
+    "pickup": {
+      "empty": "Keine Abholstellen hinzugefügt",
+      "editTitle": "Punkt bearbeiten",
+      "addTitle": "Abholstelle hinzufügen",
+      "saveButton": "Punkt speichern"
+    }
+  },
+  "backup": {
+    "title": "Backup & Datenwiederherstellung",
+    "description": "Ein Tool zum Exportieren und Importieren aller Shop-Daten (Firestore). Es wird empfohlen, vor größeren Änderungen ein Backup zu erstellen.",
+    "toasts": {
+      "exportSuccess": "Daten erfolgreich exportiert",
+      "exportError": "Fehler beim Exportieren",
+      "importError": "Fehler beim Importieren",
+      "invalidFile": "Ungültiges Dateiformat",
+      "importSuccess": "Daten erfolgreich wiederhergestellt!"
+    },
+    "export": {
+      "title": "Datenexport",
+      "description": "Laden Sie alle Sammlungen im JSON-Format als einzelne Datei herunter.",
+      "button": "Backup herunterladen (.json)"
+    },
+    "import": {
+      "title": "Datenwiederherstellung",
+      "description": "Laden Sie eine zuvor erstellte Backup-Datei hoch, um die Datenbank wiederherzustellen.",
+      "dropzoneTitle": "Datei hierher ziehen oder klicken",
+      "dropzoneDescription": "Nur .json-Dateien, die von diesem System generiert wurden"
+    },
+    "progress": {
+      "title": "Wiederherstellung läuft",
+      "description": "Bitte schließen Sie den Tab nicht, bis der Vorgang abgeschlossen ist.",
+      "label": "Datensätze wiederhergestellt:"
+    },
+    "modal": {
+      "title": "Wiederherstellung bestätigen",
+      "description": "Sind Sie sicher? Diese Aktion wird vorhandene Daten in den Sammlungen VOLLSTÄNDIG mit dem Backup ÜBERSCHREIBEN. Dies kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "confirm": "Ja, wiederherstellen"
+    }
+  },
+  "migration": {
+    "title": "Migration auf i18n + multi-currency",
+    "subtitle": "Ein Tool zum Konvertieren vorhandener Daten in das neue Format (Sprach- und Währungsunterstützung).",
+    "warning": {
+      "title": "ACHTUNG: DIES IST EIN IRREVERSIBLER VORGANG",
+      "step1": "Erstellen Sie vor der Ausführung immer ein Backup über /admin/backup",
+      "step2": "Schließen Sie den Tab nicht und trennen Sie die Internetverbindung während des Vorgangs nicht",
+      "step3": "Führen Sie zuerst einen 'Testlauf' durch, um dies vor der echten Migration zu überprüfen"
+    },
+    "buttons": {
+      "dry": "Testlauf",
+      "real": "Migration starten"
+    },
+    "modal": {
+      "title": "Migration bestätigen",
+      "question": "Sind Sie sicher?",
+      "description": "Dies wird Daten in der Datenbank ändern. Dies ist ein irreversibler Vorgang. Stellen Sie sicher, dass Sie ein Backup haben.",
+      "cancel": "Abbrechen",
+      "confirm": "Ja, starten"
+    },
+    "progress": {
+      "processing": "Verarbeitung von {{collection}}..."
+    },
+    "logsTitle": "Operationsprotokoll",
+    "logsCount": "{{count}} Datensätze",
+    "logsEmpty": "Warten auf Start...",
+    "types": {
+      "dry": "Testlauf",
+      "real": "Migration"
+    },
+    "logs": {
+      "start": "Starte {{type}}...",
+      "success": "{{type}} erfolgreich abgeschlossen!",
+      "error": "Migrations-FEHLER: {{error}}",
+      "checkingColl": "Überprüfung der Sammlung {{collName}}...",
+      "collProcessed": "Sammlung {{collName}} verarbeitet.",
+      "checkingDoc": "Überprüfung des Dokuments {{path}}...",
+      "docProcessed": "Dokument {{path}} verarbeitet.",
+      "collectingTags": "Sammeln eindeutiger Tags...",
+      "foundTags": "{{count}} eindeutige Tags gefunden."
+    },
+    "toasts": {
+      "success": "{{type}} abgeschlossen",
+      "error": "Migrationsfehler"
+    }
   }
 }

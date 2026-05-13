@@ -8,7 +8,9 @@
     "admin": "Admin",
     "login": "Anmelden",
     "logout": "Abmelden",
-    "register": "Registrieren"
+    "register": "Registrieren",
+    "language": "Sprache",
+    "currency": "Währung"
   },
   "actions": {
     "save": "Speichern",

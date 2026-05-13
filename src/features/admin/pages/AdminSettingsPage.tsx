@@ -9,6 +9,7 @@ import { Modal } from '@/shared/components/Modal';
 import { cn } from '@/shared/lib/utils';
 import { LocalizedField } from '../components/LocalizedField';
 import { SUPPORTED_LANGUAGES } from '@/i18n/config';
+import { useTranslation } from 'react-i18next';
 
 import { ImageUploader } from '../components/ImageUploader';
 
@@ -26,6 +27,7 @@ interface LandingSettings {
 }
 
 export default function AdminSettingsPage() {
+  const { t, i18n } = useTranslation('admin');
   const [settings, setSettings] = useState<LandingSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -78,13 +80,13 @@ export default function AdminSettingsPage() {
         }
       } catch (err) {
         console.error(err);
-        showToast({ message: 'Помилка завантаження налаштувань', type: 'error' });
+        showToast({ message: t('settings.toasts.loadError'), type: 'error' });
       } finally {
         setLoading(false);
       }
     };
     fetchSettings();
-  }, [showToast]);
+  }, [showToast, t]);
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,10 +94,10 @@ export default function AdminSettingsPage() {
     setSaving(true);
     try {
       await setDoc(doc(db, 'settings', 'landing'), settings);
-      showToast({ message: 'Налаштування збережено', type: 'success' });
+      showToast({ message: t('settings.toasts.saved'), type: 'success' });
     } catch (err) {
       console.error(err);
-      showToast({ message: 'Помилка збереження', type: 'error' });
+      showToast({ message: t('settings.toasts.saveError'), type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -107,10 +109,10 @@ export default function AdminSettingsPage() {
     try {
       if (editingPoint) {
         await updateDoc(doc(db, 'pickupAddresses', editingPoint.id), pointForm);
-        showToast({ message: 'Точку оновлено', type: 'success' });
+        showToast({ message: t('settings.toasts.pointUpdated'), type: 'success' });
       } else {
         await addDoc(collection(db, 'pickupAddresses'), pointForm);
-        showToast({ message: 'Точку додано', type: 'success' });
+        showToast({ message: t('settings.toasts.pointAdded'), type: 'success' });
       }
       setIsPointModalOpen(false);
       setEditingPoint(null);
@@ -120,7 +122,7 @@ export default function AdminSettingsPage() {
         workingHours: { uk: '', en: '', de: '' } 
       });
     } catch (err) {
-      showToast({ message: 'Помилка збереження точки', type: 'error' });
+      showToast({ message: t('settings.toasts.pointSaveError'), type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -135,10 +137,10 @@ export default function AdminSettingsPage() {
     
     try {
       await deleteDoc(doc(db, 'pickupAddresses', id));
-      showToast({ message: 'Точку видалено', type: 'success' });
+      showToast({ message: t('settings.toasts.pointDeleted'), type: 'success' });
       setConfirmDeleteId(null);
     } catch (err) {
-      showToast({ message: 'Помилка видалення', type: 'error' });
+      showToast({ message: t('settings.toasts.deleteError'), type: 'error' });
     }
   };
 
@@ -153,10 +155,10 @@ export default function AdminSettingsPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 leading-tight">Налаштування <br/><span className="text-farm-green">платформи</span></h1>
+        <h1 className="text-3xl font-bold text-gray-900 leading-tight">{t('settings.title.main')} <br/><span className="text-farm-green">{t('settings.title.sub')}</span></h1>
         <Button onClick={handleSaveSettings} disabled={saving} className="flex items-center gap-2 px-8">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          Зберегти все
+          {t('settings.saveAll')}
         </Button>
       </div>
 
@@ -165,27 +167,27 @@ export default function AdminSettingsPage() {
           {/* Hero Section */}
           <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold mb-8 text-farm-green flex items-center gap-3">
-              <span className="w-2 h-2 bg-farm-berry rounded-full animate-pulse" /> Герой-секція
+              <span className="w-2 h-2 bg-farm-berry rounded-full animate-pulse" /> {t('settings.sections.hero')}
             </h2>
             <div className="space-y-6">
               <LocalizedField 
-                label="Заголовок"
+                label={t('settings.labels.title')}
                 value={settings.hero.title}
                 onChange={title => setSettings({ ...settings, hero: { ...settings.hero, title } })}
               />
               <LocalizedField 
-                label="Підзаголовок"
+                label={t('settings.labels.subtitle')}
                 type="textarea"
                 value={settings.hero.subtitle}
                 onChange={subtitle => setSettings({ ...settings, hero: { ...settings.hero, subtitle } })}
               />
               <LocalizedField 
-                label="Текст кнопки"
+                label={t('settings.labels.ctaText')}
                 value={settings.hero.ctaText}
                 onChange={ctaText => setSettings({ ...settings, hero: { ...settings.hero, ctaText } })}
               />
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">Фонове фото</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">{t('settings.labels.heroImage')}</label>
                 <ImageUploader 
                   single 
                   images={settings.hero.imageUrl ? [settings.hero.imageUrl] : []} 
@@ -199,17 +201,17 @@ export default function AdminSettingsPage() {
           {/* About Section */}
           <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold mb-8 text-farm-green flex items-center gap-3">
-              <span className="w-2 h-2 bg-farm-green rounded-full animate-pulse" /> Про нас
+              <span className="w-2 h-2 bg-farm-green rounded-full animate-pulse" /> {t('settings.sections.about')}
             </h2>
             <div className="space-y-6">
               <LocalizedField 
-                label="Опис ферми"
+                label={t('settings.labels.aboutText')}
                 type="textarea"
                 value={settings.about.text}
                 onChange={text => setSettings({ ...settings, about: { ...settings.about, text } })}
               />
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">Фото ферми</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-2">{t('settings.labels.aboutImage')}</label>
                 <ImageUploader 
                   single 
                   images={settings.about.imageUrl ? [settings.about.imageUrl] : []} 
@@ -224,7 +226,7 @@ export default function AdminSettingsPage() {
         {/* Pickup Addresses */}
         <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100 h-fit">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold text-farm-green">Самовивіз</h2>
+            <h2 className="text-xl font-bold text-farm-green">{t('settings.sections.pickup')}</h2>
             <button 
               onClick={() => {
                 setEditingPoint(null);
@@ -254,10 +256,10 @@ export default function AdminSettingsPage() {
                       <MapPin className="w-5 h-5 text-farm-green" />
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900">{point.label}</p>
-                      <p className="text-sm text-gray-500 mb-2">{point.address}</p>
+                      <p className="font-bold text-gray-900">{typeof point.label === 'string' ? point.label : point.label?.[i18n.language] || point.label?.uk}</p>
+                      <p className="text-sm text-gray-500 mb-2">{typeof point.address === 'string' ? point.address : point.address?.[i18n.language] || point.address?.uk}</p>
                       <div className="flex items-center gap-1.5 text-[10px] font-bold text-farm-berry uppercase tracking-wider">
-                        <Clock className="w-3 h-3" /> {point.workingHours}
+                        <Clock className="w-3 h-3" /> {typeof point.workingHours === 'string' ? point.workingHours : point.workingHours?.[i18n.language] || point.workingHours?.uk}
                       </div>
                     </div>
                   </div>
@@ -267,9 +269,9 @@ export default function AdminSettingsPage() {
                       onClick={() => {
                         setEditingPoint(point);
                         setPointForm({ 
-                          label: point.raw?.label || { uk: point.label, en: '', de: '' }, 
-                          address: point.raw?.address || { uk: point.address, en: '', de: '' }, 
-                          workingHours: point.raw?.workingHours || { uk: point.workingHours, en: '', de: '' } 
+                          label: point.raw?.label || (typeof point.label === 'string' ? { uk: point.label, en: '', de: '' } : point.label), 
+                          address: point.raw?.address || (typeof point.address === 'string' ? { uk: point.address, en: '', de: '' } : point.address), 
+                          workingHours: point.raw?.workingHours || (typeof point.workingHours === 'string' ? { uk: point.workingHours, en: '', de: '' } : point.workingHours) 
                         });
                         setIsPointModalOpen(true);
                       }}
@@ -287,7 +289,7 @@ export default function AdminSettingsPage() {
                       )}
                     >
                       {confirmDeleteId === point.id ? (
-                        <span className="text-[10px] font-bold uppercase whitespace-nowrap">Підтвердити видалення</span>
+                        <span className="text-[10px] font-bold uppercase whitespace-nowrap">{t('settings.points.confirmDelete')}</span>
                       ) : (
                         <Trash2 className="w-4 h-4" />
                       )}
@@ -296,7 +298,7 @@ export default function AdminSettingsPage() {
                 </div>
               ))
             ) : (
-              <p className="text-center py-12 text-gray-400 italic">Точок самовивозу не додано</p>
+              <p className="text-center py-12 text-gray-400 italic">{t('settings.points.empty')}</p>
             )}
           </div>
         </div>
@@ -305,27 +307,27 @@ export default function AdminSettingsPage() {
       <Modal
         isOpen={isPointModalOpen}
         onClose={() => setIsPointModalOpen(false)}
-        title={editingPoint ? 'Редагувати точку' : 'Додати точку самовивозу'}
+        title={editingPoint ? t('settings.points.editTitle') : t('settings.points.addTitle')}
       >
         <form onSubmit={handleSavePoint} className="space-y-6">
           <LocalizedField 
-            label="Назва"
+            label={t('settings.points.labelName')}
             value={pointForm.label}
             onChange={label => setPointForm({ ...pointForm, label })}
           />
           <LocalizedField 
-            label="Повна адреса"
+            label={t('settings.points.labelAddress')}
             value={pointForm.address}
             onChange={address => setPointForm({ ...pointForm, address })}
           />
           <LocalizedField 
-            label="Години роботи"
+            label={t('settings.points.labelHours')}
             value={pointForm.workingHours}
             onChange={workingHours => setPointForm({ ...pointForm, workingHours })}
           />
           <div className="pt-4">
             <Button disabled={saving} className="w-full py-4">
-              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Зберегти точку'}
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : t('settings.points.saveButton')}
             </Button>
           </div>
         </form>

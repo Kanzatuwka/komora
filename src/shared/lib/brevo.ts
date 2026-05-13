@@ -40,6 +40,11 @@ const TEMPLATES: Record<string, any> = {
 
 const BREVO_API_URL = 'https://api.brevo.com/v3';
 
+const BREVO_SENDER = { 
+  name: import.meta.env.VITE_BREVO_SENDER_NAME || 'Комора', 
+  email: import.meta.env.VITE_BREVO_SENDER_EMAIL || 'olexandr.prykhodko@gmail.com' 
+};
+
 async function brevoRequest(endpoint: string, options: RequestInit = {}) {
   if (!BREVO_API_KEY) {
     console.warn('BREVO_API_KEY is missing. Check your environment variables.');
@@ -117,14 +122,20 @@ export async function confirmSubscription(email: string, language: 'uk' | 'en' |
   }
 }
 
-export async function sendTransactional({ to, templateId, params = {} }: { to: string, templateId: number, params?: any }) {
+export async function sendTransactional({ to, templateId, params }: { to: string, templateId: number, params?: any }) {
+  const body: any = {
+    sender: BREVO_SENDER,
+    to: [{ email: to }],
+    templateId
+  };
+
+  if (params && Object.keys(params).length > 0) {
+    body.params = params;
+  }
+
   return brevoRequest('/smtp/email', {
     method: 'POST',
-    body: JSON.stringify({
-      to: [{ email: to }],
-      templateId,
-      params
-    })
+    body: JSON.stringify(body)
   });
 }
 
@@ -134,24 +145,31 @@ export async function sendTransactional({ to, templateId, params = {} }: { to: s
 export async function sendBulkTransactional({ 
   to, 
   templateId, 
-  params = {},
-  subject 
+  params,
+  subject,
+  htmlContent
 }: { 
   to: string[], 
   templateId?: number, 
   params?: any,
-  subject?: string
+  subject?: string,
+  htmlContent?: string
 }) {
-  // Brevo API allows sending to multiple recipients in one call if using individual 'to'
-  // but for transactional campaigns, it's often better to use 'to' array if same content
+  const body: any = {
+    sender: BREVO_SENDER,
+    to: to.map(email => ({ email }))
+  };
+
+  if (templateId) body.templateId = templateId;
+  if (htmlContent) body.htmlContent = htmlContent;
+  if (subject) body.subject = subject;
+  if (params && Object.keys(params).length > 0) {
+    body.params = params;
+  }
+
   return brevoRequest('/smtp/email', {
     method: 'POST',
-    body: JSON.stringify({
-      to: to.map(email => ({ email })),
-      templateId,
-      subject,
-      params
-    })
+    body: JSON.stringify(body)
   });
 }
 
@@ -168,7 +186,7 @@ export async function sendCampaign({ subject, htmlContent, listId }: { subject: 
       subject,
       htmlContent,
       recipients: { listIds: [listId] },
-      sender: { name: 'Комора', email: 'olexandr.prykhodko@gmail.com' } 
+      sender: BREVO_SENDER
     })
   });
 

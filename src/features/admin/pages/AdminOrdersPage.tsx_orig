@@ -12,20 +12,25 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { uk, enUS, de } from 'date-fns/locale';
+import { uk } from 'date-fns/locale';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { PageLoader } from '@/shared/components/Loader';
 import { cn } from '@/shared/lib/utils';
-import { sendTransactional, getTemplateId } from '@/shared/lib/brevo';
-import { formatPrice } from '@/shared/lib/format';
+import { sendTransactional } from '@/shared/lib/brevo';
 import { Modal } from '@/shared/components/Modal';
 import { Button } from '@/shared/components/Button';
 import { motion, AnimatePresence } from 'motion/react';
-import i18n from '@/i18n/config.ts';
-import { useTranslation } from 'react-i18next';
+
+const STATUSES = [
+  { id: 'all', label: 'Всі' },
+  { id: 'new', label: 'Нові' },
+  { id: 'confirmed', label: 'Підтверджено' },
+  { id: 'in_transit', label: 'В дорозі' },
+  { id: 'delivered', label: 'Доставлено' },
+  { id: 'cancelled', label: 'Скасовано' },
+];
 
 export default function AdminOrdersPage() {
-  const { t } = useTranslation('admin');
   const [searchParams, setSearchParams] = useSearchParams();
   const statusFilter = searchParams.get('status') || 'all';
   const { orders, loading } = useAdminOrders();
@@ -34,18 +39,6 @@ export default function AdminOrdersPage() {
   const { showToast } = useToast();
   const [cancellingOrder, setCancellingOrder] = useState<any>(null);
   const [cancelReason, setCancelReason] = useState('');
-
-  const STATUSES = [
-    { id: 'all', label: t('orders.filters.all') },
-    { id: 'new', label: t('orders.filters.new') },
-    { id: 'confirmed', label: t('orders.filters.confirmed') },
-    { id: 'in_transit', label: t('orders.filters.in_transit') },
-    { id: 'delivered', label: t('orders.filters.delivered') },
-    { id: 'cancelled', label: t('orders.filters.cancelled') },
-  ];
-
-  const dateLocales: Record<string, any> = { uk, en: enUS, de };
-  const currentLocale = dateLocales[i18n.language] || uk;
 
   const filteredOrders = orders.filter(o => 
     (o.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -83,38 +76,32 @@ export default function AdminOrdersPage() {
 
       await updateDoc(doc(db, 'orders', order.id), updates);
 
-      // Send status update email using order language
-      const lang = order.userLanguage || 'uk';
-      let templateKey: string | null = null;
+      // Send status update email
+      let templateId = 0;
       switch (newStatus) {
-        case 'confirmed': templateKey = 'ORDER_CONFIRMED'; break;
-        case 'in_transit': templateKey = 'ORDER_IN_TRANSIT'; break;
-        case 'delivered': templateKey = 'ORDER_DELIVERED'; break;
-        case 'cancelled': templateKey = 'ORDER_CANCELLED'; break;
+        case 'confirmed': templateId = Number(import.meta.env.VITE_BREVO_ORDER_CONFIRMED_TEMPLATE_ID); break;
+        case 'in_transit': templateId = Number(import.meta.env.VITE_BREVO_ORDER_IN_TRANSIT_TEMPLATE_ID); break;
+        case 'delivered': templateId = Number(import.meta.env.VITE_BREVO_ORDER_DELIVERED_TEMPLATE_ID); break;
+        case 'cancelled': templateId = Number(import.meta.env.VITE_BREVO_ORDER_CANCELLED_TEMPLATE_ID); break;
       }
 
-      if (templateKey && order.userEmail) {
-        const templateId = getTemplateId(templateKey as any, lang);
-        if (templateId) {
-          await sendTransactional({
-            to: order.userEmail,
-            templateId,
-            params: {
-              customerName: order.userName,
-              orderNumber: order.id.slice(0, 8).toUpperCase(),
-              total: formatPrice(order.total, order.currency || 'UAH', lang),
-              statusMessage: i18n.t(`admin:orderStatus.${newStatus}Message`, { lng: lang }),
-              cancelReason: newStatus === 'cancelled' ? (typeof reason !== 'undefined' ? reason : cancelReason) : ''
-              //cancelReason: newStatus === 'cancelled' ? reason : ''
-            }
-          });
-        }
+      if (templateId && order.userEmail) {
+        await sendTransactional({
+          to: order.userEmail,
+          templateId,
+          params: {
+            customerName: order.userName,
+            orderNumber: order.id.slice(0, 8).toUpperCase(),
+            total: order.total.toFixed(2),
+            cancelReason: newStatus === 'cancelled' ? reason : ''
+          }
+        });
       }
 
-      showToast({ message: t('orders.toasts.statusChanged', { status: getStatusLabel(newStatus) }), type: 'success' });
+      showToast({ message: `Статус змінено на ${newStatus}`, type: 'success' });
       setCancellingOrder(null);
     } catch (err) {
-      showToast({ message: t('orders.toasts.updateError'), type: 'error' });
+      showToast({ message: 'Помилка оновлення', type: 'error' });
     }
   };
 
@@ -130,7 +117,14 @@ export default function AdminOrdersPage() {
   };
 
   const getStatusLabel = (status: string) => {
-    return t(`orders.filters.${status}`, { defaultValue: status });
+    switch (status) {
+      case 'new': return 'Нове';
+      case 'confirmed': return 'Підтверджено';
+      case 'in_transit': return 'В дорозі';
+      case 'delivered': return 'Доставлено';
+      case 'cancelled': return 'Скасовано';
+      default: return status;
+    }
   };
 
   if (loading) return <PageLoader />;
@@ -139,8 +133,8 @@ export default function AdminOrdersPage() {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('orders.title')}</h1>
-          <p className="text-gray-500">{t('orders.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Замовлення</h1>
+          <p className="text-gray-500">Обробка та керування замовленнями клієнтів</p>
         </div>
       </div>
 
@@ -151,7 +145,7 @@ export default function AdminOrdersPage() {
             <input 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder={t('orders.searchPlaceholder')} 
+              placeholder="Пошук за номером або клієнтом..." 
               className="w-full bg-gray-50 rounded-full py-4 pl-14 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-farm-green/20 border border-transparent focus:border-farm-green/20"
             />
           </div>
@@ -183,12 +177,12 @@ export default function AdminOrdersPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50">
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('orders.table.number')}</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('orders.table.client')}</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('orders.table.date')}</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('orders.table.total')}</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('orders.table.status')}</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">{t('orders.table.actions')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">№ Замовлення</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Клієнт</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Дата</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Сума</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Статус</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Дії</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -205,7 +199,7 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-8 py-6">
                     <p className="text-xs text-gray-500 font-medium">
-                      {order.createdAt && format(order.createdAt.toDate(), 'dd.MM.yy, HH:mm', { locale: currentLocale })}
+                      {order.createdAt && format(order.createdAt.toDate(), 'dd.MM.yy, HH:mm', { locale: uk })}
                     </p>
                   </td>
                   <td className="px-8 py-6">
@@ -258,7 +252,7 @@ export default function AdminOrdersPage() {
           <Modal 
             isOpen={!!cancellingOrder} 
             onClose={() => setCancellingOrder(null)}
-            title={t('orders.cancelModal.title')}
+            title="Скасування замовлення"
           >
             <div className="space-y-6">
               <div className="bg-red-50 p-6 rounded-3xl flex items-start gap-4">
@@ -266,17 +260,17 @@ export default function AdminOrdersPage() {
                   <X className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-bold text-red-900">{t('orders.cancelModal.warning')} #{cancellingOrder.id.slice(0, 8).toUpperCase()}</p>
-                  <p className="text-red-700 text-sm opacity-80 mt-1">{t('orders.cancelModal.description')}</p>
+                  <p className="font-bold text-red-900">Ви скасовуєте замовлення #{cancellingOrder.id.slice(0, 8).toUpperCase()}</p>
+                  <p className="text-red-700 text-sm opacity-80 mt-1">Ця дія надішле клієнту повідомлення про скасування.</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-4">{t('orders.cancelModal.reasonLabel')}</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-4">Причина скасування</label>
                 <textarea 
                   value={cancelReason}
                   onChange={e => setCancelReason(e.target.value)}
-                  placeholder={t('orders.cancelModal.reasonPlaceholder')}
+                  placeholder="Вкажіть причину для клієнта (напр. Товару немає в наявності)"
                   className="w-full bg-gray-50 rounded-[2rem] p-6 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 border border-transparent focus:border-red-500/20 min-h-[120px] resize-none"
                 />
               </div>
@@ -287,14 +281,14 @@ export default function AdminOrdersPage() {
                   disabled={!cancelReason.trim()}
                   className="flex-1 bg-red-600 hover:bg-red-700"
                 >
-                  {t('orders.cancelModal.confirm')}
+                  Підтвердити скасування
                 </Button>
                 <Button 
                   variant="ghost" 
                   onClick={() => setCancellingOrder(null)}
                   className="flex-1"
                 >
-                  {t('orders.cancelModal.cancel')}
+                  Скасувати
                 </Button>
               </div>
             </div>

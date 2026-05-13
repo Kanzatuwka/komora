@@ -22,16 +22,16 @@ import { LocalizedField } from '../components/LocalizedField';
 import { ImageUploader } from '../components/ImageUploader';
 
 export default function AdminProductFormPage() {
-  const { t } = useTranslation('shop');
+  const { t, i18n } = useTranslation(['admin', 'shop']);
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const isEdit = !!id;
 
   const CATEGORIES = [
-    { id: 'jam', name: t('categories.jam') },
-    { id: 'sauce', name: t('categories.sauce') },
-    { id: 'preserve', name: t('categories.preserve') },
+    { id: 'jam', name: t('shop:categories.jam') },
+    { id: 'sauce', name: t('shop:categories.sauce') },
+    { id: 'preserve', name: t('shop:categories.preserve') },
   ];
 
   const [loading, setLoading] = useState(isEdit);
@@ -87,7 +87,7 @@ export default function AdminProductFormPage() {
     e.preventDefault();
     
     if (!formData.name.uk?.trim() || !formData.description.uk?.trim() || (formData.price.UAH || 0) <= 0) {
-      showToast({ message: 'Назва (UA), опис (UA) та ціна (UAH) обовʼязкові', type: 'error' });
+      showToast({ message: t('admin:productForm.toasts.requiredFields'), type: 'error' });
       return;
     }
 
@@ -135,10 +135,10 @@ export default function AdminProductFormPage() {
 
       await batch.commit();
 
-      showToast({ message: isEdit ? 'Оновлено' : 'Створено', type: 'success' });
+      showToast({ message: t('admin:productForm.toasts.saved'), type: 'success' });
       navigate('/admin/products');
     } catch (err) {
-      showToast({ message: 'Помилка збереження', type: 'error' });
+      showToast({ message: t('admin:productForm.toasts.saveError'), type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -153,10 +153,10 @@ export default function AdminProductFormPage() {
           onClick={() => navigate('/admin/products')}
           className="flex items-center gap-2 text-gray-500 hover:text-farm-green transition-colors font-bold"
         >
-          <ChevronLeft className="w-5 h-5" /> До списку товарів
+          <ChevronLeft className="w-5 h-5" /> {t('admin:productForm.backToList')}
         </button>
         <h1 className="text-2xl font-bold text-gray-900">
-          {isEdit ? 'Редагування товару' : 'Новий товар'}
+          {isEdit ? t('admin:productForm.editTitle') : t('admin:productForm.newTitle')}
         </h1>
       </div>
 
@@ -164,7 +164,7 @@ export default function AdminProductFormPage() {
         <div className="md:col-span-2 space-y-8">
           <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100 space-y-6">
             <LocalizedField
-              label="Назва"
+              label={t('admin:productForm.nameLabel')}
               value={formData.name}
               onChange={(v) => setFormData({ ...formData, name: v })}
               required
@@ -172,7 +172,7 @@ export default function AdminProductFormPage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 ml-4">Категорія</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2 ml-4">{t('admin:productForm.categoryLabel')}</label>
                 <select
                   value={formData.category}
                   onChange={e => setFormData({ ...formData, category: e.target.value })}
@@ -184,7 +184,7 @@ export default function AdminProductFormPage() {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Ціна <span className="text-red-500">*</span></label>
+              <label className="block mb-2 font-medium">{t('admin:productForm.priceLabel')} <span className="text-red-500">*</span></label>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-gray-500">UAH</label>
@@ -224,7 +224,7 @@ export default function AdminProductFormPage() {
             </div>
 
             <LocalizedField
-              label="Опис"
+              label={t('admin:productForm.descriptionLabel')}
               type="textarea"
               value={formData.description}
               onChange={(v) => setFormData({ ...formData, description: v })}
@@ -234,25 +234,25 @@ export default function AdminProductFormPage() {
 
           <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-farm-green" /> Фотографії
+              <ImageIcon className="w-5 h-5 text-farm-green" /> {t('admin:articleForm.coverHeader')}
             </h2>
             <ImageUploader 
               images={formData.images}
               onChange={images => setFormData({ ...formData, images })}
               folder="products"
             />
-            <p className="text-xs text-gray-400 font-medium mt-6">Рекомендовано: квадратні зображення до 5MB. Перетягніть для зміни порядку.</p>
+            <p className="text-xs text-gray-400 font-medium mt-6">{t('admin:productForm.toasts.imageRecommendation')}</p>
           </div>
         </div>
 
         <div className="space-y-8">
           <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 space-y-6">
-            <h2 className="text-lg font-bold text-gray-900">Налаштування</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('admin:productForm.settings')}</h2>
             
             <label className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-farm-green/5 transition-colors">
               <div>
-                <p className="font-bold text-sm text-gray-900">Є в наявності</p>
-                <p className="text-[10px] text-gray-400">Показувати в магазині</p>
+                <p className="font-bold text-sm text-gray-900">{t('admin:productForm.inStock')}</p>
+                <p className="text-[10px] text-gray-400">{t('admin:productForm.inStockHelp')}</p>
               </div>
               <input 
                 type="checkbox" 
@@ -264,8 +264,8 @@ export default function AdminProductFormPage() {
 
             <label className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-farm-green/5 transition-colors">
               <div>
-                <p className="font-bold text-sm text-gray-900">Популярне</p>
-                <p className="text-[10px] text-gray-400">Виводити на головну</p>
+                <p className="font-bold text-sm text-gray-900">{t('admin:productForm.featured')}</p>
+                <p className="text-[10px] text-gray-400">{t('admin:productForm.featuredHelp')}</p>
               </div>
               <input 
                 type="checkbox" 
@@ -276,7 +276,7 @@ export default function AdminProductFormPage() {
             </label>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 ml-2">Пов'язані статті</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 ml-2">{t('admin:productForm.linkedArticles')}</p>
               <div className="space-y-2 max-h-64 overflow-y-auto pr-2 no-scrollbar">
                 {articles.map(article => (
                   <label key={article.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-farm-green/5">
@@ -292,7 +292,7 @@ export default function AdminProductFormPage() {
                       className="accent-farm-green"
                     />
                     <span className="text-xs font-medium truncate">
-                      {typeof article.title === 'string' ? article.title : (article.title?.uk || 'Untitled')}
+                      {typeof article.title === 'string' ? article.title : (article.title?.[i18n.language] || article.title?.uk || 'Untitled')}
                     </span>
                   </label>
                 ))}
@@ -301,14 +301,14 @@ export default function AdminProductFormPage() {
           </div>
 
           <div className="bg-farm-green p-8 rounded-[2.5rem] shadow-xl text-white">
-            <p className="text-xs font-bold uppercase tracking-widest text-white/50 mb-8">Дії</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-white/50 mb-8">{t('admin:orders.table.actions')}</p>
             <div className="space-y-3">
               <Button 
                 type="submit" 
                 className="w-full bg-white text-farm-green hover:bg-farm-cream border-none"
                 disabled={saving}
               >
-                {saving ? 'Зберігання...' : 'Зберегти зміни'}
+                {saving ? t('admin:productForm.saving') : t('admin:productForm.save')}
               </Button>
               <Button 
                 type="button"
@@ -316,7 +316,7 @@ export default function AdminProductFormPage() {
                 className="w-full text-white/50 hover:text-white"
                 onClick={() => navigate('/admin/products')}
               >
-                Скасувати
+                {t('admin:productForm.cancel')}
               </Button>
             </div>
           </div>

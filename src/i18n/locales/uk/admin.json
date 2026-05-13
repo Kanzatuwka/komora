@@ -5,7 +5,387 @@
     "in_transitMessage": "Ваше замовлення передано в доставку.",
     "deliveredMessage": "Замовлення доставлено. Дякуємо що обрали Комору!"
   },
+  "sidebar": {
+    "stats": "Статистика",
+    "orders": "Замовлення",
+    "products": "Продукти",
+    "blog": "Блог",
+    "blogCategories": "Категорії блогу",
+    "subscribers": "Підписники",
+    "newsletter": "Розсилка",
+    "settings": "Налаштування",
+    "backup": "Бекап",
+    "migration": "Міграція",
+    "logout": "Вийти",
+    "role": "Власник"
+  },
+  "notifications": {
+    "title": "Повідомлення",
+    "new": "нових",
+    "allRead": "Все прочитано",
+    "markAllRead": "Всі прочитані",
+    "loading": "Завантаження...",
+    "accessError": "Помилка доступу",
+    "justNow": "Щойно",
+    "read": "Прочитано",
+    "view": "Переглянути",
+    "empty": "Повідомлень немає",
+    "emptyDescription": "Ваш кабінет чистий",
+    "settings": "Налаштувати сповіщення"
+  },
+  "search": {
+    "placeholder": "Пошук (товари, статті, замовлення)...",
+    "searching": "Шукаємо...",
+    "results": "Результати пошуку",
+    "empty": "Нічого не знайдено",
+    "tryAnother": "Спробуйте інший запит"
+  },
+  "dashboard": {
+    "title": "Адмін-панель",
+    "subtitle": "Огляд діяльності вашої комори",
+    "checkNotifications": "Перевірити сповіщення",
+    "stats": {
+      "newOrders": "Нові замовлення",
+      "ordersMonth": "Замовлень (30 дн)",
+      "subscribers": "Підписників",
+      "contentCount": "Статей · Продуктів"
+    },
+    "quickActions": {
+      "writeArticle": "Написати статтю",
+      "addProduct": "Додати продукт",
+      "sendNewsletter": "Надіслати розсилку"
+    },
+    "recentOrders": "Останні замовлення",
+    "allOrders": "Всі замовлення",
+    "noOrders": "Немає замовлень"
+  },
+  "orders": {
+    "title": "Замовлення",
+    "subtitle": "Обробка та керування замовленнями клієнтів",
+    "searchPlaceholder": "Пошук за номером або клієнтом...",
+    "filters": {
+      "all": "Всі",
+      "new": "Нові",
+      "confirmed": "Підтверджено",
+      "in_transit": "В дорозі",
+      "delivered": "Доставлено",
+      "cancelled": "Скасовано"
+    },
+    "table": {
+      "number": "№ Замовлення",
+      "client": "Клієнт",
+      "date": "Дата",
+      "total": "Сума",
+      "status": "Статус",
+      "actions": "Дії"
+    },
+    "toasts": {
+      "statusChanged": "Статус змінено на {{status}}",
+      "updateError": "Помилка оновлення",
+      "cancelReasonRequired": "Вкажіть причину скасування"
+    },
+    "cancelModal": {
+      "title": "Скасування замовлення",
+      "warning": "Ви скасовуєте замовлення",
+      "description": "Ця дія надішле клієнту повідомлення про скасування.",
+      "reasonLabel": "Причина скасування",
+      "reasonPlaceholder": "Вкажіть причину для клієнта (напр. Товару немає в наявності)",
+      "confirm": "Підтвердити скасування",
+      "cancel": "Скасувати"
+    }
+  },
+  "orderDetails": {
+    "notFound": "Замовлення не знайдено",
+    "backToList": "До списку замовлень",
+    "items": "Склад замовлення",
+    "totalToPay": "Разом до сплати",
+    "clientComment": "Коментар від клієнта:",
+    "history": "Історія замовлення",
+    "created": "Замовлення створено",
+    "lastUpdate": "Остання зміна",
+    "client": "Клієнт",
+    "changeStatus": "Змінити статус"
+  },
+  "products": {
+    "title": "Продукти та товари",
+    "subtitle": "Керуйте асортиментом вашої Комори",
+    "addNew": "Додати товар",
+    "searchPlaceholder": "Пошук за назвою...",
+    "table": {
+      "product": "Товар",
+      "category": "Категорія",
+      "price": "Ціна",
+      "stock": "Наявність",
+      "featured": "Популярне",
+      "actions": "Дії"
+    },
+    "stock": {
+      "available": "В наявності",
+      "unavailable": "Немає"
+    },
+    "toasts": {
+      "featuredToggled": "Статус Топ-продукту змінено",
+      "deleted": "Продукт видалено",
+      "deleteError": "Помилка видалення",
+      "genericError": "Помилка"
+    }
+  },
+  "productForm": {
+    "backToList": "До списку товарів",
+    "editTitle": "Редагування товару",
+    "newTitle": "Новий товар",
+    "nameLabel": "Назва",
+    "descriptionLabel": "Опис",
+    "priceLabel": "Базова ціна (UAH)",
+    "priceEUR": "Ціна в EUR",
+    "priceUSD": "Ціна в USD",
+    "categoryLabel": "Категорія",
+    "noCategory": "Без категорії",
+    "unitsLabel": "Одиниці виміру (напр. шт, 500г, 1л)",
+    "inStock": "Наявність",
+    "inStockHelp": "Показувати в магазині",
+    "featured": "Популярний товар",
+    "featuredHelp": "Виводити на головну сторінку",
+    "settings": "Налаштування",
+    "linkedArticles": "Пов'язані статті (рецепти)",
+    "saving": "Зберігання...",
+    "save": "Зберегти товар",
+    "cancel": "Скасувати",
+    "toasts": {
+      "imageUploaded": "Зображення завантажено",
+      "imageRecommendation": "Рекомендовано: квадратні зображення до 5MB.",
+      "uploadError": "Помилка завантаження",
+      "saved": "Товар збережено",
+      "saveError": "Помилка збереження",
+      "requiredFields": "Назва (UA), опис (UA) та ціна (UAH) обовʼязкові"
+    }
+  },
+  "blogAdmin": {
+    "title": "Блог та рецепти",
+    "subtitle": "Діліться історіями вашої комори",
+    "addNew": "Нова стаття",
+    "searchPlaceholder": "Пошук за заголовком...",
+    "table": {
+      "article": "Стаття",
+      "tags": "Теги",
+      "date": "Дата",
+      "status": "Статус",
+      "featured": "Популярне",
+      "actions": "Дії"
+    },
+    "status": {
+      "published": "Опубліковано",
+      "draft": "Чернетка"
+    },
+    "toasts": {
+      "statusChanged": "Статус змінено",
+      "updateError": "Помилка оновлення",
+      "deleted": "Статтю видалено",
+      "deleteError": "Помилка видалення"
+    },
+    "confirm": "Підтвердити"
+  },
+  "articleForm": {
+    "backToList": "До списку статей",
+    "editTitle": "Редагування статті",
+    "newTitle": "Нова стаття",
+    "titleLabel": "Заголовок",
+    "excerptLabel": "Короткий опис",
+    "bodyLabel": "Текст статті",
+    "coverHeader": "Обкладинка",
+    "noPhoto": "Немає фото",
+    "changeCover": "Змінити",
+    "categoryLabel": "Категорія",
+    "noCategory": "Без категорії",
+    "publish": "Опублікувати",
+    "featured": "Популярне",
+    "linkedProducts": "Товари у рецепті",
+    "saving": "Зберігання...",
+    "save": "Зберегти статтю",
+    "cancel": "Скасувати",
+    "insertProduct": "Картка товару",
+    "insertProductModal": "Вставити товар у текст",
+    "productSearchPlaceholder": "Пошук товару за назвою...",
+    "select": "Вибрати",
+    "noProductsFound": "Товарів не знайдено",
+    "toasts": {
+      "coverUploaded": "Обкладинку завантажено",
+      "uploadError": "Помилка завантаження",
+      "requiredFields": "Заголовок (UA) та інші поля обовʼязкові"
+    }
+  },
+  "blogCategoriesAdmin": {
+    "title": "Категорії блогу",
+    "newCategoryLabel": "Назва нової категорії",
+    "addButton": "Додати категорію",
+    "empty": "Категорій ще не створено",
+    "confirm": "Підтвердити",
+    "toasts": {
+      "nameRequired": "Назва (UA) обовʼязкова",
+      "added": "Категорію додано",
+      "deleted": "Видалено",
+      "error": "Помилка"
+    }
+  },
+  "subscribers": {
+    "title": "Підписники",
+    "subtitle": "База контактів для розсилки новин",
+    "table": {
+      "email": "Email",
+      "status": "Статус",
+      "date": "Дата підписки",
+      "actions": "Дії"
+    },
+    "status": {
+      "confirmed": "Підтверджено",
+      "pending": "Очікує"
+    },
+    "confirm": "Підтвердити",
+    "empty": "Список порожній",
+    "toasts": {
+      "deleted": "Підписника видалено",
+      "deleteError": "Помилка при видаленні"
+    }
+  },
   "newsletter": {
-    "subject": "Новий рецепт: {{title}}"
+    "title": "Розсилка",
+    "stats": {
+      "recipients": "{{count}} отримувачів"
+    },
+    "tabs": {
+      "compose": "Створити",
+      "history": "Історія"
+    },
+    "composer": {
+      "segmentsLabel": "Одержувачі:",
+      "subjectTemplate": "Наш новий рецепт: {{title}} 🍓",
+      "subjectLabel": "Тема листа",
+      "subjectPlaceholder": "Напр. Наш новий смачний рецепт...",
+      "introLabel": "Вступний текст",
+      "introPlaceholder": "Напишіть кілька вітальних слів...",
+      "previewButton": "Перегляд",
+      "previewTitle": "Попередній перегляд",
+      "closePreview": "Закрити",
+      "sendButton": "Надіслати всім",
+      "confirmSendButton": "Підтвердити ({{count}} сегменти)",
+      "dynamicArticleTitle": "Вибрати рецепт",
+      "dynamicArticleSubtitle": "Дані (фото, назва, опис) будуть підтягнуті автоматично"
+    },
+    "history": {
+      "recent": "Щойно",
+      "empty": "Історія розсилок порожня"
+    },
+    "toasts": {
+      "noSubscribers": "Немає підписників у вибраних сегментах",
+      "sending": "Надсилаємо...",
+      "sent": "Успішно надіслано {{count}} підписникам",
+      "error": "Помилка при надсиланні"
+    },
+    "email": {
+      "tryProducts": "Спробуйте продукти з рецепту:",
+      "orderNow": "Замовити",
+      "unsubscribeNote": "Ви отримали цей лист, оскільки підписалися на новини Комори.",
+      "readRecipe": "Читати рецепт"
+    }
+  },
+  "settings": {
+    "title": "Налаштування платформи",
+    "saveAll": "Зберегти все",
+    "sections": {
+      "hero": "Герой-секція",
+      "about": "Про нас",
+      "pickup": "Самовивіз"
+    },
+    "hero": {
+      "title": "Заголовок",
+      "subtitle": "Підзаголовок",
+      "ctaText": "Текст кнопки",
+      "bgImage": "Фонове фото"
+    },
+    "pickup": {
+      "empty": "Точок самовивозу не додано",
+      "editTitle": "Редагувати точку",
+      "addTitle": "Додати точку самовивозу",
+      "saveButton": "Зберегти точку"
+    }
+  },
+  "backup": {
+    "title": "Бекап та відновлення даних",
+    "description": "Інструмент для експорту та імпорту всіх даних вашого магазину (Firestore). Рекомендується робити бекап перед значними змінами.",
+    "toasts": {
+      "exportSuccess": "Дані успішно експортовані",
+      "exportError": "Помилка при експорті",
+      "importError": "Помилка при імпорті",
+      "invalidFile": "Некоректний формат файлу",
+      "importSuccess": "Дані відновлено успішно!"
+    },
+    "export": {
+      "title": "Експорт даних",
+      "description": "Завантажити всі колекції у форматі JSON одним файлом.",
+      "button": "Завантажити бекап (.json)"
+    },
+    "import": {
+      "title": "Відновлення даних",
+      "description": "Завантажте раніше створений файл бекапу для відновлення бази даних.",
+      "dropzoneTitle": "Перетягніть файл сюди або натисніть",
+      "dropzoneDescription": "Тільки файли .json, згенеровані цією системою"
+    },
+    "progress": {
+      "title": "Відновлення у процесі",
+      "description": "Будь ласка, не закривайте вкладку до завершення операції.",
+      "label": "Відновлено записів:"
+    },
+    "modal": {
+      "title": "Підтвердження відновлення",
+      "description": "Ви впевнені? Ця дія ПОВНІСТЮ ПЕРЕЗАПИШЕ існуючі дані у колекціях з бекапу. Це неможливо скасувати.",
+      "cancel": "Скасувати",
+      "confirm": "Так, відновити"
+    }
+  },
+  "migration": {
+    "title": "Міграція на i18n + multi-currency",
+    "subtitle": "Інструмент для конвертації існуючих даних у новий формат (підтримка мов та валют).",
+    "warning": {
+      "title": "УВАГА: ЦЕ НЕЗВОРОТНЯ ОПЕРАЦІЯ",
+      "step1": "Перед запуском обов'язково зробіть бекап через /admin/backup",
+      "step2": "Не закривайте вкладку та не вимикайте інтернет під час процесу",
+      "step3": "Для перевірки спочатку запустіть 'Сухий прогін'"
+    },
+    "buttons": {
+      "dry": "Сухий прогін (dry run)",
+      "real": "Запустити міграцію"
+    },
+    "modal": {
+      "title": "Підтвердження міграції",
+      "question": "Ви впевнені?",
+      "description": "Це змінить дані у базі даних. Це незворотня операція. Переконайтеся, що ви зробили бекап.",
+      "cancel": "Скасувати",
+      "confirm": "Так, запустити"
+    },
+    "progress": {
+      "processing": "Обробка {{collection}}..."
+    },
+    "logsTitle": "Лог операцій",
+    "logsCount": "{{count}} записів",
+    "logsEmpty": "Очікування запуску...",
+    "types": {
+      "dry": "сухого прогону",
+      "real": "міграції"
+    },
+    "logs": {
+      "start": "Запуск {{type}}...",
+      "success": "Міграція {{type}} успішно завершена!",
+      "error": "ПОМИЛКА міграції: {{error}}",
+      "checkingColl": "Перевірка колекції {{collName}}...",
+      "collProcessed": "Колекція {{collName}} оброблена.",
+      "checkingDoc": "Перевірка документа {{path}}...",
+      "docProcessed": "Документ {{path}} оброблений.",
+      "collectingTags": "Збір унікальних тегів...",
+      "foundTags": "Знайдено {{count}} унікальних тегів."
+    },
+    "toasts": {
+      "success": "Міграція {{type}} завершена",
+      "error": "Помилка міграції"
+    }
   }
 }

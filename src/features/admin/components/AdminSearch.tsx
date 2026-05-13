@@ -19,6 +19,7 @@ import {
 import { db } from '@/shared/lib/firebase';
 import { cn, getLocalizedValue } from '@/shared/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 interface SearchResult {
   id: string;
@@ -29,6 +30,7 @@ interface SearchResult {
 }
 
 export function AdminSearch() {
+  const { t, i18n } = useTranslation('admin');
   const [isOpen, setIsOpen] = useState(false);
   const [queryText, setQueryText] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -63,7 +65,7 @@ export function AdminSearch() {
         const productsSnap = await getDocs(query(productsRef, limit(20)));
         productsSnap.docs.forEach(doc => {
           const data = doc.data();
-          const name = getLocalizedValue(data.name, 'uk');
+          const name = getLocalizedValue(data.name, i18n.language);
           if (name.toLowerCase().includes(q)) {
             searchResults.push({
               id: doc.id,
@@ -80,14 +82,14 @@ export function AdminSearch() {
         const articlesSnap = await getDocs(query(articlesRef, limit(20)));
         articlesSnap.docs.forEach(doc => {
           const data = doc.data();
-          const title = getLocalizedValue(data.title, 'uk');
+          const title = getLocalizedValue(data.title, i18n.language);
           if (title.toLowerCase().includes(q)) {
             searchResults.push({
               id: doc.id,
               title: title,
               type: 'article',
               path: `/admin/blog/${doc.id}`,
-              metadata: 'Стаття / Рецепт'
+              metadata: t('sidebar.blog') // Use translation for type label
             });
           }
         });
@@ -102,7 +104,7 @@ export function AdminSearch() {
           if (matchName || matchId) {
             searchResults.push({
               id: doc.id,
-              title: `Замовлення #${doc.id.slice(-5)}`,
+              title: `${t('orders.title')} #${doc.id.slice(-5)}`,
               type: 'order',
               path: `/admin/orders/${doc.id}`,
               metadata: `${data.userName} • ${data.total} грн`
@@ -119,7 +121,7 @@ export function AdminSearch() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [queryText]);
+  }, [queryText, i18n.language, t]);
 
   const handleSelect = (path: string) => {
     navigate(path);
@@ -142,7 +144,7 @@ export function AdminSearch() {
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="Пошук (товари, статті, замовлення)..." 
+          placeholder={t('search.placeholder')} 
           className={cn(
             "w-full bg-gray-100 rounded-full py-2.5 pl-12 pr-10 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-farm-green/20 focus:bg-white",
             isOpen && "shadow-lg bg-white"
@@ -169,12 +171,12 @@ export function AdminSearch() {
             {loading ? (
               <div className="p-8 flex flex-col items-center justify-center gap-3 text-gray-400">
                 <Loader2 className="w-6 h-6 animate-spin text-farm-green" />
-                <span className="text-xs font-medium">Шукаємо...</span>
+                <span className="text-xs font-medium">{t('search.searching')}</span>
               </div>
             ) : results.length > 0 ? (
               <div className="py-2 max-h-[400px] overflow-y-auto">
                 <div className="px-4 py-2 text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                  Результати пошуку ({results.length})
+                  {t('search.results')} ({results.length})
                 </div>
                 {results.map((result) => (
                   <button
@@ -203,8 +205,8 @@ export function AdminSearch() {
               </div>
             ) : (
               <div className="p-8 text-center">
-                <p className="text-sm text-gray-400 font-medium">Нічого не знайдено</p>
-                <p className="text-[10px] text-gray-300 mt-1 uppercase tracking-tight">Спробуйте інший запит</p>
+                <p className="text-sm text-gray-400 font-medium">{t('search.empty')}</p>
+                <p className="text-[10px] text-gray-300 mt-1 uppercase tracking-tight">{t('search.tryAnother')}</p>
               </div>
             )}
           </motion.div>

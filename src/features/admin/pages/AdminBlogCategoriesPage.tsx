@@ -10,11 +10,13 @@ import { motion, Reorder } from 'motion/react';
 import { LocalizedField } from '@/features/admin/components/LocalizedField';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { pickLocale } from '@/shared/lib/i18nContent';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminBlogCategoriesPage() {
   const { categories, loading } = useBlogCategories();
   const { showToast } = useToast();
   const { language } = useLanguage();
+  const { t, i18n } = useTranslation('admin');
   const [newCategoryName, setNewCategoryName] = useState({ uk: '', en: '', de: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState({ uk: '', en: '', de: '' });
@@ -24,7 +26,7 @@ export default function AdminBlogCategoriesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategoryName.uk?.trim()) {
-      showToast({ message: 'Назва (UA) обовʼязкова', type: 'error' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.nameRequired'), type: 'error' });
       return;
     }
 
@@ -43,9 +45,9 @@ export default function AdminBlogCategoriesPage() {
         createdAt: serverTimestamp()
       });
       setNewCategoryName({ uk: '', en: '', de: '' });
-      showToast({ message: 'Категорію додано', type: 'success' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.added'), type: 'success' });
     } catch (err) {
-      showToast({ message: 'Помилка при додаванні', type: 'error' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.error'), type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -53,7 +55,7 @@ export default function AdminBlogCategoriesPage() {
 
   const handleUpdate = async (id: string) => {
     if (!editingValue.uk?.trim()) {
-      showToast({ message: 'Назва (UA) обовʼязкова', type: 'error' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.nameRequired'), type: 'error' });
       return;
     }
 
@@ -62,9 +64,9 @@ export default function AdminBlogCategoriesPage() {
         name: editingValue
       });
       setEditingId(null);
-      showToast({ message: 'Оновлено', type: 'success' });
+      showToast({ message: t('productForm.toasts.saved'), type: 'success' });
     } catch (err) {
-      showToast({ message: 'Помилка оновлення', type: 'error' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.error'), type: 'error' });
     }
   };
 
@@ -77,10 +79,10 @@ export default function AdminBlogCategoriesPage() {
 
     try {
       await deleteDoc(doc(db, 'blogCategories', id));
-      showToast({ message: 'Видалено', type: 'success' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.deleted'), type: 'success' });
       setConfirmDeleteId(null);
     } catch (err) {
-      showToast({ message: 'Помилка видалення', type: 'error' });
+      showToast({ message: t('blogCategoriesAdmin.toasts.error'), type: 'error' });
     }
   };
 
@@ -96,20 +98,20 @@ export default function AdminBlogCategoriesPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Категорії блогу</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('blogCategoriesAdmin.title')}</h1>
       </div>
 
       <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
         <form onSubmit={handleCreate} className="space-y-4 mb-8">
           <LocalizedField
-            label="Назва нової категорії"
+            label={t('blogCategoriesAdmin.newCategoryLabel')}
             value={newCategoryName}
             onChange={(v) => setNewCategoryName(v as any)}
           />
           <div className="flex justify-end">
             <Button type="submit" disabled={saving} className="rounded-2xl">
               <Plus className="w-5 h-5 mr-2" />
-              Додати категорію
+              {t('blogCategoriesAdmin.addButton')}
             </Button>
           </div>
         </form>
@@ -117,7 +119,7 @@ export default function AdminBlogCategoriesPage() {
         <div className="space-y-3">
           {categories.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
-              Категорій ще не створено
+              {t('blogCategoriesAdmin.empty')}
             </div>
           ) : (
             categories.map((category) => (
@@ -140,7 +142,7 @@ export default function AdminBlogCategoriesPage() {
                       />
                     </div>
                   ) : (
-                    <p className="font-bold text-gray-700">{pickLocale(category.name, language)}</p>
+                    <p className="font-bold text-gray-700">{pickLocale(category.name, i18n.language)}</p>
                   )}
                 </div>
 
@@ -184,7 +186,7 @@ export default function AdminBlogCategoriesPage() {
                         }`}
                       >
                         {confirmDeleteId === category.id ? (
-                          <span className="text-[10px] font-bold uppercase whitespace-nowrap">Підтвердити</span>
+                          <span className="text-[10px] font-bold uppercase whitespace-nowrap">{t('blogCategoriesAdmin.confirm')}</span>
                         ) : (
                           <Trash2 className="w-4 h-4" />
                         )}

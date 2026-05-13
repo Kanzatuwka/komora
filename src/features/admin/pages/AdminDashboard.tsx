@@ -15,8 +15,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/Button';
 import { cn } from '@/shared/lib/utils';
 import { useNotifications } from '../hooks/useNotifications';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation('admin');
   const { stats, loading } = useAdminStats();
   const navigate = useNavigate();
   const { createNotification } = useNotifications();
@@ -25,7 +27,7 @@ export default function AdminDashboard() {
 
   const cards = [
     { 
-      label: 'Нові замовлення', 
+      label: t('dashboard.stats.newOrders'), 
       value: stats.newOrders, 
       icon: ShoppingBag, 
       color: 'text-red-600', 
@@ -33,7 +35,7 @@ export default function AdminDashboard() {
       link: '/admin/orders?status=new' 
     },
     { 
-      label: 'Замовлень (30 дн)', 
+      label: t('dashboard.stats.ordersMonth'), 
       value: stats.monthOrders, 
       icon: TrendingUp, 
       color: 'text-blue-600', 
@@ -41,7 +43,7 @@ export default function AdminDashboard() {
       link: '/admin/orders' 
     },
     { 
-      label: 'Підписників', 
+      label: t('dashboard.stats.subscribers'), 
       value: stats.subscribers, 
       icon: Users, 
       color: 'text-purple-600', 
@@ -49,7 +51,7 @@ export default function AdminDashboard() {
       link: '/admin/subscribers' 
     },
     { 
-      label: 'Статей · Продуктів', 
+      label: t('dashboard.stats.contentCount'), 
       value: `${stats.articles} · ${stats.products}`, 
       icon: FileText, 
       color: 'text-amber-600', 
@@ -61,8 +63,8 @@ export default function AdminDashboard() {
     <div className="space-y-12">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Адмін-панель</h1>
-          <p className="text-gray-500">Огляд діяльності вашої комори</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
+          <p className="text-gray-500">{t('dashboard.subtitle')}</p>
         </div>
         <button 
           onClick={() => createNotification({
@@ -72,7 +74,7 @@ export default function AdminDashboard() {
           })}
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-[10px] font-bold uppercase transition-all"
         >
-          <Bell className="w-3 h-3" /> Перевірити сповіщення
+          <Bell className="w-3 h-3" /> {t('dashboard.checkNotifications')}
         </button>
       </div>
 
@@ -101,19 +103,19 @@ export default function AdminDashboard() {
         <Link to="/admin/blog/new">
           <Button variant="outline" className="w-full h-32 rounded-[2rem] border-2 border-dashed border-farm-wood/10 hover:border-farm-green hover:bg-farm-green/5 flex flex-col gap-2">
             <Plus className="w-6 h-6 text-farm-green" />
-            <span>Написати статтю</span>
+            <span>{t('dashboard.quickActions.writeArticle')}</span>
           </Button>
         </Link>
         <Link to="/admin/products/new">
           <Button variant="outline" className="w-full h-32 rounded-[2rem] border-2 border-dashed border-farm-wood/10 hover:border-farm-green hover:bg-farm-green/5 flex flex-col gap-2">
             <Plus className="w-6 h-6 text-farm-green" />
-            <span>Додати продукт</span>
+            <span>{t('dashboard.quickActions.addProduct')}</span>
           </Button>
         </Link>
         <Link to="/admin/newsletter">
           <Button variant="outline" className="w-full h-32 rounded-[2rem] border-2 border-dashed border-farm-wood/10 hover:border-farm-green hover:bg-farm-green/5 flex flex-col gap-2">
             <Mail className="w-6 h-6 text-farm-green" />
-            <span>Надіслати розсилку</span>
+            <span>{t('dashboard.quickActions.sendNewsletter')}</span>
           </Button>
         </Link>
       </div>
@@ -121,9 +123,9 @@ export default function AdminDashboard() {
       {/* Recent Orders */}
       <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-xl font-bold text-gray-900">Останні замовлення</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('dashboard.recentOrders')}</h2>
           <Link to="/admin/orders" className="text-sm font-bold text-farm-green hover:underline flex items-center gap-1">
-            Всі замовлення <ArrowRight className="w-4 h-4" />
+            {t('dashboard.allOrders')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
         <div className="space-y-6">
@@ -149,7 +151,7 @@ export default function AdminDashboard() {
             </Link>
           ))}
           {stats.recentOrders.length === 0 && (
-            <div className="py-12 text-center text-gray-400">Немає замовлень</div>
+            <div className="py-12 text-center text-gray-400">{t('dashboard.noOrders')}</div>
           )}
         </div>
       </div>

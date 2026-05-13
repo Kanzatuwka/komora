@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '@/shared/lib/firebase';
+import { db } from '@/shared/lib/firebase';
 import { useAuth } from './AuthContext';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, Language } from '@/i18n/config';
 
@@ -33,17 +33,8 @@ function detectInitialLanguage(): Language {
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation();
   const { user } = useAuth();
-  const [currentLanguage, setCurrentLanguage] = React.useState<string>(
-    () => i18n.language || detectInitialLanguage()
-  );
-  
-  // Track which user we've already synced from Firestore
-  // Prevents re-fetching language on every user object identity change
-  const syncedUserIdRef = useRef<string | null>(null);
-  // True when user is actively changing language — skip Firestore sync
-  const isUserChangingRef = useRef<boolean>(false);
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>(i18n.language || detectInitialLanguage());
 
-  // Subscribe to i18n language changes (single source of truth for UI state)
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
       setCurrentLanguage(lng);
@@ -54,38 +45,20 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     };
   }, [i18n]);
 
-  // Apply initial language from localStorage/browser ONCE on mount
   useEffect(() => {
     const lang = detectInitialLanguage();
     if (lang !== i18n.language) {
       i18n.changeLanguage(lang);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // empty deps — run once
+  }, [i18n]);
 
-  // Sync language from Firestore — only ONCE per user login
   useEffect(() => {
-    if (!user) {
-      syncedUserIdRef.current = null;
-      return;
-    }
-    // Skip if we already synced this user
-    if (syncedUserIdRef.current === user.uid) return;
-    // Skip if user is mid-change
-    if (isUserChangingRef.current) return;
-    
-    syncedUserIdRef.current = user.uid;
-    
+    if (!user) return;
     (async () => {
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
         const stored = snap.data()?.language as Language | undefined;
-        if (
-          stored &&
-          (SUPPORTED_LANGUAGES as readonly string[]).includes(stored) &&
-          stored !== i18n.language &&
-          !isUserChangingRef.current // double-check no concurrent change
-        ) {
+        if (stored && (SUPPORTED_LANGUAGES as readonly string[]).includes(stored) && stored !== i18n.language) {
           await i18n.changeLanguage(stored);
           localStorage.setItem(STORAGE_KEY, stored);
         }
@@ -93,24 +66,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         console.error('Error fetching user language:', error);
       }
     })();
-  }, [user?.uid, i18n]);
+  }, [user?.uid]);
 
   const changeLanguage = async (lang: Language) => {
     if (!(SUPPORTED_LANGUAGES as readonly string[]).includes(lang)) return;
-    
-    isUserChangingRef.current = true;
-    try {
-      await i18n.changeLanguage(lang);
-      localStorage.setItem(STORAGE_KEY, lang);
-      if (user) {
-        try {
-          await updateDoc(doc(db, 'users', user.uid), { language: lang });
-        } catch (error) {
-          handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
-        }
+    await i18n.changeLanguage(lang);
+    localStorage.setItem(STORAGE_KEY, lang);
+    if (user) {
+      try {
+        await updateDoc(doc(db, 'users', user.uid), { language: lang });
+      } catch (error) {
+        console.error('Error updating user language:', error);
       }
-    } finally {
-      isUserChangingRef.current = false;
     }
   };
 

@@ -17,28 +17,33 @@ import {
   Calendar
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
+import { uk, enUS, de } from 'date-fns/locale';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { PageLoader } from '@/shared/components/Loader';
 import { cn } from '@/shared/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminBlogPage() {
+  const { t, i18n } = useTranslation('admin');
   const { articles, loading } = useArticles({ count: 100 });
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { showToast } = useToast();
 
+  const dateLocales: Record<string, any> = { uk, en: enUS, de };
+  const currentLocale = dateLocales[i18n.language] || uk;
+
   const filteredArticles = articles.filter(a => {
-    const title = typeof a.title === 'string' ? a.title : (a.title?.uk || '');
+    const title = typeof a.title === 'string' ? a.title : (a.title?.[i18n.language] || a.title?.uk || '');
     return title.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const toggleFeatured = async (id: string, current: boolean) => {
     try {
       await updateDoc(doc(db, 'articles', id), { featured: !current });
-      showToast({ message: 'Статус змінено', type: 'success' });
+      showToast({ message: t('blogAdmin.toasts.statusChanged'), type: 'success' });
     } catch (err) {
-      showToast({ message: 'Помилка оновлення', type: 'error' });
+      showToast({ message: t('blogAdmin.toasts.updateError'), type: 'error' });
     }
   };
 
@@ -51,10 +56,10 @@ export default function AdminBlogPage() {
 
     try {
       await deleteDoc(doc(db, 'articles', id));
-      showToast({ message: 'Статтю видалено', type: 'success' });
+      showToast({ message: t('blogAdmin.toasts.deleted'), type: 'success' });
       setConfirmDeleteId(null);
     } catch (err) {
-      showToast({ message: 'Помилка видалення', type: 'error' });
+      showToast({ message: t('blogAdmin.toasts.deleteError'), type: 'error' });
     }
   };
 
@@ -64,11 +69,11 @@ export default function AdminBlogPage() {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Блог та рецепти</h1>
-          <p className="text-gray-500">Діліться історіями вашої комори</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('blogAdmin.title')}</h1>
+          <p className="text-gray-500">{t('blogAdmin.subtitle')}</p>
         </div>
         <Link to="/admin/blog/new">
-          <Button icon={<Plus className="w-5 h-5" />}>Нова стаття</Button>
+          <Button icon={<Plus className="w-5 h-5" />}>{t('blogAdmin.addNew')}</Button>
         </Link>
       </div>
 
@@ -80,7 +85,7 @@ export default function AdminBlogPage() {
             <input 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Пошук за заголовком..." 
+              placeholder={t('blogAdmin.searchPlaceholder')} 
               className="w-full bg-gray-50 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-farm-green/20 border border-transparent focus:border-farm-green/20"
             />
           </div>
@@ -91,12 +96,12 @@ export default function AdminBlogPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50">
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Стаття</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Теги</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Дата</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Статус</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Популярне</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Дії</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.article')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.tags')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.date')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.status')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:blogAdmin.table.featured')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">{t('blogAdmin.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -107,10 +112,10 @@ export default function AdminBlogPage() {
                       <img src={article.imageUrl || undefined} className="w-12 h-12 rounded-xl object-cover" alt="" />
                       <div className="min-w-0">
                         <p className="font-bold text-gray-900 truncate mb-1">
-                          {typeof article.title === 'string' ? article.title : (article.title?.uk || 'Untitled')}
+                          {typeof article.title === 'string' ? article.title : (article.title?.[i18n.language] || article.title?.uk || 'Untitled')}
                         </p>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">
-                          {typeof article.excerpt === 'string' ? article.excerpt : (article.excerpt?.uk || '')}
+                          {typeof article.excerpt === 'string' ? article.excerpt : (article.excerpt?.[i18n.language] || article.excerpt?.uk || '')}
                         </p>
                       </div>
                     </div>
@@ -127,14 +132,14 @@ export default function AdminBlogPage() {
                   <td className="px-8 py-6">
                     <span className="text-xs text-gray-500 font-medium flex items-center gap-2">
                        <Calendar className="w-3 h-3" />
-                       {article.createdAt && format(article.createdAt.toDate(), 'dd.MM.yy', { locale: uk })}
+                       {article.createdAt && format(article.createdAt.toDate(), 'dd.MM.yy', { locale: currentLocale })}
                     </span>
                   </td>
                   <td className="px-8 py-6">
                     {article.published ? (
-                      <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Опубліковано</span>
+                      <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">{t('blogAdmin.status.published')}</span>
                     ) : (
-                      <span className="bg-gray-100 text-gray-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Чернетка</span>
+                      <span className="bg-gray-100 text-gray-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">{t('blogAdmin.status.draft')}</span>
                     )}
                   </td>
                   <td className="px-8 py-6">
@@ -170,7 +175,7 @@ export default function AdminBlogPage() {
                         )}
                       >
                         {confirmDeleteId === article.id ? (
-                          <span className="text-[10px] font-bold uppercase whitespace-nowrap">Підтвердити</span>
+                          <span className="text-[10px] font-bold uppercase whitespace-nowrap">{t('blogAdmin.confirm')}</span>
                         ) : (
                           <Trash2 className="w-5 h-5" />
                         )}

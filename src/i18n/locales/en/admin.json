@@ -5,7 +5,387 @@
     "in_transitMessage": "Your order has been handed over for delivery.",
     "deliveredMessage": "Order delivered. Thank you for choosing Komora!"
   },
+  "sidebar": {
+    "stats": "Statistics",
+    "orders": "Orders",
+    "products": "Products",
+    "blog": "Blog",
+    "blogCategories": "Blog Categories",
+    "subscribers": "Subscribers",
+    "newsletter": "Newsletter",
+    "settings": "Settings",
+    "backup": "Backup",
+    "migration": "Migration",
+    "logout": "Logout",
+    "role": "Owner"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "new": "new",
+    "allRead": "All read",
+    "markAllRead": "Mark all as read",
+    "loading": "Loading...",
+    "accessError": "Access error",
+    "justNow": "Just now",
+    "read": "Read",
+    "view": "View",
+    "empty": "No notifications",
+    "emptyDescription": "Your inbox is empty",
+    "settings": "Notification settings"
+  },
+  "search": {
+    "placeholder": "Search (products, articles, orders)...",
+    "searching": "Searching...",
+    "results": "Search results",
+    "empty": "Nothing found",
+    "tryAnother": "Try another query"
+  },
+  "dashboard": {
+    "title": "Admin Panel",
+    "subtitle": "Overview of your Komora activities",
+    "checkNotifications": "Check notifications",
+    "stats": {
+      "newOrders": "New Orders",
+      "ordersMonth": "Orders (30 d)",
+      "subscribers": "Subscribers",
+      "contentCount": "Articles · Products"
+    },
+    "quickActions": {
+      "writeArticle": "Write an Article",
+      "addProduct": "Add a Product",
+      "sendNewsletter": "Send Newsletter"
+    },
+    "recentOrders": "Recent Orders",
+    "allOrders": "All Orders",
+    "noOrders": "No orders yet"
+  },
+  "orders": {
+    "title": "Orders",
+    "subtitle": "Customer order processing and management",
+    "searchPlaceholder": "Search by number or customer...",
+    "filters": {
+      "all": "All",
+      "new": "New",
+      "confirmed": "Confirmed",
+      "in_transit": "In Transit",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "table": {
+      "number": "Order №",
+      "client": "Customer",
+      "date": "Date",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toasts": {
+      "statusChanged": "Status changed to {{status}}",
+      "updateError": "Update error",
+      "cancelReasonRequired": "Please provide a cancellation reason"
+    },
+    "cancelModal": {
+      "title": "Order Cancellation",
+      "warning": "You are cancelling order",
+      "description": "This action will send a cancellation notice to the customer.",
+      "reasonLabel": "Cancellation Reason",
+      "reasonPlaceholder": "Provide a reason for the customer (e.g. Item out of stock)",
+      "confirm": "Confirm Cancellation",
+      "cancel": "Back"
+    }
+  },
+  "orderDetails": {
+    "notFound": "Order not found",
+    "backToList": "Back to orders list",
+    "items": "Order Items",
+    "totalToPay": "Total to pay",
+    "clientComment": "Customer comment:",
+    "history": "Order History",
+    "created": "Order created",
+    "lastUpdate": "Last modified",
+    "client": "Customer",
+    "changeStatus": "Change Status"
+  },
+  "products": {
+    "title": "Products & Goods",
+    "subtitle": "Manage your Komora assortment",
+    "addNew": "Add Product",
+    "searchPlaceholder": "Search by name...",
+    "table": {
+      "product": "Product",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Availability",
+      "featured": "Featured",
+      "actions": "Actions"
+    },
+    "stock": {
+      "available": "In Stock",
+      "unavailable": "Out of Stock"
+    },
+    "toasts": {
+      "featuredToggled": "Top product status updated",
+      "deleted": "Product deleted",
+      "deleteError": "Deletion error",
+      "genericError": "Error"
+    }
+  },
+  "productForm": {
+    "backToList": "Back to products list",
+    "editTitle": "Edit Product",
+    "newTitle": "New Product",
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "priceLabel": "Base Price (UAH)",
+    "priceEUR": "Price in EUR",
+    "priceUSD": "Price in USD",
+    "categoryLabel": "Category",
+    "noCategory": "Uncategorized",
+    "unitsLabel": "Measurement units (e.g. pc, 500g, 1l)",
+    "inStock": "Availability",
+    "inStockHelp": "Show in the store",
+    "featured": "Featured product",
+    "featuredHelp": "Display on the main page",
+    "settings": "Settings",
+    "linkedArticles": "Linked Articles (Recipes)",
+    "saving": "Saving...",
+    "save": "Save Product",
+    "cancel": "Cancel",
+    "toasts": {
+      "imageUploaded": "Image uploaded",
+      "imageRecommendation": "Recommended: square images up to 5MB.",
+      "uploadError": "Upload error",
+      "saved": "Product saved",
+      "saveError": "Save error",
+      "requiredFields": "Name (UA), description (UA), and price (UAH) are required"
+    }
+  },
+  "blogAdmin": {
+    "title": "Blog & Recipes",
+    "subtitle": "Share your Komora stories",
+    "addNew": "New Article",
+    "searchPlaceholder": "Search by title...",
+    "table": {
+      "article": "Article",
+      "tags": "Tags",
+      "date": "Date",
+      "status": "Status",
+      "featured": "Featured",
+      "actions": "Actions"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "toasts": {
+      "statusChanged": "Status changed",
+      "updateError": "Update error",
+      "deleted": "Article deleted",
+      "deleteError": "Deletion error"
+    },
+    "confirm": "Confirm"
+  },
+  "articleForm": {
+    "backToList": "Back to articles list",
+    "editTitle": "Edit Article",
+    "newTitle": "New Article",
+    "titleLabel": "Title",
+    "excerptLabel": "Short Description",
+    "bodyLabel": "Article Body",
+    "coverHeader": "Cover Image",
+    "noPhoto": "No photo",
+    "changeCover": "Change",
+    "categoryLabel": "Category",
+    "noCategory": "Uncategorized",
+    "publish": "Publish",
+    "featured": "Featured",
+    "linkedProducts": "Recipe Products",
+    "saving": "Saving...",
+    "save": "Save Article",
+    "cancel": "Cancel",
+    "insertProduct": "Product Card",
+    "insertProductModal": "Insert product into text",
+    "productSearchPlaceholder": "Search product by name...",
+    "select": "Select",
+    "noProductsFound": "No products found",
+    "toasts": {
+      "coverUploaded": "Cover uploaded",
+      "uploadError": "Upload error",
+      "requiredFields": "Title and other fields are required"
+    }
+  },
+  "blogCategoriesAdmin": {
+    "title": "Blog Categories",
+    "newCategoryLabel": "New Category Name",
+    "addButton": "Add Category",
+    "empty": "No categories yet",
+    "confirm": "Confirm",
+    "toasts": {
+      "nameRequired": "Name is required",
+      "added": "Category added",
+      "deleted": "Deleted",
+      "error": "Error"
+    }
+  },
+  "subscribers": {
+    "title": "Subscribers",
+    "subtitle": "Mailing list contact database",
+    "table": {
+      "email": "Email",
+      "status": "Status",
+      "date": "Subscription Date",
+      "actions": "Actions"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending"
+    },
+    "confirm": "Confirm",
+    "empty": "The list is empty",
+    "toasts": {
+      "deleted": "Subscriber deleted",
+      "deleteError": "Deletion error"
+    }
+  },
   "newsletter": {
-    "subject": "New recipe: {{title}}"
+    "title": "Newsletter",
+    "stats": {
+      "recipients": "{{count}} recipients"
+    },
+    "tabs": {
+      "compose": "Compose",
+      "history": "History"
+    },
+    "composer": {
+      "segmentsLabel": "Target Recipients:",
+      "subjectTemplate": "Our new recipe: {{title}} 🍓",
+      "subjectLabel": "Email Subject",
+      "subjectPlaceholder": "e.g. Our new delicious recipe...",
+      "introLabel": "Intro Text",
+      "introPlaceholder": "Write a few welcoming words...",
+      "previewButton": "Preview",
+      "previewTitle": "Newsletter Preview",
+      "closePreview": "Close",
+      "sendButton": "Send to All",
+      "confirmSendButton": "Confirm ({{count}} segments)",
+      "dynamicArticleTitle": "Select Recipe",
+      "dynamicArticleSubtitle": "Data (photo, title, description) will be pulled automatically"
+    },
+    "history": {
+      "recent": "Just now",
+      "empty": "Newsletter history is empty"
+    },
+    "toasts": {
+      "noSubscribers": "No subscribers in selected segments",
+      "sending": "Sending...",
+      "sent": "Successfully sent to {{count}} subscribers",
+      "error": "Error while sending"
+    },
+    "email": {
+      "tryProducts": "Try these products from the recipe:",
+      "orderNow": "Order Now",
+      "unsubscribeNote": "You received this email because you subscribed to Komora newsletter.",
+      "readRecipe": "Read Recipe"
+    }
+  },
+  "settings": {
+    "title": "Platform Settings",
+    "saveAll": "Save All",
+    "sections": {
+      "hero": "Hero Section",
+      "about": "About Us",
+      "pickup": "Pickup"
+    },
+    "hero": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "ctaText": "CTA Text",
+      "bgImage": "Background Image"
+    },
+    "pickup": {
+      "empty": "No pickup points added",
+      "editTitle": "Edit Point",
+      "addTitle": "Add Pickup Point",
+      "saveButton": "Save Point"
+    }
+  },
+  "backup": {
+    "title": "Backup & Data Recovery",
+    "description": "A tool to export and import all of your store's data (Firestore). It is recommended to perform a backup before major changes.",
+    "toasts": {
+      "exportSuccess": "Data successfully exported",
+      "exportError": "Error during export",
+      "importError": "Error during import",
+      "invalidFile": "Invalid file format",
+      "importSuccess": "Data restored successfully!"
+    },
+    "export": {
+      "title": "Data Export",
+      "description": "Download all collections in JSON format as a single file.",
+      "button": "Download Backup (.json)"
+    },
+    "import": {
+      "title": "Data Recovery",
+      "description": "Upload a previously created backup file to restore the database.",
+      "dropzoneTitle": "Drag and drop a file here or click",
+      "dropzoneDescription": "Only .json files generated by this system"
+    },
+    "progress": {
+      "title": "Restoration in Progress",
+      "description": "Please do not close the tab until the operation is complete.",
+      "label": "Records restored:"
+    },
+    "modal": {
+      "title": "Confirm Restoration",
+      "description": "Are you sure? This action will COMPLETELY OVERWRITE existing data in collections with the backup. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Yes, restore"
+    }
+  },
+  "migration": {
+    "title": "Migration to i18n + multi-currency",
+    "subtitle": "A tool to convert existing data to the new format (language and currency support).",
+    "warning": {
+      "title": "WARNING: THIS IS AN IRREVERSIBLE OPERATION",
+      "step1": "Always perform a backup via /admin/backup before running",
+      "step2": "Do not close the tab or disconnect from the internet during the process",
+      "step3": "Run a 'Dry run' first to verify before real migration"
+    },
+    "buttons": {
+      "dry": "Dry run",
+      "real": "Run Migration"
+    },
+    "modal": {
+      "title": "Confirm Migration",
+      "question": "Are you sure?",
+      "description": "This will change data in the database. This is an irreversible operation. Ensure you have a backup.",
+      "cancel": "Cancel",
+      "confirm": "Yes, run"
+    },
+    "progress": {
+      "processing": "Processing {{collection}}..."
+    },
+    "logsTitle": "Operation Log",
+    "logsCount": "{{count}} records",
+    "logsEmpty": "Waiting to start...",
+    "types": {
+      "dry": "dry run",
+      "real": "migration"
+    },
+    "logs": {
+      "start": "Starting {{type}}...",
+      "success": "{{type}} completed successfully!",
+      "error": "Migration ERROR: {{error}}",
+      "checkingColl": "Checking collection {{collName}}...",
+      "collProcessed": "Collection {{collName}} processed.",
+      "checkingDoc": "Checking document {{path}}...",
+      "docProcessed": "Document {{path}} processed.",
+      "collectingTags": "Collecting unique tags...",
+      "foundTags": "Found {{count}} unique tags."
+    },
+    "toasts": {
+      "success": "{{type}} completed",
+      "error": "Migration error"
+    }
   }
 }

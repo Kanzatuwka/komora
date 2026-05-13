@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { db } from '@/shared/lib/firebase';
+import { useTranslation } from 'react-i18next';
 import { 
   collection, 
   getDocs, 
@@ -39,6 +40,7 @@ interface MigrationProgress {
 }
 
 export default function AdminMigratePage() {
+  const { t } = useTranslation('admin');
   const { showToast } = useToast();
   const [isMigrating, setIsMigrating] = useState(false);
   const [logs, setLogs] = useState<MigrationLog[]>([]);
@@ -53,9 +55,11 @@ export default function AdminMigratePage() {
     setIsMigrating(true);
     setLogs([]);
     setProgress(null);
-    addLog(`Запуск ${dryRun ? 'сухого прогону' : 'міграції'}...`, dryRun ? 'info' : 'warning');
+    addLog(t('migration.logs.start', { type: dryRun ? t('migration.types.dry') : t('migration.types.real') }), dryRun ? 'info' : 'warning');
 
     try {
+      // ... (migration logic stays mostly the same but could use translated logs)
+      
       // 1. Products
       await migrateCollection('products', (data) => {
         const updates: any = {};
@@ -132,12 +136,12 @@ export default function AdminMigratePage() {
         return Object.keys(updates).length > 0 ? updates : null;
       }, dryRun);
 
-      addLog(`Міграція ${dryRun ? '(сухий прогін) ' : ''}успішно завершена!`, 'success');
-      showToast({ message: `Міграція ${dryRun ? '(сухий прогін) ' : ''}завершена`, type: 'success' });
+      addLog(t('migration.logs.success', { type: dryRun ? t('migration.types.dry') : '' }), 'success');
+      showToast({ message: t('migration.toasts.success', { type: dryRun ? t('migration.types.dry') : '' }), type: 'success' });
     } catch (error) {
       console.error('Migration error:', error);
-      addLog(`ПОМИЛКА міграції: ${error instanceof Error ? error.message : String(error)}`, 'error');
-      showToast({ message: 'Помилка міграції', type: 'error' });
+      addLog(t('migration.logs.error', { error: error instanceof Error ? error.message : String(error) }), 'error');
+      showToast({ message: t('migration.toasts.error'), type: 'error' });
     } finally {
       setIsMigrating(false);
       setProgress(null);
@@ -145,7 +149,7 @@ export default function AdminMigratePage() {
   };
 
   const migrateCollection = async (collName: string, transform: (data: any) => any, dryRun: boolean) => {
-    addLog(`Перевірка колекції ${collName}...`);
+    addLog(t('migration.logs.checkingColl', { collName }));
     const snapshot = await getDocs(collection(db, collName));
     const total = snapshot.size;
     let current = 0;
@@ -184,11 +188,11 @@ export default function AdminMigratePage() {
         }
       }
     }
-    addLog(`Колекція ${collName} оброблена.`, 'success');
+    addLog(t('migration.logs.collProcessed', { collName }), 'success');
   };
 
   const migrateDocument = async (collName: string, docId: string, transform: (data: any) => any, dryRun: boolean) => {
-    addLog(`Перевірка документа ${collName}/${docId}...`);
+    addLog(t('migration.logs.checkingDoc', { path: `${collName}/${docId}` }));
     const docRef = doc(db, collName, docId);
     const d = await getDoc(docRef);
     
@@ -201,11 +205,11 @@ export default function AdminMigratePage() {
         addLog(`${dryRun ? '[DRY RUN] ' : ''}Migrated ${collName}/${docId}: ${Object.keys(updates).join(', ')}`, 'info');
       }
     }
-    addLog(`Документ ${collName}/${docId} оброблений.`, 'success');
+    addLog(t('migration.logs.docProcessed', { path: `${collName}/${docId}` }), 'success');
   };
 
   const migrateTags = async (dryRun: boolean) => {
-    addLog('Збір унікальних тегів...');
+    addLog(t('migration.logs.collectingTags'));
     const tagsMap = new Map<string, 'product' | 'article' | 'both'>();
 
     // Get product tags
@@ -240,7 +244,7 @@ export default function AdminMigratePage() {
     });
 
     const total = tagsMap.size;
-    addLog(`Знайдено ${total} унікальних тегів.`);
+    addLog(t('migration.logs.foundTags', { count: total }));
     setProgress({ total, current: 0, collection: 'tags' });
 
     let current = 0;
@@ -280,25 +284,25 @@ export default function AdminMigratePage() {
         addLog(`Committed batch for tags`, 'success');
       }
     }
-    addLog('Колекція tags оброблена.', 'success');
+    addLog(t('migration.logs.collProcessed', { collName: 'tags' }), 'success');
   };
 
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-farm-green mb-2">Міграція на i18n + multi-currency</h1>
-        <p className="text-farm-wood/70">Інструмент для конвертації існуючих даних у новий формат.</p>
+        <h1 className="text-3xl font-bold text-farm-green mb-2">{t('migration.title')}</h1>
+        <p className="text-farm-wood/70">{t('migration.subtitle')}</p>
       </div>
 
       <div className="bg-red-50 border-l-4 border-red-500 p-6 mb-8 rounded-r-2xl">
         <div className="flex items-center gap-3 mb-4">
           <AlertTriangle className="w-8 h-8 text-red-600" />
-          <h2 className="text-xl font-bold text-red-600">УВАГА: ЦЕ НЕЗВОРОТНЯ ОПЕРАЦІЯ</h2>
+          <h2 className="text-xl font-bold text-red-600 uppercase tracking-tight">{t('migration.warning.title')}</h2>
         </div>
         <ul className="list-disc list-inside space-y-2 text-red-800 font-medium">
-          <li>Перед запуском обов'язково зробіть бекап через <a href="/admin/backup" className="underline">/admin/backup</a></li>
-          <li>Не закривайте вкладку та не вимикайте інтернет під час процесу</li>
-          <li>Для перевірки спочатку запустіть "Сухий прогін"</li>
+          <li>{t('migration.warning.step1')}</li>
+          <li>{t('migration.warning.step2')}</li>
+          <li>{t('migration.warning.step3')}</li>
         </ul>
       </div>
 
@@ -311,7 +315,7 @@ export default function AdminMigratePage() {
             disabled={isMigrating}
           >
             <FileSearch className="w-5 h-5 mr-2" />
-            Сухий прогін (dry run)
+            {t('migration.buttons.dry')}
           </Button>
           <Button 
             className="flex-1 min-w-[200px] bg-red-600 hover:bg-red-700 border-red-600"
@@ -319,7 +323,7 @@ export default function AdminMigratePage() {
             disabled={isMigrating}
           >
             <Play className="w-5 h-5 mr-2" />
-            Запустити міграцію
+            {t('migration.buttons.real')}
           </Button>
         </div>
 
@@ -327,15 +331,15 @@ export default function AdminMigratePage() {
         <Modal 
           isOpen={showConfirmModal} 
           onClose={() => setShowConfirmModal(false)}
-          title="Підтвердження міграції"
+          title={t('migration.modal.title')}
         >
           <div className="text-center">
             <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertTriangle className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-farm-green mb-4">Ви впевнені?</h3>
+            <h3 className="text-xl font-bold text-farm-green mb-4">{t('migration.modal.question')}</h3>
             <p className="text-gray-600 mb-8">
-              Це змінить дані у базі даних. Це незворотня операція. Переконайтеся, що ви зробили бекап.
+              {t('migration.modal.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
@@ -343,7 +347,7 @@ export default function AdminMigratePage() {
                 className="flex-1" 
                 onClick={() => setShowConfirmModal(false)}
               >
-                Скасувати
+                {t('migration.modal.cancel')}
               </Button>
               <Button 
                 className="flex-1 bg-red-600 hover:bg-red-700 border-red-600" 
@@ -352,7 +356,7 @@ export default function AdminMigratePage() {
                   runMigration(false);
                 }}
               >
-                Так, запустити
+                {t('migration.modal.confirm')}
               </Button>
             </div>
           </div>
@@ -361,7 +365,7 @@ export default function AdminMigratePage() {
         {progress && (
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
-              <span className="font-bold text-farm-green">Обробка {progress.collection}...</span>
+              <span className="font-bold text-farm-green">{t('migration.progress.processing', { collection: progress.collection })}</span>
               <span className="text-farm-green font-black">{progress.current} / {progress.total}</span>
             </div>
             <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden">
@@ -378,16 +382,16 @@ export default function AdminMigratePage() {
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-farm-green flex items-center gap-2">
               <History className="w-5 h-5" />
-              Лог операцій
+              {t('migration.logsTitle')}
             </h3>
-            {logs.length > 0 && <span className="text-xs text-farm-wood/50">{logs.length} записів</span>}
+            {logs.length > 0 && <span className="text-xs text-farm-wood/50">{t('migration.logsCount', { count: logs.length })}</span>}
           </div>
           
           <div className="h-[400px] bg-gray-900 rounded-2xl p-4 overflow-y-auto font-mono text-sm">
             <div className="flex flex-col gap-1">
               <AnimatePresence initial={false}>
                 {logs.length === 0 ? (
-                  <div className="text-gray-500 italic py-8 text-center">Очікування запуску...</div>
+                  <div className="text-gray-500 italic py-8 text-center">{t('migration.logsEmpty')}</div>
                 ) : logs.map((log, i) => (
                   <motion.div 
                     key={i}
