@@ -27,7 +27,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-farm-cream/30">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 pt-32 pb-24">
+      <main className="max-w-7xl mx-auto px-4 pt-24 pb-24">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-farm-green mb-4">{t('blog:title')}</h1>

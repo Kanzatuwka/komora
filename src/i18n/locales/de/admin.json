@@ -43,7 +43,6 @@
   "dashboard": {
     "title": "Admin-Bereich",
     "subtitle": "Übersicht Ihrer Komora-Aktivitäten",
-    "checkNotifications": "Benachrichtigungen prüfen",
     "stats": {
       "newOrders": "Neue Bestellungen",
       "ordersMonth": "Bestellungen (30 Tage)",
@@ -167,7 +166,7 @@
     "searchPlaceholder": "Suche nach Titel...",
     "table": {
       "article": "Artikel",
-      "tags": "Tags",
+      "category": "Kategorie",
       "date": "Datum",
       "status": "Status",
       "featured": "Beliebt",
@@ -208,6 +207,9 @@
     "productSearchPlaceholder": "Produkt nach Name suchen...",
     "select": "Auswählen",
     "noProductsFound": "Keine Produkte gefunden",
+    "addLinkedProduct": "Produkt zum Rezept hinzufügen",
+    "noLinkedProducts": "Noch keine Produkte hinzugefügt",
+    "noMoreProducts": "Keine weiteren Produkte verfügbar",
     "toasts": {
       "coverUploaded": "Titelbild hochgeladen",
       "uploadError": "Fehler beim Hochladen",
@@ -289,24 +291,43 @@
     }
   },
   "settings": {
-    "title": "Plattform-Einstellungen",
+    "title": {
+      "main": "Plattform-Einstellungen",
+      "sub": "Seiteninhalt und Abholstellen"
+    },
     "saveAll": "Alles speichern",
     "sections": {
       "hero": "Hero-Bereich",
       "about": "Über uns",
       "pickup": "Abholung"
     },
-    "hero": {
-      "title": "Titel",
+    "labels": {
+      "title": "Haupttitel",
       "subtitle": "Untertitel",
-      "ctaText": "CTA-Text",
-      "bgImage": "Hintergrundbild"
+      "ctaText": "Button-Text (Shop)",
+      "heroImage": "Hintergrundbild",
+      "aboutText": "Text des Bereichs 'Über uns'",
+      "aboutImage": "Bild des Bereichs 'Über uns'"
     },
-    "pickup": {
+    "points": {
       "empty": "Keine Abholstellen hinzugefügt",
       "editTitle": "Punkt bearbeiten",
       "addTitle": "Abholstelle hinzufügen",
-      "saveButton": "Punkt speichern"
+      "saveButton": "Punkt speichern",
+      "labelName": "Standortname (z. B. Shop Nr. 1)",
+      "labelAddress": "Vollständige Adresse",
+      "labelHours": "Öffnungszeiten",
+      "confirmDelete": "Löschen?"
+    },
+    "toasts": {
+      "saved": "Einstellungen erfolgreich gespeichert",
+      "saveError": "Fehler beim Speichern",
+      "loadError": "Einstellungen konnten nicht geladen werden",
+      "pointAdded": "Abholstelle hinzugefügt",
+      "pointUpdated": "Punkt aktualisiert",
+      "pointDeleted": "Punkt gelöscht",
+      "deleteError": "Fehler beim Löschen",
+      "pointSaveError": "Fehler beim Speichern des Punktes"
     }
   },
   "backup": {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useArticles } from '../../blog/hooks/useBlogData';
+import { useArticles, useBlogCategories } from '../../blog/hooks/useBlogData';
 import { db } from '@/shared/lib/firebase';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
@@ -25,10 +25,13 @@ import { useTranslation } from 'react-i18next';
 
 export default function AdminBlogPage() {
   const { t, i18n } = useTranslation('admin');
-  const { articles, loading } = useArticles({ count: 100 });
+  const { articles, loading: articlesLoading } = useArticles({ count: 100 });
+  const { categories, loading: categoriesLoading } = useBlogCategories();
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { showToast } = useToast();
+
+  const loading = articlesLoading || categoriesLoading;
 
   const dateLocales: Record<string, any> = { uk, en: enUS, de };
   const currentLocale = dateLocales[i18n.language] || uk;
@@ -97,7 +100,7 @@ export default function AdminBlogPage() {
             <thead>
               <tr className="bg-gray-50/50">
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.article')}</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.tags')}</th>
+                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.category')}</th>
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.date')}</th>
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('blogAdmin.table.status')}</th>
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">{t('admin:blogAdmin.table.featured')}</th>
@@ -121,13 +124,9 @@ export default function AdminBlogPage() {
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <div className="flex flex-wrap gap-1">
-                      {article.tags?.slice(0, 2).map((t: string) => (
-                        <span key={t} className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
+                    <span className="bg-gray-50 text-gray-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      {categories.find(c => c.id === article.categoryId)?.name || t('articleForm.noCategory')}
+                    </span>
                   </td>
                   <td className="px-8 py-6">
                     <span className="text-xs text-gray-500 font-medium flex items-center gap-2">

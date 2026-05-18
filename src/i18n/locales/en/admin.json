@@ -43,7 +43,6 @@
   "dashboard": {
     "title": "Admin Panel",
     "subtitle": "Overview of your Komora activities",
-    "checkNotifications": "Check notifications",
     "stats": {
       "newOrders": "New Orders",
       "ordersMonth": "Orders (30 d)",
@@ -167,7 +166,7 @@
     "searchPlaceholder": "Search by title...",
     "table": {
       "article": "Article",
-      "tags": "Tags",
+      "category": "Category",
       "date": "Date",
       "status": "Status",
       "featured": "Featured",
@@ -208,6 +207,9 @@
     "productSearchPlaceholder": "Search product by name...",
     "select": "Select",
     "noProductsFound": "No products found",
+    "addLinkedProduct": "Add product to recipe",
+    "noLinkedProducts": "No products added yet",
+    "noMoreProducts": "No more products available",
     "toasts": {
       "coverUploaded": "Cover uploaded",
       "uploadError": "Upload error",
@@ -289,24 +291,43 @@
     }
   },
   "settings": {
-    "title": "Platform Settings",
+    "title": {
+      "main": "Platform Settings",
+      "sub": "Page content and pickup points"
+    },
     "saveAll": "Save All",
     "sections": {
       "hero": "Hero Section",
       "about": "About Us",
       "pickup": "Pickup"
     },
-    "hero": {
-      "title": "Title",
+    "labels": {
+      "title": "Main Title",
       "subtitle": "Subtitle",
-      "ctaText": "CTA Text",
-      "bgImage": "Background Image"
+      "ctaText": "Button Text (Shop)",
+      "heroImage": "Background Image",
+      "aboutText": "About Us Section Text",
+      "aboutImage": "About Us Section Image"
     },
-    "pickup": {
+    "points": {
       "empty": "No pickup points added",
       "editTitle": "Edit Point",
       "addTitle": "Add Pickup Point",
-      "saveButton": "Save Point"
+      "saveButton": "Save Point",
+      "labelName": "Location Name (e.g. Shop #1)",
+      "labelAddress": "Full Address",
+      "labelHours": "Working Hours",
+      "confirmDelete": "Delete?"
+    },
+    "toasts": {
+      "saved": "Settings saved successfully",
+      "saveError": "Error while saving",
+      "loadError": "Failed to load settings",
+      "pointAdded": "Pickup point added",
+      "pointUpdated": "Point updated",
+      "pointDeleted": "Point deleted",
+      "deleteError": "Error while deleting",
+      "pointSaveError": "Error while saving point"
     }
   },
   "backup": {

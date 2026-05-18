@@ -20,7 +20,9 @@ import {
   Heading1,
   Heading2,
   Quote,
-  Sparkles
+  Sparkles,
+  Plus,
+  X
 } from 'lucide-react';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { Modal } from '@/shared/components/Modal';
@@ -133,8 +135,10 @@ export default function AdminArticleFormPage() {
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [linkedSearchTerm, setLinkedSearchTerm] = useState('');
   const [bodyActiveTab, setBodyActiveTab] = useState<Language>('uk');
   const [isProductPickerOpen, setIsProductPickerOpen] = useState(false);
+  const [isLinkedPickerOpen, setIsLinkedPickerOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     title: { uk: '', en: '', de: '' },
@@ -182,6 +186,14 @@ export default function AdminArticleFormPage() {
 
   const { products } = useProducts({ category: 'all' });
   const { categories } = useBlogCategories();
+
+  const linkedProducts = useMemo(() => {
+    return products.filter(p => formData.linkedProductIds.includes(p.id));
+  }, [products, formData.linkedProductIds]);
+
+  const unlinkedProducts = useMemo(() => {
+    return products.filter(p => !formData.linkedProductIds.includes(p.id));
+  }, [products, formData.linkedProductIds]);
 
   useEffect(() => {
     if (isEdit) {
@@ -512,29 +524,112 @@ export default function AdminArticleFormPage() {
               </label>
             </div>
 
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 ml-2">{t('admin:articleForm.linkedProducts')}</p>
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-2 no-scrollbar">
-                {products.map(product => (
-                  <label key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-farm-green/5">
-                    <input 
-                      type="checkbox"
-                      checked={formData.linkedProductIds.includes(product.id)}
-                      onChange={e => {
-                        const ids = e.target.checked 
-                          ? [...formData.linkedProductIds, product.id]
-                          : formData.linkedProductIds.filter(id => id !== product.id);
-                        setFormData({ ...formData, linkedProductIds: ids });
-                      }}
-                      className="accent-farm-green"
-                    />
-                    <span className="text-xs font-medium truncate">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4 ml-2">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{t('admin:articleForm.linkedProducts')}</p>
+                <button 
+                  type="button"
+                  onClick={() => setIsLinkedPickerOpen(true)}
+                  className="p-1.5 hover:bg-farm-green/10 rounded-lg transition-colors text-farm-green"
+                  title={t('admin:articleForm.addLinkedProduct')}
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="space-y-2">
+                {linkedProducts.map(product => (
+                  <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl group border border-transparent hover:border-farm-green/20 transition-all">
+                    <img src={product.images?.[0] || undefined} className="w-8 h-8 rounded-lg object-cover bg-white" alt="" />
+                    <span 
+                      className="text-[10px] font-bold text-gray-700 line-clamp-2 flex-1 leading-tight break-words hyphens-auto"
+                      title={pickLocale(product.name, language)}
+                      lang={language}
+                    >
                       {pickLocale(product.name, language)}
                     </span>
-                  </label>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ 
+                        ...prev, 
+                        linkedProductIds: prev.linkedProductIds.filter(id => id !== product.id) 
+                      }))}
+                      className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 ))}
+                {linkedProducts.length === 0 && (
+                  <div className="text-center py-6 px-4 bg-gray-50/50 rounded-[2rem] border-2 border-dashed border-gray-100">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                      {t('admin:articleForm.noLinkedProducts')}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Linked Product Selection Modal */}
+            <Modal
+              isOpen={isLinkedPickerOpen}
+              onClose={() => setIsLinkedPickerOpen(false)}
+              title={t('admin:articleForm.addLinkedProduct')}
+            >
+              <div className="space-y-6">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                  <input
+                    type="text"
+                    placeholder={t('admin:articleForm.productSearchPlaceholder')}
+                    value={linkedSearchTerm}
+                    onChange={e => setLinkedSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-farm-green/20 outline-none font-medium"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                  {unlinkedProducts.filter(p => {
+                    const searchQ = linkedSearchTerm.toLowerCase();
+                    return SUPPORTED_LANGUAGES.some(lng => 
+                      pickLocale(p.name, lng).toLowerCase().includes(searchQ)
+                    );
+                  }).map(product => (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          linkedProductIds: [...prev.linkedProductIds, product.id]
+                        }));
+                        setIsLinkedPickerOpen(false);
+                        setLinkedSearchTerm('');
+                      }}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 hover:bg-farm-green hover:text-white transition-all text-left group"
+                    >
+                      <img src={product.images?.[0] || undefined} className="w-12 h-12 rounded-xl object-cover bg-white" alt="" />
+                      <div className="flex-1 pr-2">
+                        <p 
+                          className="font-bold text-sm line-clamp-2 leading-snug break-words hyphens-auto"
+                          title={pickLocale(product.name, language)}
+                          lang={language}
+                        >
+                          {pickLocale(product.name, language)}
+                        </p>
+                        <p className="text-[10px] uppercase font-bold tracking-widest opacity-60 mt-0.5">
+                          {typeof product.price === 'number' ? product.price : (product.price?.[i18n.language === 'uk' ? 'UAH' : i18n.language === 'en' ? 'USD' : 'EUR'] || product.price?.UAH || 0)} {i18n.language === 'uk' ? '₴' : i18n.language === 'en' ? '$' : '€'}
+                        </p>
+                      </div>
+                      <Plus className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  ))}
+                  {unlinkedProducts.length === 0 && (
+                    <p className="text-center py-8 text-gray-400 font-medium">{t('admin:articleForm.noMoreProducts')}</p>
+                  )}
+                </div>
+              </div>
+            </Modal>
           </div>
 
           <div className="bg-farm-green p-8 rounded-[2.5rem] shadow-xl text-white">

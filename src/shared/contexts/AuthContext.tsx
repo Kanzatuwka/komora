@@ -27,7 +27,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    localStorage.removeItem('komora-cart');
+    await signOut(auth);
+    window.location.href = '/';
+  };
 
   useEffect(() => {
     let profileUnsub: () => void = () => {};

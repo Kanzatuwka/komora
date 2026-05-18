@@ -32,7 +32,7 @@ function detectInitialLanguage(): Language {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [currentLanguage, setCurrentLanguage] = React.useState<string>(
     () => i18n.language || detectInitialLanguage()
   );
@@ -63,37 +63,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // empty deps — run once
 
-  // Sync language from Firestore — only ONCE per user login
+  // Sync language from Firestore profile
   useEffect(() => {
-    if (!user) {
-      syncedUserIdRef.current = null;
-      return;
-    }
-    // Skip if we already synced this user
-    if (syncedUserIdRef.current === user.uid) return;
-    // Skip if user is mid-change
+    if (!profile?.language) return;
     if (isUserChangingRef.current) return;
-    
-    syncedUserIdRef.current = user.uid;
-    
-    (async () => {
-      try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        const stored = snap.data()?.language as Language | undefined;
-        if (
-          stored &&
-          (SUPPORTED_LANGUAGES as readonly string[]).includes(stored) &&
-          stored !== i18n.language &&
-          !isUserChangingRef.current // double-check no concurrent change
-        ) {
-          await i18n.changeLanguage(stored);
-          localStorage.setItem(STORAGE_KEY, stored);
-        }
-      } catch (error) {
-        console.error('Error fetching user language:', error);
-      }
-    })();
-  }, [user?.uid, i18n]);
+
+    if (profile.language !== i18n.language) {
+      i18n.changeLanguage(profile.language);
+      localStorage.setItem(STORAGE_KEY, profile.language);
+    }
+  }, [profile?.language, i18n]);
 
   const changeLanguage = async (lang: Language) => {
     if (!(SUPPORTED_LANGUAGES as readonly string[]).includes(lang)) return;

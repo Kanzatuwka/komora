@@ -7,21 +7,19 @@ import {
   FileText,
   Plus,
   Mail,
-  ArrowRight,
-  Bell
+  ArrowRight
 } from 'lucide-react';
 import { PageLoader } from '@/shared/components/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/Button';
 import { cn } from '@/shared/lib/utils';
-import { useNotifications } from '../hooks/useNotifications';
 import { useTranslation } from 'react-i18next';
+import { formatPrice } from '@/shared/lib/format';
 
 export default function AdminDashboard() {
-  const { t } = useTranslation('admin');
+  const { t, i18n } = useTranslation('admin');
   const { stats, loading } = useAdminStats();
   const navigate = useNavigate();
-  const { createNotification } = useNotifications();
 
   if (loading) return <PageLoader />;
 
@@ -66,16 +64,6 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
           <p className="text-gray-500">{t('dashboard.subtitle')}</p>
         </div>
-        <button 
-          onClick={() => createNotification({
-            title: 'Тест',
-            message: 'Сповіщення працюють!',
-            type: 'system'
-          })}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-[10px] font-bold uppercase transition-all"
-        >
-          <Bell className="w-3 h-3" /> {t('dashboard.checkNotifications')}
-        </button>
       </div>
 
       {/* Cards */}
@@ -145,7 +133,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-bold text-gray-900 mb-0.5">{order.total} ₴</p>
+                <p className="font-bold text-gray-900 mb-0.5">{formatPrice(order.total, order.currency || 'UAH', i18n.language)}</p>
                 <p className="text-[10px] text-farm-berry font-bold uppercase tracking-widest">{order.status}</p>
               </div>
             </Link>

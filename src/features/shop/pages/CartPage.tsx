@@ -23,7 +23,7 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-farm-cream/30">
         <Navbar />
-        <main className="max-w-7xl mx-auto px-4 pt-32 pb-24 flex items-center justify-center">
+        <main className="max-w-7xl mx-auto px-4 pt-24 pb-24 flex items-center justify-center">
           <EmptyState 
             title={t('shop:cart.empty')}
             description={t('shop:cart.emptyDescription')}
@@ -39,7 +39,7 @@ export default function CartPage() {
     <div className="min-h-screen bg-farm-cream/30">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 pt-32 pb-24">
+      <main className="max-w-7xl mx-auto px-4 pt-24 pb-24">
         <div className="flex items-center justify-between mb-12">
           <div>
             <h1 className="text-4xl font-bold text-farm-green mb-2">{t('shop:cart.title')}</h1>

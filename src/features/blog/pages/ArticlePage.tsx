@@ -35,7 +35,7 @@ export default function ArticlePage() {
     <div className="min-h-screen bg-farm-cream/30">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 pt-32 pb-24">
+      <main className="max-w-4xl mx-auto px-4 pt-24 pb-24">
         <Link to="/blog" className="flex items-center gap-2 text-farm-wood hover:text-farm-green transition-colors mb-12">
           <ChevronLeft className="w-5 h-5" />
           <span className="font-bold">{t('blog:article.backToList')}</span>

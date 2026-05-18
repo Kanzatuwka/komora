@@ -23,6 +23,7 @@ import { uk } from 'date-fns/locale';
 import { useToast } from '@/shared/contexts/ToastContext';
 import { PageLoader } from '@/shared/components/Loader';
 import { cn } from '@/shared/lib/utils';
+import { formatPrice } from '@/shared/lib/format';
 
 export default function AdminProductsPage() {
   const { t, i18n } = useTranslation(['admin', 'shop']);
@@ -136,7 +137,7 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-8 py-6">
                     <span className="font-bold text-gray-900">
-                      {typeof product.price === 'number' ? product.price : (product.price?.[i18n.language === 'uk' ? 'UAH' : i18n.language === 'en' ? 'USD' : 'EUR'] || product.price?.UAH || 0)} {i18n.language === 'uk' ? '₴' : i18n.language === 'en' ? '$' : '€'}
+                      {formatPrice(product.price, i18n.language === 'uk' ? 'UAH' : i18n.language === 'en' ? 'USD' : 'EUR', i18n.language)}
                     </span>
                   </td>
                   <td className="px-8 py-6">

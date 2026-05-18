@@ -24,7 +24,7 @@ export const useCurrency = () => {
 };
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { language } = useLanguage();
   const [currency, setCurrency] = useState<Currency>('UAH');
 
@@ -37,21 +37,15 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     }
   }, [language]);
 
+  // Sync currency from Firestore profile
   useEffect(() => {
-    if (!user) return;
-    (async () => {
-      try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        const stored = snap.data()?.preferredCurrency as Currency | undefined;
-        if (stored && (SUPPORTED_CURRENCIES as readonly string[]).includes(stored)) {
-          setCurrency(stored);
-          localStorage.setItem(STORAGE_KEY, stored);
-        }
-      } catch (error) {
-        console.error('Error fetching user currency:', error);
-      }
-    })();
-  }, [user?.uid]);
+    if (!profile?.preferredCurrency) return;
+    
+    if (profile.preferredCurrency !== currency) {
+      setCurrency(profile.preferredCurrency);
+      localStorage.setItem(STORAGE_KEY, profile.preferredCurrency);
+    }
+  }, [profile?.preferredCurrency, currency]);
 
   const changeCurrency = async (c: Currency) => {
     if (!(SUPPORTED_CURRENCIES as readonly string[]).includes(c)) return;

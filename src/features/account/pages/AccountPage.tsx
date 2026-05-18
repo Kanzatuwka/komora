@@ -76,7 +76,7 @@ export default function AccountPage() {
     <div className="min-h-screen bg-farm-cream/30">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 pt-32 pb-24">
+      <main className="max-w-7xl mx-auto px-4 pt-24 pb-24">
         <div className="grid lg:grid-cols-4 gap-12">
           {/* Sidebar */}
           <div className="lg:col-span-1">

@@ -45,7 +45,7 @@ export default function OrderConfirmationPage() {
     <div className="min-h-screen bg-farm-cream/30">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 pt-32 pb-24">
+      <main className="max-w-4xl mx-auto px-4 pt-24 pb-24">
         <div className="bg-white p-12 md:p-20 rounded-[4rem] shadow-xl text-center flex flex-col items-center">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-8">
             <CheckCircle2 className="w-12 h-12 text-green-600" />

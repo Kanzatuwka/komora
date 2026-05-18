@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useCurrency, Currency } from './CurrencyContext';
+import { useAuth } from './AuthContext';
 
 export interface CartItem {
   productId: string;
@@ -29,6 +30,7 @@ export const useCart = () => {
 };
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const { currency, changeCurrency } = useCurrency();
   const [items, setItems] = useState<CartItem[]>([]);
   const [cartCurrency, setCartCurrency] = useState<Currency | null>(null);
@@ -65,6 +67,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('komora-cart', JSON.stringify({ items, cartCurrency }));
     }
   }, [items, cartCurrency, isInitialized]);
+
+  // Clear cart on logout
+  useEffect(() => {
+    if (!user && isInitialized) {
+      // If we're not logged in, we shouldn't have items from a previous session
+      // (AuthContext already removes it from localStorage on logout)
+      if (items.length > 0) {
+        setItems([]);
+        setCartCurrency(null);
+      }
+    }
+  }, [user, isInitialized, items.length]);
 
   const addItem = (product: any, quantity: number) => {
     // Set cart currency if this is the first item

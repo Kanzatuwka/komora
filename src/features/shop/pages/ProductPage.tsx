@@ -48,7 +48,7 @@ export default function ProductPage() {
     <div className="min-h-screen bg-farm-cream/30">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 pt-32 pb-24">
+      <main className="max-w-7xl mx-auto px-4 pt-24 pb-24">
         <button 
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-farm-wood hover:text-farm-green transition-colors mb-12"

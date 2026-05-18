@@ -28,10 +28,10 @@ export function useAuthActions() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       redirectAfterLogin();
-      showToast({ message: t('auth:login.successToast', { defaultValue: 'Вітаємо з поверненням!' }), type: 'success' });
+      showToast({ message: t('auth:login.successToast'), type: 'success' });
     } catch (err) {
       console.error(err);
-      throw new Error('Невірний email або пароль');
+      throw new Error(t('auth:login.errorInvalid'));
     }
   };
 
@@ -64,7 +64,7 @@ export function useAuthActions() {
       }
       
       redirectAfterLogin();
-      showToast({ message: t('auth:login.googleSuccessToast', { defaultValue: 'Успішний вхід через Google' }), type: 'success' });
+      showToast({ message: t('auth:login.googleSuccessToast'), type: 'success' });
     } catch (err) {
       console.error(err);
       showToast({ message: t('auth:login.errorGeneric'), type: 'error' });
@@ -93,9 +93,9 @@ export function useAuthActions() {
     } catch (err: any) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
-        throw new Error(t('auth:register.errorEmailInUse', { defaultValue: 'Цей email вже використовується' }));
+        throw new Error(t('auth:register.errorEmailInUse'));
       }
-      throw new Error(t('auth:register.errorGeneric', { defaultValue: 'Помилка реєстрації. Спробуйте ще раз.' }));
+      throw new Error(t('auth:register.errorGeneric'));
     }
   };
 
@@ -103,7 +103,7 @@ export function useAuthActions() {
     try {
       await signOut(auth);
       navigate('/');
-      showToast({ message: t('auth:logout.successToast', { defaultValue: 'Ви вийшли з акаунта' }), type: 'info' });
+      showToast({ message: t('auth:logout.successToast'), type: 'info' });
     } catch (err) {
       console.error(err);
     }

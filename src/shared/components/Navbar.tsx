@@ -39,10 +39,10 @@ export function Navbar() {
 
   return (
     <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
       isScrolled 
-        ? "bg-transparent py-4 shadow-none" 
-        : "bg-white/95 backdrop-blur-md py-6 shadow-md border-b border-farm-green/10"
+        ? "bg-white py-2 shadow-md border-b border-farm-green/10" 
+        : "bg-white/95 backdrop-blur-md py-4 shadow-md border-b border-farm-green/10"
     )}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-500">
         <Link to="/" className="text-2xl font-bold text-farm-green flex items-center gap-2">

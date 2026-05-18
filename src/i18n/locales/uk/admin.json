@@ -43,7 +43,6 @@
   "dashboard": {
     "title": "Адмін-панель",
     "subtitle": "Огляд діяльності вашої комори",
-    "checkNotifications": "Перевірити сповіщення",
     "stats": {
       "newOrders": "Нові замовлення",
       "ordersMonth": "Замовлень (30 дн)",
@@ -167,7 +166,7 @@
     "searchPlaceholder": "Пошук за заголовком...",
     "table": {
       "article": "Стаття",
-      "tags": "Теги",
+      "category": "Категорія",
       "date": "Дата",
       "status": "Статус",
       "featured": "Популярне",
@@ -208,6 +207,9 @@
     "productSearchPlaceholder": "Пошук товару за назвою...",
     "select": "Вибрати",
     "noProductsFound": "Товарів не знайдено",
+    "addLinkedProduct": "Додати товар до рецепту",
+    "noLinkedProducts": "Товари ще не додані",
+    "noMoreProducts": "Більше товарів немає",
     "toasts": {
       "coverUploaded": "Обкладинку завантажено",
       "uploadError": "Помилка завантаження",
@@ -289,24 +291,43 @@
     }
   },
   "settings": {
-    "title": "Налаштування платформи",
+    "title": {
+      "main": "Налаштування платформи",
+      "sub": "Вміст сторінок та точок самовивозу"
+    },
     "saveAll": "Зберегти все",
     "sections": {
-      "hero": "Герой-секція",
+      "hero": "Hero-секція",
       "about": "Про нас",
       "pickup": "Самовивіз"
     },
-    "hero": {
-      "title": "Заголовок",
+    "labels": {
+      "title": "Основний заголовок",
       "subtitle": "Підзаголовок",
-      "ctaText": "Текст кнопки",
-      "bgImage": "Фонове фото"
+      "ctaText": "Текст кнопки (Магазин)",
+      "heroImage": "Фонове зображення",
+      "aboutText": "Текст секції 'Про нас'",
+      "aboutImage": "Зображення секції 'Про нас'"
     },
-    "pickup": {
+    "points": {
       "empty": "Точок самовивозу не додано",
       "editTitle": "Редагувати точку",
       "addTitle": "Додати точку самовивозу",
-      "saveButton": "Зберегти точку"
+      "saveButton": "Зберегти точку",
+      "labelName": "Назва локації (напр. Магазин №1)",
+      "labelAddress": "Повна адреса",
+      "labelHours": "Графік роботи",
+      "confirmDelete": "Видалити?"
+    },
+    "toasts": {
+      "saved": "Налаштування успішно збережено",
+      "saveError": "Помилка при збереженні",
+      "loadError": "Не вдалося завантажити налаштування",
+      "pointAdded": "Точку самовивозу додано",
+      "pointUpdated": "Точку оновлено",
+      "pointDeleted": "Точку видалено",
+      "deleteError": "Помилка при видаленні",
+      "pointSaveError": "Помилка при збереженні точки"
     }
   },
   "backup": {

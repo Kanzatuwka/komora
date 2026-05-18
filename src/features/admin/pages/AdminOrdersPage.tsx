@@ -209,7 +209,7 @@ export default function AdminOrdersPage() {
                     </p>
                   </td>
                   <td className="px-8 py-6">
-                    <span className="font-bold text-farm-green">{order.total} ₴</span>
+                    <span className="font-bold text-farm-green">{formatPrice(order.total, order.currency || 'UAH', i18n.language)}</span>
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-2">
