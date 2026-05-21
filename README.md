@@ -1,68 +1,68 @@
-# Комора — Фермерські продукти з душею 🍓
+# Komora — Farm Products Crafted with Soul 🍓
 
-Це повнофункціональна e-commerce платформа для сімейної ферми "Комора", побудована на сучасному стеку **React + Firebase**. Проєкт забезпечує повний цикл взаємодії з клієнтом: від знайомства з брендом через блог до оформлення замовлення та керування особистим кабінетом.
+This is a fully-featured e-commerce platform for the "Komora" family farm, built on a modern **React + Firebase** stack. The project provides a complete cycle of customer interaction: from introducing the brand through the blog to placing orders and managing a personal customer account.
 
-## 🌟 Основні особливості
+## 🌟 Key Features
 
-### 🌍 Глобалізація та UX
-- **Мультимовність (i18n):** Повна підтримка трьох мов (**Українська, Англійська, Німецька**). Автоматичне визначення мови браузера та збереження вибору користувача.
-- **Мультивалютність:** Можливість перегляду цін у **UAH, USD, EUR** з автоматичним перерахунком.
-- **Адаптивний дизайн:** Оптимізовано для всіх пристроїв. Navbar з динамічною висотою та продумана типографіка в стилі "Modern Farm".
+### 🌍 Globalization & UX
+- **Multilingual Support (i18n):** Full support for three languages (**Ukrainian, English, German**). Automatic browser language detection and preservation of user selection.
+- **Multi-currency:** Ability to view prices in **UAH, USD, EUR** with automatic conversion.
+- **Adaptive Design:** Optimized for all devices. Navbar with a dynamic height and carefully curated "Modern Farm" style typography.
 
-### 🛒 Магазин та Замовлення
-- **Каталог товарів:** Фільтрація за категоріями, пошук, сортування та детальні сторінки продуктів.
-- **Кошик та Checkout:** Гнучке управління товарами в кошику та багатокроковий процес оформлення замовлення.
-- **Особистий кабінет:** Історія замовлень, статус доставки, керування профілем та налаштуваннями (мова, валюта).
+### 🛒 Shop & Orders
+- **Product Catalog:** Category filtering, search, sorting, and rich product detail pages.
+- **Cart & Checkout:** Flexible cart item management and a structured multi-step checkout process.
+- **Personal Account:** Order history, delivery status, profile management, and preference customizer (language, currency).
 
-### 📝 Контент та Блог
-- **Rich-Text Блог:** Статті та рецепти з підтримкою мультимедіа та вбудованими картками продуктів.
-- **Взаємозв'язки:** Продукти автоматично відображаються в рецептах, де вони згадуються.
+### 📝 Content & Blog
+- **Rich-Text Blog:** Articles and recipes featuring multimedia support and embedded product showcase cards.
+- **Interconnected Content:** Products automatically appear in recipes/articles where they are mentioned or linked.
 
-### 🔐 Безпека та Аутентифікація
-- **Global AuthContext:** Надійна аутентифікація через Firebase Auth (Google Login).
-- **Авто-профілювання:** Автоматичне створення документа користувача в Firestore при першому вході з дефолтними налаштуваннями.
-- **Firestore Security Rules:** Жорсткі правила доступу, що захищають дані користувачів та забезпечують цілісність контенту.
+### 🔐 Security & Authentication
+- **Global AuthContext:** Reliable authentication via Firebase Auth (Google Login).
+- **Auto-Profiling:** Automated creation of a user document in Firestore on their first login with default preferences.
+- **Firestore Security Rules:** Strict access rules protecting user data and ensuring custom content integrity.
 
-### 🛡 Адмін-панель (The Hub)
-- **Dashboard:** Аналітика замовлень, статистика доходів та популярні товари.
-- **CMS:** Повне CRUD управління продуктами, категоріями та статтями блогу за допомогою **TipTap** редактора.
-- **Маркетинг:** Інтеграція з **Brevo (Sendinblue)** для управління підписниками та автоматичних email-розсилок.
-- **Системні інструменти:** Менеджер бекапів, інструменти міграції та налаштування контенту головної сторінки.
+### 🛡 Admin Panel (The Hub)
+- **Dashboard:** Order analytics, revenue visualizers, and popular items monitoring.
+- **CMS:** Complete CRUD management for products, categories, and blog articles powered by the **TipTap** editor.
+- **Marketing:** Integration with **Brevo (Sendinblue)** to manage subscribers and orchestrate transactional or automated newsletter dispatch campaigns.
+- **System Tools:** Backup manager, database migration utilities, and homepage hero/about layout customizers.
 
-## 🛠 Технологічний стек
+## 🛠 Tech Stack
 
 - **Core:** React 19, Vite, TypeScript
 - **Styling:** Tailwind CSS 4.0
 - **State/Auth:** Firebase (Firestore, Auth, Storage)
-- **Animations:** Framer Motion (через `motion/react`)
+- **Animations:** Framer Motion (via `motion/react`)
 - **UI Components:** Lucide Icons, Headless UI/Radix-like patterns
 - **Editors:** TipTap (Rich Text)
-- **Data Viz:** Recharts (Графіки в адмінці)
+- **Data Viz:** Recharts (Admin Panel Charts)
 - **Internationalization:** i18next + react-i18next
 
-## ⚙️ Початок роботи
+## ⚙️ Getting Started
 
-1. **Встановлення залежностей:**
+1. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. **Налаштування середовища:** Копіюйте `.env.example` у `.env.local` та заповніть ключі Firebase та Brevo.
+2. **Environment Configuration:** Copy `.env.example` to `.env.local` and populate the Firebase and Brevo API credentials.
 
-3. **Запуск:**
+3. **Run Development Server:**
    ```bash
    npm run dev
    ```
 
-## 📂 Структура проєкту
+## 📂 Project Structure
 
-- `/src/features` — Модульна архітектура (shop, blog, admin, account, auth).
-- `/src/shared` — Контексти, спільні компоненти, мовні переклади (i18n), бібліотеки.
-- `/src/db` — Опис схеми даних (blueprint) та правила безпеки.
+- `/src/features` — Modular architecture (shop, blog, admin, account, auth).
+- `/src/shared` — Contexts, shared UI components, localized translations (i18n), libraries.
+- `/src/db` — Data schema blueprint descriptions and security rule files.
 
-## 📝 Стан розробки
+## 📝 Development Status
 
-Проєкт знаходиться на стадії активного розвитку. Поточний прогрес та документацію по модулях можна знайти в папці `/docs`.
+The project is under active development. The current progress and module-by-module documentation can be found in the `/docs` folder.
 
 ---
-© 2024-2026 Комора. Побудовано для людей, які цінують справжнє. 🌿
+© 2024-2026 Komora. Crafted for people who value authenticity. 🌿
