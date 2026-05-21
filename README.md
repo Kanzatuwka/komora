@@ -1,5 +1,7 @@
 # Komora — Farm Products Crafted with Soul 🍓
 
+> 🚀 **Project is live!** The application is currently running within the Google AI Studio environment and is accessible via this link: [**Komora Demo App**](https://ais-pre-u4vjlboq3xz7oo6kyduc5h-13883820133.europe-west2.run.app/)
+
 This is a fully-featured e-commerce platform for the "Komora" family farm, built on a modern **React + Firebase** stack. The project provides a complete cycle of customer interaction: from introducing the brand through the blog to placing orders and managing a personal customer account.
 
 ## 🌟 Key Features

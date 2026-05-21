@@ -1,5 +1,7 @@
 # Komora — Hofprodukte mit Seele hergestellt 🍓
 
+> 🚀 **Projekt ist live!** Die Anwendung läuft derzeit in der Google AI Studio-Umgebung und ist unter folgendem Link erreichbar: [**Komora Demo-Anwendung**](https://ais-pre-u4vjlboq3xz7oo6kyduc5h-13883820133.europe-west2.run.app/)
+
 Dies ist eine voll funktionsfähige E-Commerce-Plattform für den Familien-Bauernhof "Komora", basierend auf einem modernen **React + Firebase** Stack. Das Projekt bietet einen vollständigen Zyklus der Kundeninteraktion: vom Kennenlernen der Marke über den Blog bis hin zur Bestellung und der Verwaltung des persönlichen Kundenkontos.
 
 ## 🌟 Hauptmerkmale
