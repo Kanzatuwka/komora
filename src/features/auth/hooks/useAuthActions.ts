@@ -37,32 +37,7 @@ export function useAuthActions() {
 
   const loginWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      
-      // Якщо це новий користувач — створити документ у /users
-      const userRef = doc(db, 'users', result.user.uid);
-      const snap = await getDoc(userRef);
-      
-      if (!snap.exists()) {
-        const isAdmin = result.user.email === 'olexandr.prykhodko@gmail.com';
-        const defaultCurrency = currentLanguage === 'en' ? 'USD' : currentLanguage === 'de' ? 'EUR' : 'UAH';
-        
-        await setDoc(userRef, {
-          email: result.user.email,
-          name: result.user.displayName || '',
-          phone: '',
-          role: isAdmin ? 'admin' : 'user',
-          language: currentLanguage,
-          preferredCurrency: defaultCurrency,
-          createdAt: serverTimestamp(),
-        });
-      } else {
-        // Ensure admin role for this specific email if document already exists
-        if (result.user.email === 'olexandr.prykhodko@gmail.com') {
-          await setDoc(userRef, { role: 'admin' }, { merge: true });
-        }
-      }
-      
+      await signInWithPopup(auth, googleProvider);
       redirectAfterLogin();
       showToast({ message: t('auth:login.googleSuccessToast'), type: 'success' });
     } catch (err) {
