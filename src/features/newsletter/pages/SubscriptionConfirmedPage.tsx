@@ -8,9 +8,11 @@ import { Button } from '@/shared/components/Button';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { Navbar } from '@/shared/components/Navbar';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 export default function SubscriptionConfirmedPage() {
   const { t } = useTranslation(['newsletter', 'landing', 'common']);
+  const { language: currentLang, changeLanguage } = useLanguage();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const email = searchParams.get('email');
@@ -33,13 +35,23 @@ export default function SubscriptionConfirmedPage() {
         }
 
         const data = snap.data();
+        const subscriberLang = (searchParams.get('lang') || data?.language || 'uk') as 'uk' | 'en' | 'de';
+
+        if (subscriberLang !== currentLang) {
+          try {
+            await changeLanguage(subscriberLang);
+          } catch (langErr) {
+            console.warn('Failed to change interface language:', langErr);
+          }
+        }
+
         if (data.status !== 'confirmed') {
           await updateDoc(docRef, {
             status: 'confirmed'
           });
           
           try {
-            await confirmSubscription(emailId);
+            await confirmSubscription(emailId, subscriberLang);
           } catch (brevoErr) {
             console.warn('Brevo confirmation email failed, but subscription confirmed in DB:', brevoErr);
           }
