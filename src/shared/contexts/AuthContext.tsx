@@ -67,6 +67,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
             });
+          } else {
+            // Ensure admin role for this specific email if document already exists but has user role
+            if (firebaseUser.email === 'olexandr.prykhodko@gmail.com' && snap.data()?.role !== 'admin') {
+              await setDoc(userRef, { role: 'admin' }, { merge: true });
+            }
           }
 
           // Start listening to the user profile document
