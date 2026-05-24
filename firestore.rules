@@ -107,8 +107,14 @@ service cloud.firestore {
       allow create: if (isOwner(uid) && isValidId(uid) && isValidUser(incoming()) && 
                     (incoming().role == 'user' || (incoming().role == 'admin' && incoming().email == 'olexandr.prykhodko@gmail.com'))) || isAdmin();
       allow update: if (isOwner(uid) && isValidId(uid) &&
-                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'role', 'updatedAt', 'language', 'preferredCurrency']) &&
+                       (
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'role', 'updatedAt', 'language', 'preferredCurrency']) ||
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'role', 'updatedAt', 'language', 'preferredCurrency', 'createdAt', 'email'])
+                       ) &&
                        (incoming().get('email', existing().email) == existing().email) &&
+                       (!incoming().diff(existing()).affectedKeys().hasAny(['createdAt']) || 
+                        incoming().createdAt == existing().createdAt || 
+                        (incoming().createdAt == request.time && request.time.toMillis() - existing().createdAt.toMillis() < 10000)) &&
                        (!incoming().diff(existing()).affectedKeys().hasAny(['updatedAt']) || incoming().updatedAt == request.time) &&
                        (incoming().get('role', existing().role) == existing().role || (incoming().role == 'admin' && existing().email == 'olexandr.prykhodko@gmail.com'))) || isAdmin();
     }
