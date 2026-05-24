@@ -1,58 +1,67 @@
-# Інструкція з міграції на власний хостинг (Cloudflare Pages) 🚀
+# Cloudflare Pages Hosting Migration Guide 🚀
 
-Цей посібник містить вичерпний покроковий план міграції нашої платформи **Komora** на власний хостинг **Cloudflare Pages**, а також повний опис усіх необхідних змін у конфігурації та списку **Environment Variables** (змінних оточення).
+This guide provides a comprehensive step-by-step plan for migrating the **Komora** platform to custom hosting via **Cloudflare Pages**, along with a detailed list of all required configurations and **Environment Variables**.
 
 ---
 
-## 📋 1. Загальні вимоги до хостингу Cloudflare
+## 📋 1. General Cloudflare Hosting Requirements
 
-Оскільки додаток побудований як **SPA (Single Page Application)** на базі **Vite + React + TypeScript + Firebase**, хостинг Cloudflare Pages ідеально підходить для нього (він є безкоштовним, швидким та масштабованим).
+Since the application is designed as a **Single Page Application (SPA)** using **Vite + React + TypeScript + Firebase**, Cloudflare Pages is the ideal hosting solution (fast, scalable, and free).
 
-### Налаштування проєкту в Cloudflare Dashboard:
-1. Перейдіть у **Cloudflare Dashboard** -> **Workers & Pages** -> **Create application** -> **Pages** -> **Connect to Git**.
-2. Оберіть ваш репозиторій із кодом.
-3. У налаштуваннях збірки (**Build settings**) встановіть:
-   - **Framework preset:** `Vite` (або `None`)
-   - **Build command:** `npm run build`
+### Project Configuration in Cloudflare Dashboard:
+1. Navigate to **Cloudflare Dashboard** -> **Workers & Pages** -> **Create application** -> **Pages** -> **Connect to Git**.
+2. Select your repository.
+3. In the **Build settings** section, configure the following:
+   - **Framework preset:** `Vite` (or `None`)
+   - **Build command:** `npm run build` (or with config injection: `echo $FIREBASE_JSON_CONFIG > firebase-applet-config.json && npm run build`)
    - **Build output directory:** `dist`
-   - **Node.js Version:** `18` або вище (можна вказати в змінних оточення Cloudflare `NODE_VERSION: 20`).
+   - **Node.js Version:** **Node.js 22 or higher is strictly required** for modern Wrangler deployments (can be specified using the environment variable `NODE_VERSION: 22` in your Cloudflare settings).
 
 ---
 
-## 🔀 2. Вирішення проблеми роутингу (Nested Routes)
+## 🔀 2. Routing Configuration for SPA (Single-Page Application)
 
-В SPA-додатках (таких як наш) всі маршрути (`/admin`, `/admin/orders`, `/blog/:id` тощо) обробляються на стороні клієнта за допомогою React Router. Якщо користувач оновить сторінку на вкладеному маршруті, Cloudflare поверне помилку `404 Not Found`, оскільки фізично такого файлу на сервері немає.
+In modern deployments utilizing **Cloudflare Workers & Assets** (via Wrangler), routing to nested paths (such as `/admin`, `blog/:id`, etc.) is handled seamlessly. 
 
-### Рішення:
-Необхідно створити файл `_redirects` у папці `/public/` (який після білду потрапить в `/dist/_redirects`).
-У цьому файлі має бути лише один рядок:
-```text
-/* /index.html 200
-```
-Це вкаже Cloudflare перенаправляти всі запити на головний `index.html`, де React Router успішно обробить маршрут клієнтською частиною.
-
----
-
-## 🔑 3. Конфігурація Firebase при міграції
-
-Зараз додаток зчитує налаштування Firebase локально з автогенерованого файлу `firebase-applet-config.json` (рядок `import firebaseConfig from '../../../firebase-applet-config.json'` всередині `/src/shared/lib/firebase.ts`).
-
-Щоб зробити систему гнучкою, безпечною та незалежною від локальних JSON-файлів при розгортанні, ви можете обрати **один із двох варіантів**:
-
-### Варіант А: Автоматична генерація файлу при білді (Рекомендовано)
-Ви можете не змінювати код додатка, а перед збіркою на Cloudflare створювати файл `firebase-applet-config.json` за допомогою системної команди.
-Для цього додайте змінну оточення `FIREBASE_JSON_CONFIG` у Cloudflare, яка міститиме повний JSON-рядок конфігурації Firebase:
+The build automatically generates or relies on a `wrangler.json` / `wrangler.jsonc` file with the following configuration:
 ```json
-{"projectId":"your-id","appId":"...","apiKey":"...","authDomain":"...","firestoreDatabaseId":"...","storageBucket":"...","messagingSenderId":"..."}
+"assets": {
+  "not_found_handling": "single-page-application"
+}
 ```
-А в полі **Build command** на Cloudflare вкажіть:
+
+* **Note on Redirects:** You **must not** manually create or commit a custom `_redirects` file with rules like `/* /index.html 200`. Under modern Wrangler asset deployments, adding files with such rules triggers conflicts and blocks deployment with the error `Invalid _redirects configuration: Infinite loop detected in this rule`. The `not_found_handling` asset configuration built into Wrangler takes care of this automatically.
+
+---
+
+## 🔑 3. Firebase Configuration
+
+The application reads its Firebase configuration at runtime from an auto-generated file named `firebase-applet-config.json` (imported inside `/src/shared/lib/firebase.ts`).
+
+To make the system flexible and safe when deploying to production without committing configuration secrets, you can choose one of the following setups:
+
+### Setup A: Dynamic Configuration File Generation (Recommended)
+You can automatically construct this file during the build process on Cloudflare. 
+Add an environment variable `FIREBASE_JSON_CONFIG` in Cloudflare containing your raw Firebase config JSON string (values should match your Firebase project):
+```json
+{
+  "projectId": "YOUR_PROJECT_ID",
+  "appId": "YOUR_APP_ID",
+  "apiKey": "YOUR_API_KEY",
+  "authDomain": "YOUR_AUTH_DOMAIN",
+  "firestoreDatabaseId": "YOUR_DATABASE_ID",
+  "storageBucket": "YOUR_STORAGE_BUCKET",
+  "messagingSenderId": "YOUR_MESSAGING_SENDER_ID"
+}
+```
+Then, update your **Build command** in Cloudflare Pages to generate this file automatically prior to invoking Vite:
 ```bash
 echo $FIREBASE_JSON_CONFIG > firebase-applet-config.json && npm run build
 ```
 
-### Варіант Б: Перенесення конфігурації у змінні оточення `VITE_`
-Ви можете замінити імпорт файлу в `src/shared/lib/firebase.ts` на використання клієнтських змінних оточення Vite. 
-Для цього перепишіть ініціалізацію конфігурації:
+### Setup B: Environment Variables Configuration (`VITE_`)
+Alternatively, you can modify `/src/shared/lib/firebase.ts` to fetch configurations directly from Vite environment variables.
+Rewrite the initialization as follows:
 ```typescript
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -64,87 +73,87 @@ const firebaseConfig = {
   firestoreDatabaseId: import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || '(default)'
 };
 ```
-І додайте відповідні змінні `VITE_FIREBASE_*` до панелі керування Cloudflare Pages.
+Then configure the individual `VITE_FIREBASE_*` keys inside your Cloudflare environment settings dashboard.
 
 ---
 
-## 📁 4. Повний список та значення Environment Variables
+## 📁 4. Comprehensive Environment Variables Reference
 
-Всі приватні змінні оточення в проєкті Vite, які використовуються на клієнті, **обов'язково** повинні мати префікс `VITE_`, щоб Vite вніс їх у збірку.
+All client-facing environment variables in a Vite project **must** be prefixed with `VITE_` so that they are exposed to the browser build.
 
-Додайте наступні ключі у розділі **Settings** -> **Environment variables** вашого проєкту на Cloudflare (у розділах **Production** та **Preview**):
+Add the following environment variables in the **Settings** -> **Environment variables** section of your Cloudflare Dashboard (both **Production** and **Preview** environments):
 
-### 📬 Конфігурація розсилок Brevo (Sendinblue)
+### 📬 Brevo (Sendinblue) Mailing Configuration
 
-| Ім'я змінної | Тип значення | Опис / Призначення | Приклад значення |
+| Variable Name | Type | Description | Placeholder Value |
 | :--- | :--- | :--- | :--- |
-| `VITE_BREVO_API_KEY` | `string` | Ключ доступу API (v3) з кабінету Brevo. | `xkeysib-c4f5d6g7...` |
-| `VITE_BREVO_LIST_ID` | `number` | ID списку контактів у Brevo, куди додаватимуться валідовані підписники. | `3` |
-| `VITE_BREVO_SENDER_NAME` | `string` | Ім'я відправника транзакційних та маркетингових листів. | `Комора` |
-| `VITE_BREVO_SENDER_EMAIL` | `string` | Верифікований Email у вашому кабінеті Brevo. | `olexandr.prykhodko@gmail.com` |
+| `VITE_BREVO_API_KEY` | `string` | API Access Key (v3) from your Brevo Dashboard | `your_brevo_api_key_here` |
+| `VITE_BREVO_LIST_ID` | `number` | ID of the target contact list in Brevo | `your_brevo_list_id` |
+| `VITE_BREVO_SENDER_NAME` | `string` | Sender name shown for transactional/marketing emails | `your_sender_name_here` |
+| `VITE_BREVO_SENDER_EMAIL` | `string` | Verified sender email address | `your_verified_sender_email@domain.com` |
 
 ---
 
-### 📧 Шаблони листів Brevo за мовами (Double Opt-In та Статуси)
+### 📧 Brevo Email Templates by Language (Double Opt-In & Order Statuses)
 
-Кожен тип листа має по 3 версії відповідно до підтримуваних мов (Українська, Англійська, Німецька).
+Each email template has 3 language versions (Ukrainian, English, German) for full localization support.
 
-#### 🇺🇦 Українські шаблони (UK)
-| Ім'я змінної | Опис шаблону | Значення |
+#### 🇺🇦 Ukrainian Templates (UK)
+| Variable Name | Description | Placeholder Value / Template ID |
 | :--- | :--- | :--- |
-| `VITE_BREVO_DOI_CONFIRM_UK` | Підтвердження підписки (Double Opt-In) | ID шаблону в Brevo (напр. `2`) |
-| `VITE_BREVO_DOI_WELCOME_UK` | Привітальний лист після підтвердження підписки | ID шаблону в Brevo (напр. `4`) |
-| `VITE_BREVO_ORDER_PLACED_UK` | Замовлення успішно створено клієнтом | ID шаблону в Brevo (напр. `5`) |
-| `VITE_BREVO_ORDER_CONFIRMED_UK` | Замовлення підтверджено адміністратором | ID шаблону в Brevo (напр. `6`) |
-| `VITE_BREVO_ORDER_IN_TRANSIT_UK` | Замовлення передано в службу доставки / відправлено | ID шаблону в Brevo (напр. `7`) |
-| `VITE_BREVO_ORDER_DELIVERED_UK` | Замовлення доставлено отримувачу | ID шаблону в Brevo (напр. `8`) |
-| `VITE_BREVO_ORDER_CANCELLED_UK` | Замовлення скасовано (із зазначенням причин) | ID шаблону в Brevo (напр. `9`) |
+| `VITE_BREVO_DOI_CONFIRM_UK` | Subscription Confirmation (Double Opt-In) | `your_uk_doi_confirm_template_id` |
+| `VITE_BREVO_DOI_WELCOME_UK` | Welcome email after subscription confirmation | `your_uk_doi_welcome_template_id` |
+| `VITE_BREVO_ORDER_PLACED_UK` | Order placed notification | `your_uk_order_placed_template_id` |
+| `VITE_BREVO_ORDER_CONFIRMED_UK` | Order confirmed by admin | `your_uk_order_confirmed_template_id` |
+| `VITE_BREVO_ORDER_IN_TRANSIT_UK` | Order dispatched / in transit | `your_uk_order_transit_template_id` |
+| `VITE_BREVO_ORDER_DELIVERED_UK` | Order successfully delivered | `your_uk_order_delivered_template_id` |
+| `VITE_BREVO_ORDER_CANCELLED_UK` | Order cancelled with reasoning | `your_uk_order_cancelled_template_id` |
 
-#### 🇬🇧 Англійські шаблони (EN)
-| Ім'я змінної | Опис шаблону | Значення |
+#### 🇬🇧 English Templates (EN)
+| Variable Name | Description | Placeholder Value / Template ID |
 | :--- | :--- | :--- |
-| `VITE_BREVO_DOI_CONFIRM_EN` | Confirmation of Premium Newsletter subscription (DOI) | ID шаблону в Brevo (напр. `11`) |
-| `VITE_BREVO_DOI_WELCOME_EN` | Welcome subscriber notification | ID шаблону в Brevo (напр. `12`) |
-| `VITE_BREVO_ORDER_PLACED_EN` | New order placed confirmation | ID шаблону в Brevo (напр. `15`) |
-| `VITE_BREVO_ORDER_CONFIRMED_EN`| Order confirmed by Admin | ID шаблону в Brevo (напр. `17`) |
-| `VITE_BREVO_ORDER_IN_TRANSIT_EN`| Cargo dispatched/shipped update | ID шаблону в Brevo (напр. `19`) |
-| `VITE_BREVO_ORDER_DELIVERED_EN` | Parcel successfully hand-delivered | ID шаблону в Brevo (напр. `21`) |
-| `VITE_BREVO_ORDER_CANCELLED_EN` | Order cancellation reason status notification | ID шаблону в Brevo (напр. `23`) |
+| `VITE_BREVO_DOI_CONFIRM_EN` | Subscription Confirmation (Double Opt-In) | `your_en_doi_confirm_template_id` |
+| `VITE_BREVO_DOI_WELCOME_EN` | Welcome email after subscription confirmation | `your_en_doi_welcome_template_id` |
+| `VITE_BREVO_ORDER_PLACED_EN` | Order placed notification | `your_en_order_placed_template_id` |
+| `VITE_BREVO_ORDER_CONFIRMED_EN` | Order confirmed by admin | `your_en_order_confirmed_template_id` |
+| `VITE_BREVO_ORDER_IN_TRANSIT_EN` | Order dispatched / in transit | `your_en_order_transit_template_id` |
+| `VITE_BREVO_ORDER_DELIVERED_EN` | Order successfully delivered | `your_en_order_delivered_template_id` |
+| `VITE_BREVO_ORDER_CANCELLED_EN` | Order cancelled with reasoning | `your_en_order_cancelled_template_id` |
 
-#### 🇩🇪 Німецькі шаблони (DE)
-| Ім'я змінної | Опис шаблону | Значення |
+#### 🇩🇪 German Templates (DE)
+| Variable Name | Description | Placeholder Value / Template ID |
 | :--- | :--- | :--- |
-| `VITE_BREVO_DOI_CONFIRM_DE` | Newsletter-Abonnement Bestätigung (Double Opt-In) | ID шаблону в Brevo (напр. `13`) |
-| `VITE_BREVO_DOI_WELCOME_DE` | Willkommens-E-Mail (Erfolgreiches Abo) | ID шаблону в Brevo (напр. `14`) |
-| `VITE_BREVO_ORDER_PLACED_DE` | Bestelleingang bestätigt | ID шаблону в Brevo (напр. `16`) |
-| `VITE_BREVO_ORDER_CONFIRMED_DE`| Bestellung wurde durch Admin bestätigt | ID шаблону в Brevo (напр. `18`) |
-| `VITE_BREVO_ORDER_IN_TRANSIT_DE`| Bestellung wurde an Versand übergeben / Unterwegs | ID шаблону в Brevo (напр. `20`) |
-| `VITE_BREVO_ORDER_DELIVERED_DE` | Bestellung erfolgreich zugestellt | ID шаблону в Brevo (напр. `22`) |
-| `VITE_BREVO_ORDER_CANCELLED_DE` | Stornierung der Bestellung status update | ID шаблону в Brevo (напр. `24`) |
+| `VITE_BREVO_DOI_CONFIRM_DE` | Subscription Confirmation (Double Opt-In) | `your_de_doi_confirm_template_id` |
+| `VITE_BREVO_DOI_WELCOME_DE` | Welcome email after subscription confirmation | `your_de_doi_welcome_template_id` |
+| `VITE_BREVO_ORDER_PLACED_DE` | Order placed notification | `your_de_order_placed_template_id` |
+| `VITE_BREVO_ORDER_CONFIRMED_DE` | Order confirmed by admin | `your_de_order_confirmed_template_id` |
+| `VITE_BREVO_ORDER_IN_TRANSIT_DE` | Order dispatched / in transit | `your_de_order_transit_template_id` |
+| `VITE_BREVO_ORDER_DELIVERED_DE` | Order successfully delivered | `your_de_order_delivered_template_id` |
+| `VITE_BREVO_ORDER_CANCELLED_DE` | Order cancelled with reasoning | `your_de_order_cancelled_template_id` |
 
 ---
 
-### 🔥 Налаштування сервісів Firebase (якщо вибрано Варіант Б)
+### 🔥 Firebase Service Settings (If utilizing Setup B)
 
-Якщо у файлі `/src/shared/lib/firebase.ts` ви змінили логіку на використання індивідуальних `VITE_` ключів, додайте такі змінні в Cloudflare:
+If you modify `/src/shared/lib/firebase.ts` to utilize separate `VITE_` environment variables, configure the following keys in your Cloudflare dashboard:
 
-| Ім'я змінної | Тип значення | Опис | Приклад значення |
+| Variable Name | Type | Description | Placeholder Value |
 | :--- | :--- | :--- | :--- |
-| `VITE_FIREBASE_API_KEY` | `string` | Веб-ключ API Firebase вашого проєкту. | `AIzaSyDDyDX0QV1OLlDsllc...` |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `string` | Домен авторизації для OAuth. | `komora-d7d96.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | `string` | Ідентифікатор проєкту в Google Cloud. | `komora-d7d96` |
-| `VITE_FIREBASE_STORAGE_BUCKET`| `string` | Посилання на хмарне сховище завантажених фото. | `komora-d7d96.firebasestorage.app`|
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | `string` | ID відправника системних повідомлень. | `380303075032` |
-| `VITE_FIREBASE_APP_ID` | `string` | Унікальний ID зареєстрованого веб-додатка. | `1:380303075032:web:509d...` |
-| `VITE_FIREBASE_FIRESTORE_DATABASE_ID` | `string` | ID використовуваної бази Firestore. Залиште порожнім або `(default)` за замовчуванням. | `ai-studio-fb67e21b-3fe2...` |
+| `VITE_FIREBASE_API_KEY` | `string` | Firebase Web API Key for your project | `your_firebase_api_key_here` |
+| `VITE_FIREBASE_AUTH_DOMAIN` | `string` | Authentication domain designated for OAuth | `your_project_id.firebaseapp.com` |
+| `VITE_FIREBASE_PROJECT_ID` | `string` | Unique identifier for your Google Cloud project | `your_project_id_here` |
+| `VITE_FIREBASE_STORAGE_BUCKET`| `string` | Google Cloud Storage upload bucket reference | `your_project_id.firebasestorage.app` |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | `string` | Cloud messaging sender identifier | `your_messaging_sender_id_here` |
+| `VITE_FIREBASE_APP_ID` | `string` | Identifier unique to your registered Web App | `your_firebase_app_id_here` |
+| `VITE_FIREBASE_FIRESTORE_DATABASE_ID` | `string` | Firestore instance database identifier | `your_database_id_here` |
 
 ---
 
-## 🔒 5. Безпека перед публікацією
-1. **Авторизовані домени в Firebase Console:**
-   Обов'язково перейдіть у консоль Firebase -> **Authentication** -> **Settings** -> **Authorized Domains** та додайте ваші власні домени від Cloudflare Pages (наприклад, `your-app.pages.dev` та ваш персональний домен `komora.ua`, якщо він підключений). Без цього Google Login повертатиме помилку авторизації.
-2. **CORS у Firebase Storage:**
-   Якщо ви плануєте завантажувати зображення товарів безпосередньо з вашого нового домену через адмін-панель за допомогою Drag-and-Drop, налаштуйте CORS правила для вашого бакету Google Cloud Storage, дозволивши вашому домену метод `POST` та заголовки `Content-Type`.
+## 🔒 5. Post-Migration Security Steps
+1. **Authorized Domains in Firebase Console:**
+   Go to your Firebase Console -> **Authentication** -> **Settings** -> **Authorized Domains** and add your custom Cloudflare Pages domains (such as `your-app.pages.dev` and any custom domains like `komora.ua`). Without adding these, Google Authentication will fail.
+2. **CORS Configuration for Firebase Storage:**
+   If you plan to upload images directly from your backoffice utilizing Drag-and-Drop, declare appropriate CORS rules on your Google Cloud Storage bucket to explicitly allow methods like `POST` and headers like `Content-Type` from your Cloudflare domains.
 
 ---
-Розгортання на Cloudflare Pages дасть проєкту неймовірну швидкість завдяки глобальному CDN та повністю зніме навантаження на сервери розробки! 🌾✨
+Deploying to Cloudflare Pages yields superior loading speeds globally and lifts unnecessary load off development containers! 🌾✨
