@@ -66,6 +66,7 @@
     "total": "Gesamtbetrag",
     "terms": "Durch Klicken auf die Schaltfläche erklären Sie sich mit den Servicebedingungen von Komora einverstanden.",
     "newOrderToast": "Neue Bestellung!",
+    "newOrderMessage": "Kunde {{name}} hat eine Bestellung über {{total}} {{currency}} aufgegeben.",
     "successToast": "Bestellung erfolgreich aufgegeben!",
     "errorToast": "Fehler beim Aufgeben der Bestellung. Bitte versuchen Sie es erneut."
   },
