@@ -98,7 +98,7 @@ export default function CheckoutPage() {
       // Create admin notification
       await createNotification({
         title: t('shop:checkout.newOrderToast'),
-        message: `Клієнт ${formData.name} оформив замовлення на суму ${total} ${currency}.`,
+        message: t('shop:checkout.newOrderMessage', { name: formData.name, total, currency }),
         type: 'order',
         link: `/admin/orders`
       });
