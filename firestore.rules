@@ -173,7 +173,7 @@ service cloud.firestore {
 
     match /notifications/{id} {
       allow read, update, delete: if isAdmin();
-      allow create: if (isSignedIn() && isValidNotification(incoming())) || isAdmin();
+      allow create: if isValidNotification(incoming()) || isAdmin();
     }
 
     match /tags/{tagId} {
