@@ -47,7 +47,7 @@ export function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="h-screen bg-gray-50 flex overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
@@ -58,18 +58,18 @@ export function AdminLayout() {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 w-72 bg-farm-green text-white z-50 transition-transform duration-300 lg:relative lg:translate-x-0",
+        "fixed inset-y-0 left-0 w-72 bg-farm-green text-white z-50 transition-transform duration-300 lg:relative lg:translate-x-0 h-full",
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="h-full flex flex-col p-6">
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center justify-between mb-8 flex-shrink-0">
             <Link to="/" className="text-2xl font-black italic tracking-tighter">КОМОРА ADM</Link>
             <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-white/50">
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-2 overflow-y-auto pr-1 pb-4">
             {menuItems.map(item => (
               <Link
                 key={item.path}
@@ -88,7 +88,7 @@ export function AdminLayout() {
 
           <button 
             onClick={logout}
-            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-medium text-white/50 hover:text-white hover:bg-white/10 transition-all"
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-medium text-white/50 hover:text-white hover:bg-white/10 transition-all flex-shrink-0 mt-auto pt-4 border-t border-white/10"
           >
             <LogOut className="w-5 h-5" /> {t('sidebar.logout')}
           </button>
@@ -96,7 +96,7 @@ export function AdminLayout() {
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
           <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden">
             <Menu className="w-6 h-6 text-gray-400" />
