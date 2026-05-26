@@ -66,6 +66,7 @@
     "total": "Total",
     "terms": "By clicking the button, you agree to Komora's terms of service.",
     "newOrderToast": "New order!",
+    "newOrderMessage": "Customer {{name}} placed an order for {{total}} {{currency}}.",
     "successToast": "Order placed successfully!",
     "errorToast": "Error placing order. Please try again."
   },
