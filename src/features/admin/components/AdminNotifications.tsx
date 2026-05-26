@@ -47,6 +47,7 @@ export function AdminNotifications() {
   useEffect(() => {
     const q = query(
       collection(db, 'notifications'), 
+      orderBy('createdAt', 'desc'),
       limit(20)
     );
 
@@ -56,10 +57,10 @@ export function AdminNotifications() {
         ...doc.data()
       })) as Notification[];
       
-      // Sort locally to avoid index requirement
+      // Sort locally to handle any pending server timestamps gracefully
       const sorted = [...data].sort((a, b) => {
-        const timeA = a.createdAt?.seconds || 0;
-        const timeB = b.createdAt?.seconds || 0;
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : Date.now();
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : Date.now();
         return timeB - timeA;
       });
 
