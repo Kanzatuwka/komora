@@ -13,6 +13,8 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '@/shared/lib/firebase';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { pickLocale } from '@/shared/lib/i18nContent';
 
 /**
  * Hook to retrieve the orders of a specific user.
@@ -122,3 +124,43 @@ export function useUpdateProfile(userId: string) {
 
   return { updateProfile, loading };
 }
+
+/**
+ * Hook to retrieve real-time details of a single pickup address point,
+ * resolving localized values according to current language selection.
+ */
+export function usePickupAddress(id: string | null | undefined) {
+  const [address, setAddress] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+
+  useEffect(() => {
+    if (!id) {
+      setAddress(null);
+      setLoading(false);
+      return;
+    }
+    const unsub = onSnapshot(doc(db, 'pickupAddresses', id), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setAddress({
+          id: snap.id,
+          label: pickLocale(data.label, language),
+          address: pickLocale(data.address, language),
+          workingHours: pickLocale(data.workingHours, language),
+          raw: data
+        });
+      } else {
+        setAddress(null);
+      }
+      setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, `pickupAddresses/${id}`);
+      setLoading(false);
+    });
+    return unsub;
+  }, [id, language]);
+
+  return { address, loading };
+}
+
