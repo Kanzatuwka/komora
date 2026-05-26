@@ -19,11 +19,7 @@ export function LoginForm() {
     try {
       await loginWithEmail(email, password);
     } catch (err: any) {
-      if (err.message === 'Невірний email або пароль') {
-        setError(t('auth:login.errorInvalid'));
-      } else {
-        setError(t('auth:login.errorGeneric'));
-      }
+      setError(err.message || t('auth:login.errorGeneric'));
     } finally {
       setLoading(false);
     }

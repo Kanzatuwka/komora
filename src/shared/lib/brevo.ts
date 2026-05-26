@@ -41,7 +41,7 @@ const TEMPLATES: Record<string, any> = {
 const BREVO_API_URL = 'https://api.brevo.com/v3';
 
 const BREVO_SENDER = { 
-  name: import.meta.env.VITE_BREVO_SENDER_NAME || 'Комора', 
+  name: import.meta.env.VITE_BREVO_SENDER_NAME || 'Komora', 
   email: import.meta.env.VITE_BREVO_SENDER_EMAIL || 'olexandr.prykhodko@gmail.com' 
 };
 

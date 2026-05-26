@@ -2,9 +2,16 @@ import { useState } from 'react';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '@/shared/lib/firebase';
 
+/**
+ * Hook to manage media uploads and deletions in Firebase Storage.
+ */
 export function useUploadImage() {
   const [uploading, setUploading] = useState(false);
 
+  /**
+   * Uploads a file target to Firebase Storage and returns its public URL link.
+   * Generates a unique UUID file name to avoid collisions.
+   */
   const uploadImage = async (file: File, folder: string = 'products') => {
     setUploading(true);
     try {
@@ -19,6 +26,9 @@ export function useUploadImage() {
     }
   };
 
+  /**
+   * Deletes an image from Firebase Storage by passing its storage reference URL.
+   */
   const deleteImage = async (url: string) => {
     try {
       const fileRef = ref(storage, url);

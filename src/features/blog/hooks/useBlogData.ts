@@ -19,6 +19,9 @@ interface BlogFilters {
   count?: number;
 }
 
+/**
+ * Hook to retrieve a filtered and locale-resolved array of published articles.
+ */
 export function useArticles({ tag, categoryId, count = 12 }: BlogFilters) {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +64,9 @@ export function useArticles({ tag, categoryId, count = 12 }: BlogFilters) {
   return { articles, loading };
 }
 
+/**
+ * Hook to grab all active blog categories resolving their translated locale dynamic structures.
+ */
 export function useBlogCategories() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +92,9 @@ export function useBlogCategories() {
   return { categories, loading };
 }
 
+/**
+ * Hook to load a single article with dynamic parsing of its multilingual body, excerpts and titles.
+ */
 export function useArticle(id: string) {
   const [article, setArticle] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -115,6 +124,9 @@ export function useArticle(id: string) {
   return { article, loading };
 }
 
+/**
+ * Hook to resolve any products explicitly tagged or embedded inside a given article.
+ */
 export function useLinkedProducts(productIds: string[]) {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

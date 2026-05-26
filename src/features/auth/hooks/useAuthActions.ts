@@ -19,11 +19,17 @@ export function useAuthActions() {
   const { t } = useTranslation(['auth', 'common']);
   const { language: currentLanguage } = useLanguage();
 
+  /**
+   * Helper to redirect user to their original route or home page after login.
+   */
   const redirectAfterLogin = () => {
     const from = (location.state as any)?.from?.pathname || '/';
     navigate(from, { replace: true });
   };
 
+  /**
+   * Handles user sign-in using email and password.
+   */
   const loginWithEmail = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -35,6 +41,9 @@ export function useAuthActions() {
     }
   };
 
+  /**
+   * Handles user sign-in via Google OAuth popup.
+   */
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
@@ -46,6 +55,9 @@ export function useAuthActions() {
     }
   };
 
+  /**
+   * Registers a new user with their email coordinates and stores customized user profiles in Firestore.
+   */
   const register = async ({ name, email, password, language }: any) => {
     try {
       const cred: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -74,6 +86,9 @@ export function useAuthActions() {
     }
   };
 
+  /**
+   * Logs out the current user and redirects to home page.
+   */
   const logout = async () => {
     try {
       await signOut(auth);

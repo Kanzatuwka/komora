@@ -31,7 +31,7 @@ export function useSubscribe() {
         return;
       }
 
-      // 2. Створити документ зі статусом pending
+      // Create document with pending status
       await setDoc(docRef, {
         email: emailId,
         status: 'pending',
@@ -41,13 +41,13 @@ export function useSubscribe() {
 
       // Notify admin
       await createNotification({
-        title: 'Новий підписник!',
-        message: `Користувач ${emailId} подав запит на підписку.`,
+        title: 'New Subscriber Request',
+        message: `User ${emailId} requested newsletter subscription.`,
         type: 'subscriber',
         link: '/admin/subscribers'
       });
 
-      // 3. Тригернути Brevo confirmation template
+      // Trigger Brevo double-opt-in confirmation template
       try {
         await brevoSubscribe(email, (i18n.language || 'uk') as any);
       } catch (brevoErr) {

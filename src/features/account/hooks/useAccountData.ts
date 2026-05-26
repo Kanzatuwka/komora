@@ -14,6 +14,10 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '@/shared/lib/firebase';
 
+/**
+ * Hook to retrieve the orders of a specific user.
+ * It listens to real-time updates from Firestore.
+ */
 export function useUserOrders(userId: string) {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +43,10 @@ export function useUserOrders(userId: string) {
   return { orders, loading };
 }
 
+/**
+ * Hook to manage a user's shipping addresses.
+ * Provides functions to fetch, add, and remove addresses.
+ */
 export function useUserAddresses(userId: string) {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +74,9 @@ export function useUserAddresses(userId: string) {
   return { addresses, loading, addAddress, removeAddress };
 }
 
+/**
+ * Hook to retrieve real-time details of a single order.
+ */
 export function useOrderDetails(id: string) {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -86,6 +97,9 @@ export function useOrderDetails(id: string) {
   return { order, loading };
 }
 
+/**
+ * Hook to update a user's profile information.
+ */
 export function useUpdateProfile(userId: string) {
   const [loading, setLoading] = useState(false);
 

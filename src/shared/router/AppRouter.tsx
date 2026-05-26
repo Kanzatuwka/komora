@@ -31,7 +31,7 @@ import AdminMigratePage from '@/features/admin/pages/AdminMigratePage';
 export function AppRouter() {
   return (
     <Routes>
-      {/* Публічні маршрути */}
+      {/* Public Routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/shop" element={<ShopPage />} />
       <Route path="/shop/:id" element={<ProductPage />} />
@@ -48,7 +48,7 @@ export function AppRouter() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/subscription-confirmed" element={<SubscriptionConfirmedPage />} />
 
-      {/* Користувацькі маршрути */}
+      {/* User Authorized Routes */}
       <Route path="/account" element={
         <ProtectedRoute><AccountPage /></ProtectedRoute>
       } />
@@ -56,7 +56,7 @@ export function AppRouter() {
         <ProtectedRoute><OrderDetailsPage /></ProtectedRoute>
       } />
 
-      {/* Адмінські маршрути */}
+      {/* Admin Panel Routes */}
       <Route path="/admin" element={
         <ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>
       }>

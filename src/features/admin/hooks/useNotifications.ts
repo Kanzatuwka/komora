@@ -1,6 +1,9 @@
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/shared/lib/firebase';
 
+/**
+ * Params for creating system or administrative notifications.
+ */
 interface CreateNotificationParams {
   title: string;
   message: string;
@@ -8,6 +11,9 @@ interface CreateNotificationParams {
   link?: string;
 }
 
+/**
+ * Hook providing capabilities to generate real-time notifications inside the admin panel.
+ */
 export function useNotifications() {
   const createNotification = async ({ title, message, type, link }: CreateNotificationParams) => {
     try {
