@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { useOrderDetails } from '../hooks/useAccountData';
+import { useOrderDetails, usePickupAddress } from '../hooks/useAccountData';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { formatPrice, formatDate } from '@/shared/lib/format';
@@ -17,6 +17,7 @@ export default function OrderDetailsPage() {
   const { t } = useTranslation(['account', 'common']);
   const { language } = useLanguage();
   const { order, loading } = useOrderDetails(id || '');
+  const { address: pickupAddress } = usePickupAddress(order?.pickupAddressId);
 
   if (loading) return <PageLoader />;
   if (!order) return <div className="p-24 text-center">{t('account:orderDetails.notFound')}</div>;
@@ -90,7 +91,26 @@ export default function OrderDetailsPage() {
                     {order.deliveryMethod === 'delivery' ? t('account:orderDetails.courierDelivery') : t('account:orderDetails.pickup')}
                   </p>
                   <p className="text-farm-wood opacity-70 text-sm mt-1">
-                    {order.deliveryMethod === 'delivery' ? order.address : 'Київ, вул. Велика Васильківська, 32'}
+                    {order.deliveryMethod === 'delivery' ? (
+                      order.address
+                    ) : (
+                      <>
+                        {pickupAddress ? (
+                          <>
+                            <span className="block font-semibold text-farm-green">{pickupAddress.label}</span>
+                            <span className="block mt-0.5">{pickupAddress.address}</span>
+                            {pickupAddress.workingHours && (
+                              <span className="block text-xs font-medium text-farm-wood/60 mt-1 flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5 text-farm-wood/50" />
+                                {pickupAddress.workingHours}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          t('common:loading', { defaultValue: 'Loading...' })
+                        )}
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
